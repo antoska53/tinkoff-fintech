@@ -10,7 +10,7 @@ class UsefulService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         getContact()
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -19,14 +19,13 @@ class UsefulService : Service() {
 
     private fun getContact() {
         val contacts = arrayListOf<String>()
-        val cursor =
-            contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
-        while (cursor?.moveToNext() == true) {
-            contacts.add(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)))
-        }
-        cursor?.close()
+        contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
+            .use { cursor ->
+                while (cursor?.moveToNext() == true) {
+                    contacts.add(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)))
+                }
+            }
         sendLocalBroadcast(contacts)
-
     }
 
     private fun sendLocalBroadcast(contacts: ArrayList<String>) {

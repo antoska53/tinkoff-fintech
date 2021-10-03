@@ -20,10 +20,21 @@ import ru.myacademyhomework.homework_1.databinding.ActivitySecondBinding
 
 class SecondActivity : AppCompatActivity() {
 
-    private lateinit var br: BroadcastReceiver
     private lateinit var binding: ActivitySecondBinding
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-    private var isRationaleShown = false
+    private val br: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            setResult(Activity.RESULT_OK, intent)
+            stopService(Intent(context, UsefulService::class.java))
+            finish()
+        }
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                startService(Intent(this, UsefulService::class.java))
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,31 +42,10 @@ class SecondActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.butService.setOnClickListener { onClickStartService() }
-
-        br = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                setResult(Activity.RESULT_OK, intent)
-                stopService(Intent(context, UsefulService::class.java))
-                finish()
-            }
-        }
-
-        requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                if (isGranted) {
-                    startService(Intent(this, UsefulService::class.java))
-                }
-            }
     }
 
     private fun onClickStartService() {
         when {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                startService(Intent(this, UsefulService::class.java))
-            }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
                 showContactsPermissionDialog()
             }
@@ -68,14 +58,10 @@ class SecondActivity : AppCompatActivity() {
     private fun showContactsPermissionDialog() {
         AlertDialog.Builder(this)
             .setMessage("доступ к контактам нужен для запуска сервиса")
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton("OK") { _, _ ->
                 requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-                isRationaleShown = true
-                dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton("Cancel", null)
             .show()
     }
 
