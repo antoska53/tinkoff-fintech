@@ -14,7 +14,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: ContactAdapter
-    private lateinit var secondForActivityResult: ActivityResultLauncher<Intent>
+    private val secondForActivityResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            updateData(result)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,11 +25,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecycler()
-
-        secondForActivityResult =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                updateData(result)
-            }
 
         binding.secondActivityButton.setOnClickListener {
             secondForActivityResult.launch(Intent(this, SecondActivity::class.java))
@@ -39,10 +37,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateData(result: ActivityResult) {
-        result.data?.let { intent ->
-            intent.getStringArrayListExtra(SecondActivity.CONTACTS)?.let { arrayList ->
-                adapter.updateContacts(arrayList)
-            }
+        result.data?.getStringArrayListExtra(SecondActivity.CONTACTS)?.let { arrayList ->
+            adapter.updateContacts(arrayList)
         }
     }
 
