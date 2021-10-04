@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">homework_1</string>
+    <string name="activity_2">Activity 2</string>
+    <string name="start_service">Start service</string>
+</resources>
