@@ -1,0 +1,8 @@
+ru/myacademyhomework/homework_1/BuildConfig.java
+ ru.myacademyhomework.homework_1.BuildConfig
+ru/myacademyhomework/homework_1/databinding/ActivitySecondBinding.java
+ ru.myacademyhomework.homework_1.databinding.ActivitySecondBinding
+ru/myacademyhomework/homework_1/databinding/ActivityMainBinding.java
+ ru.myacademyhomework.homework_1.databinding.ActivityMainBinding
+ru/myacademyhomework/homework_1/databinding/ViewHolderContactBinding.java
+ ru.myacademyhomework.homework_1.databinding.ViewHolderContactBinding
