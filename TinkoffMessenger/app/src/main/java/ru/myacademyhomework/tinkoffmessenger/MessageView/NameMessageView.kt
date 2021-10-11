@@ -1,11 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.MessageView
 
 import android.content.Context
-import android.content.res.TypedArray
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PointF
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.ViewGroup
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -27,7 +22,7 @@ class NameMessageView @JvmOverloads constructor(
         var totalHeight = 0
 
 
-        for(i in 0 until childCount) {
+        for (i in 0 until childCount) {
             val child = getChildAt(i)
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, totalHeight)
             totalWidth = maxOf(totalWidth, child.measuredWidth)

@@ -37,7 +37,7 @@ class EmojiView @JvmOverloads constructor(
         val typedArray: TypedArray =
             context.obtainStyledAttributes(attrs, R.styleable.EmojiView, defStyleAttr, defStyleAttr)
 
-        smile = typedArray.getString(R.styleable.EmojiView_emojiSmile)?: "\uD83D\uDE04"
+        smile = typedArray.getString(R.styleable.EmojiView_emojiSmile) ?: "\uD83D\uDE04"
         textCount = typedArray.getString(R.styleable.EmojiView_emojiTextCount) ?: "1"
         text = "$smile $textCount"
 

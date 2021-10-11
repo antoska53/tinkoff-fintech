@@ -6,14 +6,4 @@
         <attr name="emojiTextSize" format="dimension"/>
         <attr name="emojiTextColor" format="color"/>
     </declare-styleable>
-
-    <declare-styleable name="NameMessageView">
-        <attr name="name" format="string"/>
-        <attr name="message" format="string"/>
-        <attr name="textSizeName" format="dimension"/>
-        <attr name="textSizeMessage" format="dimension"/>
-        <attr name="textColorName" format="color"/>
-        <attr name="textColorMessage" format="color"/>
-    </declare-styleable>
-
 </resources>

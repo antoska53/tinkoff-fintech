@@ -3,7 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger.MessageView
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
-import ru.myacademyhomework.tinkoffmessenger.R
 
 class FlexBoxLayout @JvmOverloads constructor(
     context: Context,
@@ -12,17 +11,13 @@ class FlexBoxLayout @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
-
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
         var totalWidth = 0
         var totalHeight = 0
         var rowWidth = 0
 
-
-
-        for(i in 0 until childCount){
+        for (i in 0 until childCount) {
             val child = getChildAt(i)
 
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, totalHeight)
@@ -30,7 +25,7 @@ class FlexBoxLayout @JvmOverloads constructor(
             val childWidth = child.measuredWidth
             val specWidth = MeasureSpec.getSize(widthMeasureSpec)
             rowWidth += childWidth
-            if(rowWidth > specWidth){
+            if (rowWidth > specWidth) {
                 totalWidth = maxOf(totalWidth, rowWidth - childWidth)
                 rowWidth = childWidth
                 totalHeight += child.measuredHeight
@@ -47,14 +42,14 @@ class FlexBoxLayout @JvmOverloads constructor(
         var currentBottom = 0
         var currentLeft = 0
 
-        for(i in 0 until childCount){
+        for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if(currentLeft + child.measuredWidth > r){
+            if (currentLeft + child.measuredWidth > r) {
                 currentLeft = 0
                 currentBottom += child.measuredHeight
             }
             child.layout(
-                currentLeft ,
+                currentLeft,
                 currentBottom,
                 currentLeft + child.measuredWidth,
                 currentBottom + child.measuredHeight

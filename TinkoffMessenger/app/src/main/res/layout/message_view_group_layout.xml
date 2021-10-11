@@ -11,17 +11,6 @@
         />
 <!--    android:layout_marginRight="50dp"-->
 
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Name"-->
-<!--        android:textSize="22sp"/>-->
-
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="bla bla bla"-->
-<!--        android:textSize="24sp"/>-->
 
     <ru.myacademyhomework.tinkoffmessenger.MessageView.NameMessageView
         android:layout_width="wrap_content"
@@ -40,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view1"
@@ -48,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view2"
@@ -56,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view3"
@@ -64,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view4"
@@ -72,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view5"
@@ -80,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view6"
@@ -88,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view7"
@@ -97,7 +86,7 @@
                     android:background="@drawable/bg_emoji_view"
                     app:emojiTextCount="100500"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
                 <ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
                     android:id="@+id/emoji_view8"
@@ -105,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_emoji_view"
                     android:padding="10dp"
-                    app:emojiTextColor="@android:color/holo_blue_bright"
+                    app:emojiTextColor="@color/message_color"
                     app:emojiTextSize="14sp"/>
 
     </ru.myacademyhomework.tinkoffmessenger.MessageView.FlexBoxLayout>
