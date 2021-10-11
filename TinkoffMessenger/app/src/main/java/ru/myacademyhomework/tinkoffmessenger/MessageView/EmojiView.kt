@@ -64,7 +64,7 @@ class EmojiView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         textCoordinate.x = w / 2f
-        textCoordinate.y = h / 2f + paddingTop
+        textCoordinate.y = h / 2f + (paddingTop / 2f)
     }
 
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
