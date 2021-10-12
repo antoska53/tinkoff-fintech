@@ -9,6 +9,7 @@
     tools:context=".MainActivity">
 
     <ru.myacademyhomework.tinkoffmessenger.MessageView.MessageViewGroup
+        android:id="@+id/message_view_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"/>

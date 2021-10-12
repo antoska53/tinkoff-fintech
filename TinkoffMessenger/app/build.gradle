@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk compileSdk
 
     defaultConfig {
         applicationId "ru.myacademyhomework.tinkoffmessenger"
-        minSdk 23
-        targetSdk 30
+        minSdk minSdk
+        targetSdk targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -33,8 +33,7 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation "androidx.core:core-ktx:$ktxVersion"
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "com.google.android.material:material:$googleMaterialVersion"
 }
