@@ -2,10 +2,9 @@ package ru.myacademyhomework.tinkoffmessenger
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import ru.myacademyhomework.tinkoffmessenger.MessageView.EmojiView
-import ru.myacademyhomework.tinkoffmessenger.MessageView.FlexBoxLayout
-import ru.myacademyhomework.tinkoffmessenger.MessageView.MessageViewGroup
+import ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+import ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout
+import ru.myacademyhomework.tinkoffmessenger.messageview.MessageViewGroup
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

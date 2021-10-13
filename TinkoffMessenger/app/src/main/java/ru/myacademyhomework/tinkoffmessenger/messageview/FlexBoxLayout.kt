@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.MessageView
+package ru.myacademyhomework.tinkoffmessenger.messageview
 
 import android.content.Context
 import android.util.AttributeSet
@@ -35,17 +35,22 @@ class FlexBoxLayout @JvmOverloads constructor(
         val resultWidth = resolveSize(totalWidth, widthMeasureSpec)
         val resultHeight = resolveSize(totalHeight, heightMeasureSpec)
 
-        setMeasuredDimension(resultWidth, resultHeight)
+        setMeasuredDimension(
+            resultWidth + paddingLeft + paddingRight,
+            resultHeight + paddingTop + paddingBottom
+        )
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        var currentBottom = 0
-        var currentLeft = 0
+        var currentBottom = paddingTop
+        var currentLeft = paddingLeft
 
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (currentLeft + child.measuredWidth > r) {
-                currentLeft = 0
+            val left = currentLeft + child.measuredWidth
+            val right = r - paddingRight - paddingLeft
+            if (left > right) {
+                currentLeft = paddingLeft
                 currentBottom += child.measuredHeight
             }
             child.layout(

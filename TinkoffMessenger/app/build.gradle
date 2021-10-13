@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk compileSdk
+    compileSdkVersion rootProject.compileSdk
 
     defaultConfig {
         applicationId "ru.myacademyhomework.tinkoffmessenger"
-        minSdk minSdk
-        targetSdk targetSdk
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
         versionCode 1
         versionName "1.0"
 

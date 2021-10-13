@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.MessageView
+package ru.myacademyhomework.tinkoffmessenger.messageview
 
 import android.content.Context
 import android.util.AttributeSet
@@ -97,7 +97,7 @@ class MessageViewGroup @JvmOverloads constructor(
         flexBox.layout(
             imageView.right + marginRight,
             textViewNameMessage.bottom,
-            imageView.right + marginRight + flexBox.measuredWidth + paddingRight,
+            imageView.right + marginRight + flexBox.measuredWidth,
             textViewNameMessage.bottom + flexBox.measuredHeight + paddingTop
         )
 

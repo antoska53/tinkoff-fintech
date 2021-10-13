@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.MessageView
+package ru.myacademyhomework.tinkoffmessenger.messageview
 
 import android.content.Context
 import android.content.res.TypedArray
@@ -67,20 +67,9 @@ class EmojiView @JvmOverloads constructor(
         textCoordinate.y = h / 2f + (paddingTop / 2f)
     }
 
-    override fun onCreateDrawableState(extraSpace: Int): IntArray {
-        val drawableState = super.onCreateDrawableState(extraSpace + SUPPORTED_DRAWABLE_STATE.size)
-        if (isSelected) {
-            mergeDrawableStates(drawableState, SUPPORTED_DRAWABLE_STATE)
-        }
-        return drawableState
-    }
-
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawText(text, textCoordinate.x, textCoordinate.y, textPaint)
     }
 
-    companion object {
-        private val SUPPORTED_DRAWABLE_STATE = intArrayOf(android.R.attr.state_selected)
-    }
 }

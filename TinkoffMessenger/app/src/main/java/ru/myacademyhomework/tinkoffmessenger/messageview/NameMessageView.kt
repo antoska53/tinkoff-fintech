@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.MessageView
+package ru.myacademyhomework.tinkoffmessenger.messageview
 
 import android.content.Context
 import android.util.AttributeSet
