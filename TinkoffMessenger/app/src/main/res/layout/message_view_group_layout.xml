@@ -13,14 +13,15 @@
 
 
     <ru.myacademyhomework.tinkoffmessenger.messageview.NameMessageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_name_message_view"
         android:padding="10dp"/>
 
     <ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         >
 
                 <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView

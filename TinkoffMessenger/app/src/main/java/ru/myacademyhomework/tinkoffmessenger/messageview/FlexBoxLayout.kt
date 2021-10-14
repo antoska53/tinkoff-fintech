@@ -48,7 +48,7 @@ class FlexBoxLayout @JvmOverloads constructor(
         for (i in 0 until childCount) {
             val child = getChildAt(i)
             val left = currentLeft + child.measuredWidth
-            val right = r - paddingRight - paddingLeft
+            val right = r - l - paddingRight
             if (left > right) {
                 currentLeft = paddingLeft
                 currentBottom += child.measuredHeight
