@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@mipmap/ic_launcher"
+        />
+<!--    android:layout_marginRight="50dp"-->
+
+
+    <ru.myacademyhomework.tinkoffmessenger.messageview.NameMessageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_name_message_view"
+        android:padding="10dp"/>
+
+    <ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        >
+
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextCount="100500"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+                <ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
+                    android:id="@+id/emoji_view8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_emoji_view"
+                    android:padding="10dp"
+                    app:emojiTextColor="@color/message_color"
+                    app:emojiTextSize="14sp"/>
+
+    </ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout>
+
+
+</merge>

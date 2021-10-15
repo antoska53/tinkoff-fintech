@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="EmojiView">
+        <attr name="emojiSmile" format="string"/>
+        <attr name="emojiTextCount" format="string"/>
+        <attr name="emojiTextSize" format="dimension"/>
+        <attr name="emojiTextColor" format="color"/>
+    </declare-styleable>
+</resources>
