@@ -3,16 +3,20 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.Message
 import java.lang.IllegalArgumentException
 
-class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(private val listener: ChatMessageListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var messages: List<Message> = listOf(
-        Message(avatar = "", name = "Alice", message = "hello world", date = "16 октября"),
-        Message(avatar = "", name = "Bob", message = "hello", "15 октября"),
-        Message(avatar = "", name = "Hack", message = "hahahaha", "15 октября")
+    private val messages: MutableList<Any> = mutableListOf(
+        Message(avatar = "", name = "Alice", message = "hello world", listEmoji = mutableListOf()),
+        Message(avatar = "", name = "Bob", message = "hello", listEmoji = mutableListOf("\uD83D\uDE04")),
+        DateMessage(month = "октябрь", day = "16"),
+        Message(avatar = "", name = "Hack", message = "hahahaha", listEmoji = mutableListOf("\uD83D\uDE04")),
+        DateMessage(month = "октябрь", day = "15")
     )
 
 
@@ -34,21 +38,16 @@ class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position != 0) {
-            when (messages[position].date) {
-                messages[position - 1].date -> ChatFragment.TYPE_MESSAGE
+        return  when (messages[position]) {
+                is Message -> ChatFragment.TYPE_MESSAGE
                 else -> ChatFragment.TYPE_DATE
             }
-        } else {
-            ChatFragment.TYPE_MESSAGE
-        }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ChatViewHolder -> holder.onBind(messages[position])
-            is DateViewHolder -> holder.onBind(messages[position])
+            is ChatViewHolder -> holder.onBind(messages[position] as Message, listener)
+            is DateViewHolder -> holder.onBind(messages[position] as DateMessage)
         }
 //        holder.onBind(messages[position])
     }
@@ -56,4 +55,17 @@ class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int = messages.size
 
 
+
+    fun updateData(message: Message){
+        messages.add(0, message)
+        notifyDataSetChanged()
+    }
+
+    fun updateListEmoji(emoji: String, position: Int){
+        val message = messages[position]
+        if (message is Message){
+            message.listEmoji.add(emoji)
+            notifyDataSetChanged()
+        }
+    }
 }
