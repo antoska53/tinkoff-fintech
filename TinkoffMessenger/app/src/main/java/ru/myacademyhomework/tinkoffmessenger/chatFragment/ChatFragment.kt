@@ -3,7 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -71,27 +70,9 @@ class ChatFragment : Fragment(), ChatMessageListener, BottomSheetListener {
         recyclerView.adapter = adapter
     }
 
-    private fun onClickButtonSendMessage() {
-        if (editTextMessage.text.isNotEmpty()) {
-            val message = Message(
-                avatar = "",
-                name = "Me",
-                message = editTextMessage.text.toString(),
-                listEmoji = mutableListOf()
-            )
-            updateRecycler(message)
-        }
-    }
-
-    override fun itemLongClicked(position: Int): Boolean {
-        positionMessage = position
-        Log.d("ID", "itemLongClicked: $positionMessage")
-        return showBottomSheetDialog()
-    }
-
     private fun initBottomSheetDialog() {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
-        dialog = BottomSheetDialog(this.requireContext())
+        dialog = BottomSheetDialog(this.requireContext(), R.style.BottomSheetDialogTheme)
         dialog.setContentView(bottomSheet)
         bottomSheet.setOnClickListener {
             dialog.dismiss()
@@ -103,11 +84,26 @@ class ChatFragment : Fragment(), ChatMessageListener, BottomSheetListener {
 
     }
 
+    private fun onClickButtonSendMessage() {
+        if (editTextMessage.text.isNotEmpty()) {
+            val message = Message(
+                avatar = "",
+                name = "Me",
+                message = editTextMessage.text.toString(),
+                listEmoji = mutableListOf()
+            )
+            editTextMessage.text.clear()
+            updateRecycler(message)
+        }
+    }
+
+    override fun itemLongClicked(position: Int): Boolean {
+        positionMessage = position
+        return showBottomSheetDialog()
+    }
+
     override fun itemEmojiClicked(emoji: String) {
         updateEmoji(emoji)
-        // val emojiView = EmojiView(requireContext())
-        //  emojiView.smile = emoji
-        //  requireActivity().findViewById<FlexBoxLayout>(flexBoxId).addView(emojiView)
     }
 
     private fun showBottomSheetDialog(): Boolean {

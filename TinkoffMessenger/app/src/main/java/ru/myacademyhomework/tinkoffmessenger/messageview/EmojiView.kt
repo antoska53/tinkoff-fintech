@@ -43,7 +43,7 @@ class EmojiView @JvmOverloads constructor(
 
 
 
-        textPaint.color = typedArray.getColor(R.styleable.EmojiView_emojiTextColor, Color.WHITE)
+        textPaint.color = typedArray.getColor(R.styleable.EmojiView_emojiTextColor, Color.BLACK)
         textPaint.textSize = typedArray.getDimension(R.styleable.EmojiView_emojiTextSize, 50f)
         typedArray.recycle()
     }

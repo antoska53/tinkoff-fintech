@@ -1,12 +1,11 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Message
@@ -25,11 +24,43 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         textviewName.text = message.name
         textviewMessage.text = message.message
-        for (emoji in message.listEmoji){
-            Log.d("EMOJI", "onBind: $adapterPosition")
-            val emojiView = EmojiView(itemView.context)
+        flexBoxEmoji.removeAllViews()
+
+        for (emoji in message.listEmoji) {
+            val emojiView: EmojiView = LayoutInflater.from(itemView.context)
+                .inflate(R.layout.emoji_view_layout, flexBoxEmoji, false) as EmojiView
+
+            emojiView.setOnClickListener {
+                emojiView.isSelected = !it.isSelected
+                if (emojiView.isSelected) {
+                    val reactionCount = emojiView.textCount.toInt() + 1
+                    emojiView.textCount = reactionCount.toString()
+                } else {
+                    val reactionCount = emojiView.textCount.toInt() - 1
+                    if (reactionCount == 0) {
+                        flexBoxEmoji.removeView(emojiView)
+                        if (flexBoxEmoji.childCount == 1) {
+                            flexBoxEmoji.removeAllViews()
+                        }
+                        message.listEmoji.remove(emoji)
+                    } else {
+                        emojiView.textCount = reactionCount.toString()
+                    }
+                }
+            }
+
             emojiView.smile = emoji
+            emojiView.isSelected = true
+            emojiView.textCount = "1"
+
             flexBoxEmoji.addView(emojiView)
+        }
+
+        if (flexBoxEmoji.childCount != 0) {
+            val plusButton = LayoutInflater.from(itemView.context)
+                .inflate(R.layout.emoji_view_plus_layout, flexBoxEmoji, false)
+            plusButton.setOnClickListener { listener.itemLongClicked(adapterPosition) }
+            flexBoxEmoji.addView(plusButton)
         }
 
         messageView.setOnLongClickListener { listener.itemLongClicked(adapterPosition) }
@@ -38,4 +69,5 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .load(R.mipmap.ic_launcher)
             .into(imageviewAvatar)
     }
+
 }
