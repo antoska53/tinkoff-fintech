@@ -1,5 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger
 
-interface BottomSheetListener {
-    fun itemEmojiClicked(emoji: String)
+fun interface BottomSheetListener {
+    fun itemEmojiClicked(emoji: String, idMessage: Int)
 }

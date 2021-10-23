@@ -4,36 +4,27 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import ru.myacademyhomework.tinkoffmessenger.BottomSheetListener
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Message
+import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
 
 
-class ChatFragment : Fragment(), ChatMessageListener, BottomSheetListener {
+class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private lateinit var adapter: ChatAdapter
-    private lateinit var adapterBottomSheet: BottomSheetAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var editTextMessage: EditText
     private lateinit var buttonSendMessage: ImageButton
     private lateinit var dialog: BottomSheetDialog
-    private var positionMessage: Int = 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler(view)
-        initBottomSheetDialog()
         buttonSendMessage = view.findViewById(R.id.button_send_message)
         buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }
         editTextMessage = view.findViewById(R.id.edittext_message)
@@ -56,32 +47,16 @@ class ChatFragment : Fragment(), ChatMessageListener, BottomSheetListener {
         })
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false)
+    override fun onDestroyView() {
+        recyclerView.adapter = null
+        super.onDestroyView()
     }
+
 
     private fun initRecycler(view: View) {
-        recyclerView = view.findViewById(R.id.chat_recycler)
+         val recyclerView = view.findViewById<RecyclerView>(R.id.chat_recycler)
         adapter = ChatAdapter(this)
         recyclerView.adapter = adapter
-    }
-
-    private fun initBottomSheetDialog() {
-        val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
-        dialog = BottomSheetDialog(this.requireContext(), R.style.BottomSheetDialogTheme)
-        dialog.setContentView(bottomSheet)
-        bottomSheet.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
-        adapterBottomSheet = BottomSheetAdapter(this)
-        recyclerBottomSheet.adapter = adapterBottomSheet
-
     }
 
     private fun onClickButtonSendMessage() {
@@ -97,26 +72,39 @@ class ChatFragment : Fragment(), ChatMessageListener, BottomSheetListener {
         }
     }
 
-    override fun itemLongClicked(position: Int): Boolean {
-        positionMessage = position
-        return showBottomSheetDialog()
-    }
-
-    override fun itemEmojiClicked(emoji: String) {
-        updateEmoji(emoji)
-    }
-
-    private fun showBottomSheetDialog(): Boolean {
-        dialog.show()
+    override fun itemLongClicked(idMessage: Int): Boolean {
+        showBottomSheetDialog(idMessage)
         return true
+    }
+
+
+    private fun showBottomSheetDialog(idMessage: Int) {
+        val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
+        dialog = BottomSheetDialog(this.requireContext(), R.style.BottomSheetDialogTheme)
+        dialog.setContentView(bottomSheet)
+        bottomSheet.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
+        val adapterBottomSheet = BottomSheetAdapter(idMessage) { emoji, id ->
+            updateEmoji(emoji, id)
+        }
+        recyclerBottomSheet.adapter = adapterBottomSheet
+        dialog.show()
     }
 
     private fun updateRecycler(message: Message) {
         adapter.updateData(message)
     }
 
-    private fun updateEmoji(emoji: String) {
-        adapter.updateListEmoji(emoji, positionMessage)
+
+    private fun updateEmoji(emoji: String, idMessage: Int) {
+        val message = MessageFactory.messages[idMessage]
+        if (message is Message) {
+            message.listEmoji.add(emoji)
+            adapter.updateListEmoji(idMessage)
+        }
     }
 
     companion object {

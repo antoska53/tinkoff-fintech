@@ -10,10 +10,11 @@ class BottomSheetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
     private val emojiTextView = itemView.findViewById<TextView>(R.id.emoji_bottomsheet)
 
-    fun onBind(emoji: String, listener: BottomSheetListener) {
+    fun onBind(emoji: String, idMessage: Int, listener: BottomSheetListener) {
         emojiTextView.text = emoji
         emojiTextView.setOnClickListener {
-            listener.itemEmojiClicked(emoji)
+            listener.itemEmojiClicked(emoji, idMessage)
         }
+
     }
 }

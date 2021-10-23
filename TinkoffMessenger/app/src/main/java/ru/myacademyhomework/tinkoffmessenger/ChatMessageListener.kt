@@ -1,5 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger
 
 interface ChatMessageListener {
-    fun itemLongClicked(positionMessage: Int): Boolean
+    fun itemLongClicked(idMessage: Int): Boolean
 }
