@@ -29,16 +29,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
+                Unit
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
             override fun afterTextChanged(s: Editable) {
-                if (s.toString().isNotEmpty()) {
-                    buttonSendMessage.setImageResource(R.drawable.plane)
-                } else {
-                    buttonSendMessage.setImageResource(R.drawable.cross)
-                }
+                buttonSendMessage.setImageResource(
+                    if (s.toString().isNotEmpty()) R.drawable.plane else R.drawable.cross)
             }
         })
     }
