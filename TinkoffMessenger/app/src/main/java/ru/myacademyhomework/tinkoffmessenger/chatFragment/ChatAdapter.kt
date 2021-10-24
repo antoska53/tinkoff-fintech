@@ -4,8 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.data.Message
-import ru.myacademyhomework.tinkoffmessenger.factory.CreatorChatViewHolder
-import ru.myacademyhomework.tinkoffmessenger.factory.CreatorDateViewHolder
 import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
 import java.lang.IllegalArgumentException
 import java.time.LocalDate
@@ -18,8 +16,8 @@ class ChatAdapter(private val listener: ChatMessageListener) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ChatFragment.TYPE_DATE -> CreatorDateViewHolder().createViewHolder(parent)
-            ChatFragment.TYPE_MESSAGE -> CreatorChatViewHolder().createViewHolder(parent)
+            ChatFragment.TYPE_DATE -> DateViewHolder.createViewHolder(parent)
+            ChatFragment.TYPE_MESSAGE -> ChatViewHolder.createViewHolder(parent)
             else -> throw IllegalArgumentException()
         }
 
@@ -44,8 +42,8 @@ class ChatAdapter(private val listener: ChatMessageListener) :
 
 
     fun updateData(message: Message) {
-        messages.add(0, message)
-        notifyItemInserted(0)
+        messages.add(message)
+        notifyItemInserted(messages.size)
     }
 
     fun updateListEmoji(position: Int) {

@@ -12,12 +12,13 @@
         android:id="@+id/chat_recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:stackFromEnd="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/edittext_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:reverseLayout="true" />
+         />
 
     <EditText
         android:id="@+id/edittext_message"

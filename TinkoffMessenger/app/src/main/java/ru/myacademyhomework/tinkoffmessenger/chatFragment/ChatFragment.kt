@@ -17,7 +17,7 @@ import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
 
 class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private lateinit var adapter: ChatAdapter
-    private lateinit var recyclerView: RecyclerView
+    private var recyclerView: RecyclerView? = null
     private lateinit var editTextMessage: EditText
     private lateinit var buttonSendMessage: ImageButton
     private lateinit var dialog: BottomSheetDialog
@@ -29,34 +29,30 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
-            override fun afterTextChanged(s: Editable?) {
-                s?.let {
-                    if (it.toString().isNotEmpty()) {
-                        buttonSendMessage.setImageResource(R.drawable.plane)
-                    } else {
-                        buttonSendMessage.setImageResource(R.drawable.cross)
-                    }
+            override fun afterTextChanged(s: Editable) {
+                if (s.toString().isNotEmpty()) {
+                    buttonSendMessage.setImageResource(R.drawable.plane)
+                } else {
+                    buttonSendMessage.setImageResource(R.drawable.cross)
                 }
             }
         })
     }
 
     override fun onDestroyView() {
-        recyclerView.adapter = null
+        recyclerView?.adapter = null
         super.onDestroyView()
     }
 
 
     private fun initRecycler(view: View) {
-         val recyclerView = view.findViewById<RecyclerView>(R.id.chat_recycler)
+        recyclerView = view.findViewById<RecyclerView>(R.id.chat_recycler)
         adapter = ChatAdapter(this)
-        recyclerView.adapter = adapter
+        recyclerView?.adapter = adapter
     }
 
     private fun onClickButtonSendMessage() {
@@ -82,13 +78,12 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
         dialog = BottomSheetDialog(this.requireContext(), R.style.BottomSheetDialogTheme)
         dialog.setContentView(bottomSheet)
-        bottomSheet.setOnClickListener {
-            dialog.dismiss()
-        }
+
 
         val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
         val adapterBottomSheet = BottomSheetAdapter(idMessage) { emoji, id ->
             updateEmoji(emoji, id)
+            dialog.dismiss()
         }
         recyclerBottomSheet.adapter = adapterBottomSheet
         dialog.show()
@@ -96,6 +91,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     private fun updateRecycler(message: Message) {
         adapter.updateData(message)
+        recyclerView?.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
 

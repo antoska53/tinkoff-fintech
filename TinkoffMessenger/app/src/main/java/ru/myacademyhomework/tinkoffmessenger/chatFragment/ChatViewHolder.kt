@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -68,6 +69,15 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         Glide.with(itemView)
             .load(R.mipmap.ic_launcher)
             .into(imageviewAvatar)
+    }
+
+    companion object {
+        fun createViewHolder(parent: ViewGroup): ChatViewHolder {
+            return ChatViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.view_holder_message, parent, false)
+            )
+        }
     }
 
 }
