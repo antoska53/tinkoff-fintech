@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/bg_chat_color"
+    tools:context=".chatFragment.ChatFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chat_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/edittext_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+         />
+
+    <EditText
+        android:id="@+id/edittext_message"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_edit_text"
+        android:hint="@string/hint_textview_message"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/text_color_hint"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_send_message"
+        />
+
+    <ImageButton
+        android:id="@+id/button_send_message"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_button_send_message"
+        android:src="@drawable/cross"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toEndOf="@id/edittext_message"
+        app:layout_constraintTop_toBottomOf="@id/chat_recycler"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

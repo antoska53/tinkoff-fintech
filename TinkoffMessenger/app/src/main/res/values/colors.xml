@@ -10,4 +10,12 @@
     <color name="name_color">#2A9D8F</color>
     <color name="message_color">#FAFAFA</color>
     <color name="bg_chat_color">#121212</color>
+    <color name="button_send_message_color">#1E1E1E</color>
+    <color name="button_cross_color">#1E1E1E</color>
+    <color name="edit_text_color">#282828</color>
+    <color name="text_color_hint">#CCCCCC</color>
+    <color name="color_date">#070707</color>
+    <color name="color_text_date">#999999</color>
+    <color name="color_action_bar">#2A9D8F</color>
+    <color name="color_status_bar">#2A9D8F</color>
 </resources>

@@ -41,8 +41,10 @@ class EmojiView @JvmOverloads constructor(
         textCount = typedArray.getString(R.styleable.EmojiView_emojiTextCount) ?: "1"
         text = "$smile $textCount"
 
-        textPaint.color = typedArray.getColor(R.styleable.EmojiView_emojiTextColor, Color.WHITE)
-        textPaint.textSize = typedArray.getDimension(R.styleable.EmojiView_emojiTextSize, 30f)
+
+
+        textPaint.color = typedArray.getColor(R.styleable.EmojiView_emojiTextColor, Color.BLACK)
+        textPaint.textSize = typedArray.getDimension(R.styleable.EmojiView_emojiTextSize, 50f)
         typedArray.recycle()
     }
 
