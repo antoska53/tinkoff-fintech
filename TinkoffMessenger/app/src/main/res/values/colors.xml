@@ -18,4 +18,5 @@
     <color name="color_text_date">#999999</color>
     <color name="color_action_bar">#2A9D8F</color>
     <color name="color_status_bar">#2A9D8F</color>
+    <color name="bg_bottom_nav_color">#1E1E1E</color>
 </resources>

@@ -3,4 +3,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hint_textview_message">Написать</string>
+    <string name="channels">Channels</string>
+    <string name="people">People</string>
+    <string name="profile">Profile</string>
 </resources>
