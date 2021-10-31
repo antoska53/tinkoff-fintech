@@ -4,14 +4,9 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.channelsfragment.ChannelsFragment
-import ru.myacademyhomework.tinkoffmessenger.peoplefragment.PeopleFragment
-import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
-import java.lang.IllegalArgumentException
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,30 +47,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             tab.text = tabs[position]
         }.attach()
 
-//        val bottomNavigation = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
-//        bottomNavigation?.setOnItemSelectedListener {
-//            when (it.itemId) {
-//                R.id.navigation_channels -> {
-//                    loadFragment(ChannelsFragment.newInstance("", ""))
-//                    true
-//                }
-//                R.id.navigation_people -> {
-//                    loadFragment(PeopleFragment.newInstance("", ""))
-//                    true
-//                }
-//                R.id.navigation_profile -> {
-//                    loadFragment(ProfileFragment.newInstance("", ""))
-//                    true
-//                }
-//                else -> throw IllegalArgumentException()
-//            }
-//        }
-    }
 
-    private fun loadFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commitAllowingStateLoss()
     }
 
 

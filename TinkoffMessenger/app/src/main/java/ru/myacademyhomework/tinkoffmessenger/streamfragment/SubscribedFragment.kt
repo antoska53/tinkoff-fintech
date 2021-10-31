@@ -1,60 +1,56 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.factory.ChannelFactory
+import ru.myacademyhomework.tinkoffmessenger.factory.SubscribeChannelFactory
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SubscribedFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class SubscribedFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private lateinit var adapter: StreamAdapter
+    private var recycler: RecyclerView? = null
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initRecycler(view)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_subscribed, container, false)
+    private fun initRecycler(view: View){
+        recycler = view.findViewById<RecyclerView>(R.id.recycler_subscribe_stream)
+        adapter = StreamAdapter(){ streams, position, isSelected ->
+            if (isSelected) updateStream(streams, position)
+            else removeStream(streams, position)
+        }
+        adapter.channels = SubscribeChannelFactory.channels
+        recycler?.adapter = adapter
+    }
+
+    private fun updateStream(streams: List<String>, position: Int){
+        SubscribeChannelFactory.channels.addAll(position + 1, streams)
+        adapter.updateData(position, streams.size, false)
+    }
+
+    private fun removeStream(streams: List<String>, position: Int){
+        SubscribeChannelFactory.channels.removeAll(streams)
+        adapter.updateData(position, streams.size, true)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        recycler?.adapter = null
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SubscribedFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+        const val TYPE_ITEM_CHANNEL = 0
+        const val TYPE_STREAM = 1
+
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SubscribedFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance() =
+            SubscribedFragment()
     }
 }
