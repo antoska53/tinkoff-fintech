@@ -4,7 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.23743589743589744" />
+        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable-v24/ic_search.xml" value="0.24114583333333334" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/bg_arrow_view.xml" value="0.24114583333333334" />
+        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/bg_btn_nav_view.xml" value="0.1265625" />
+        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/bg_button_logout.xml" value="0.24114583333333334" />
+        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/bg_edit_text.xml" value="0.24114583333333334" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/bg_emoji_view.xml" value="0.1265625" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/bg_name_message_view.xml" value="0.23743589743589744" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/drawable/channels.xml" value="0.2" />
@@ -20,9 +24,10 @@
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/emoji_button.xml" value="0.16" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_all_stream.xml" value="0.12182971014492754" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_channels.xml" value="0.12182971014492754" />
-        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_chat.xml" value="0.1272644927536232" />
+        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_chat.xml" value="0.1" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_contacts.xml" value="0.1272644927536232" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_flow.xml" value="0.12182971014492754" />
+        <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_people.xml" value="0.22" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_profile.xml" value="0.1272644927536232" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_stream.xml" value="0.25" />
         <entry key="..\:/Users/tosha/AndroidStudioProjects/tfs-android-fall-2021/TinkoffMessenger/app/src/main/res/layout/fragment_subscribed.xml" value="0.11639492753623189" />

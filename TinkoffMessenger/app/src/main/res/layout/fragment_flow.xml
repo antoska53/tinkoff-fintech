@@ -18,6 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_bottom_nav_color"
+        app:itemIconTint="@color/bg_btn_nav_view"
+        app:itemTextColor="@color/bg_btn_nav_view"
         app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>

@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, FlowFragment.newInstance("", ""))
+                .replace(R.id.fragment_container, FlowFragment.newInstance())
                 .commitNow()
         }
 

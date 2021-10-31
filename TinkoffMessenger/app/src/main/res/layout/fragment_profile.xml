@@ -1,59 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".profilefragment.ProfileFragment">
 
     <ImageView
         android:id="@+id/imageview_avatar_profile"
         android:layout_width="185dp"
         android:layout_height="185dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="125dp" />
+        android:layout_marginTop="125dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
         android:id="@+id/textview_name_profile"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:textSize="32sp"
+        android:textColor="@color/textview_name_profile_color"
         android:gravity="center"
-        tools:text="Name Name" />
+        android:text="Name Name"
+        app:layout_constraintStart_toStartOf="@id/imageview_avatar_profile"
+        app:layout_constraintEnd_toEndOf="@id/imageview_avatar_profile"
+        app:layout_constraintTop_toBottomOf="@id/imageview_avatar_profile"
+        />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tv_in_a_meeting"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textSize="20sp"
+            android:textColor="@color/textview_meeting_color"
             android:gravity="end"
-            android:text="In a meeting" />
+            android:text="In a meeting"
+            app:layout_constraintStart_toStartOf="@id/textview_name_profile"
+            app:layout_constraintEnd_toStartOf="@id/tv_online"
+            app:layout_constraintTop_toBottomOf="@id/textview_name_profile"
+            />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tv_online"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:textSize="16sp"
-            android:layout_weight="1"
+            android:gravity="start"
             android:text="online"
-            android:textColor="@android:color/holo_green_light" />
+            android:textColor="@color/textview_online_color"
+            app:layout_constraintStart_toEndOf="@id/tv_in_a_meeting"
+            app:layout_constraintEnd_toEndOf="@id/textview_name_profile"
+            app:layout_constraintTop_toTopOf="@id/tv_in_a_meeting"
+            app:layout_constraintBottom_toBottomOf="@id/tv_in_a_meeting"/>
 
-    </LinearLayout>
 
     <Button
+        android:id="@+id/button_logout"
         android:layout_width="185dp"
         android:layout_height="55dp"
-        android:layout_gravity="center"
         android:layout_marginTop="165dp"
         android:textSize="20sp"
-        android:text="Log out"/>
+        android:textColor="@color/button_logout_textcolor"
+        android:text="Log out"
+        android:background="@drawable/bg_button_logout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_in_a_meeting"/>
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

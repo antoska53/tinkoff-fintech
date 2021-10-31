@@ -19,4 +19,9 @@
     <color name="color_action_bar">#2A9D8F</color>
     <color name="color_status_bar">#2A9D8F</color>
     <color name="bg_bottom_nav_color">#1E1E1E</color>
+    <color name="button_logout_color">#1B1B1B</color>
+    <color name="button_logout_textcolor">#FFFFFF</color>
+    <color name="textview_online_color">#4AB54D</color>
+    <color name="textview_meeting_color">#BCBCBC</color>
+    <color name="textview_name_profile_color">#FFFFFF</color>
 </resources>

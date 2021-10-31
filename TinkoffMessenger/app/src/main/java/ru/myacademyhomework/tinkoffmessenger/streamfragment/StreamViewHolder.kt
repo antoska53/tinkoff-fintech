@@ -6,14 +6,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.StreamListener
+import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
 
 class StreamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val nameStream: TextView = itemView.findViewById(R.id.textview_name_stream)
 
-    fun onBind(name: String){
-        nameStream.text = name
+    fun onBind(stream: ItemStream, listener: StreamListener){
+        nameStream.text = stream.nameStream
         nameStream.setOnClickListener {
-            listener.onClick(name)
+            listener.onClickStream(stream)
         }
     }
 

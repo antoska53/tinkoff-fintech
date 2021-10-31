@@ -17,7 +17,11 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:hint="Users"
+            android:paddingStart="60dp"
+            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:hint="Users..."
+            android:textColorHint="#FFFFFF"
             />
 
         <ImageView
@@ -25,6 +29,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
+            android:src="@drawable/ic_search"
             />
 
     </LinearLayout>

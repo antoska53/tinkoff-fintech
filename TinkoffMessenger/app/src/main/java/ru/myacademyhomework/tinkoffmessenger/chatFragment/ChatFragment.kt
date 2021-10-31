@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -16,6 +18,12 @@ import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
 
 
 class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
+    private val nameChannel by lazy {
+        arguments?.getString(NAME_CHANNEL)
+    }
+    private val nameTopic by lazy {
+        arguments?.getString(NAME_TOPIC)
+    }
     private lateinit var adapter: ChatAdapter
     private var recyclerView: RecyclerView? = null
     private lateinit var editTextMessage: EditText
@@ -25,6 +33,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler(view)
+        val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
+        tvNameTopic.text = nameTopic
+
         buttonSendMessage = view.findViewById(R.id.button_send_message)
         buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }
         editTextMessage = view.findViewById(R.id.edittext_message)
@@ -103,10 +114,17 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     companion object {
         const val TYPE_DATE = 0
-
         const val TYPE_MESSAGE = 1
+        const val NAME_CHANNEL = "NAME_CHANNEL"
+        const val NAME_TOPIC = "NAME_STREAM"
 
         @JvmStatic
-        fun newInstance() = ChatFragment()
+        fun newInstance(nameChannel: String, nameTopic: String) =
+            ChatFragment().apply {
+                arguments = Bundle().apply {
+                    putString(NAME_CHANNEL, nameChannel)
+                    putString(NAME_TOPIC, nameTopic)
+                }
+            }
     }
 }
