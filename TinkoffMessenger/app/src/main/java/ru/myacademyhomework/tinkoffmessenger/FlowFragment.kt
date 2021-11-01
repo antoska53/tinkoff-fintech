@@ -46,11 +46,12 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
     private fun loadFragment(fragment: Fragment) {
         childFragmentManager.beginTransaction()
             .replace(R.id.flow_fragment_container, fragment)
+            .addToBackStack(null)
             .commitAllowingStateLoss()
     }
 
     companion object {
-
+        const val FLOW_FRAGMENT = "FLOW_FRAGMENT"
         @JvmStatic
         fun newInstance() =
             FlowFragment()

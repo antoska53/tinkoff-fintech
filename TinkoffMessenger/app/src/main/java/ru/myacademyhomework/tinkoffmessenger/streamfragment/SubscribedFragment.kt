@@ -1,9 +1,12 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
@@ -14,6 +17,13 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
     private lateinit var adapter: StreamAdapter
     private var recycler: RecyclerView? = null
+    private var navigation: FragmentNavigation? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is FragmentNavigation)
+            navigation = context
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,10 +56,8 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     }
 
     private fun openChatTopic(stream: ItemStream) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.flow_fragment_container, ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
-            .addToBackStack("SUBSCRIBE")
-            .commitAllowingStateLoss()
+        navigation?.changeFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
+
     }
 
     override fun onDestroyView() {

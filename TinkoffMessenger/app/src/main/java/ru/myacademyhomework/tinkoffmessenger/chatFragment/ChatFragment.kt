@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -47,7 +46,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
             override fun afterTextChanged(s: Editable) {
                 buttonSendMessage.setImageResource(
-                    if (s.toString().isNotEmpty()) R.drawable.plane else R.drawable.cross)
+                    if (s.toString().isNotEmpty()) R.drawable.plane else R.drawable.cross
+                )
             }
         })
     }
