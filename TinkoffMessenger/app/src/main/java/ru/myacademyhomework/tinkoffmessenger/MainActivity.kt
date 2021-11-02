@@ -14,19 +14,29 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         if (savedInstanceState == null) {
             val fragment = FlowFragment.newInstance()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment,
+                .add(
+                    R.id.fragment_container, fragment,
                     FlowFragment.FLOW_FRAGMENT
                 )
 //                .setPrimaryNavigationFragment(fragment)
-                .commitNow()
+                .commit()
         }
     }
 
-    override fun changeFragment(fragment: Fragment) {
+    override fun changeFlowFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, fragment)
+            .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
-//            .setPrimaryNavigationFragment(fragment)
+            //            .setPrimaryNavigationFragment(fragment)
             .commitAllowingStateLoss()
+
+    }
+
+    override fun changeBottomNavFragment(fragment: Fragment, toBackstack: Boolean) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flow_fragment_container, fragment)
+            if (toBackstack) addToBackStack(null)
+            commitAllowingStateLoss()
+        }
     }
 }

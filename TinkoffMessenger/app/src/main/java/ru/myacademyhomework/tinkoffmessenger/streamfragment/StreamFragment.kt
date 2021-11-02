@@ -16,7 +16,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val tabs: List<String> = listOf("Subscribed", "All streams")
-        val pagerAdapter = PagerAdapter(parentFragmentManager, lifecycle)
+        val pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
 
         val viewPager = view.findViewById<ViewPager2>(R.id.viewpager_stream)

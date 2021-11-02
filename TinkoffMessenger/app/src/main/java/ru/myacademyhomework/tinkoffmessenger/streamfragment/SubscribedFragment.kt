@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -56,7 +55,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     }
 
     private fun openChatTopic(stream: ItemStream) {
-        navigation?.changeFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
+        navigation?.changeFlowFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
 
     }
 

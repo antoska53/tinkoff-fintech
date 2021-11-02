@@ -3,5 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger
 import androidx.fragment.app.Fragment
 
 interface FragmentNavigation {
-    fun changeFragment(fragment: Fragment)
+    fun changeFlowFragment(fragment: Fragment)
+    fun changeBottomNavFragment(fragment: Fragment, toBackstack:Boolean)
 }

@@ -56,7 +56,7 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
     }
 
     private fun openChatTopic(stream: ItemStream) {
-        navigation?.changeFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
+        navigation?.changeFlowFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
 
     }
 
