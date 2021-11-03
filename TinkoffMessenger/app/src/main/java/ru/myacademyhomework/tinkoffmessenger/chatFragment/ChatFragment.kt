@@ -5,9 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
@@ -33,7 +31,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         super.onViewCreated(view, savedInstanceState)
         initRecycler(view)
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
-        tvNameTopic.text = nameTopic
+        tvNameTopic.text = "Topic: #$nameTopic"
+        val tvNameChannel = view.findViewById<TextView>(R.id.textview_name_channel)
+        tvNameChannel.text = nameChannel
+
+        val buttonBack = view.findViewById<ImageView>(R.id.imageView_arrow_back)
+        buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
         buttonSendMessage = view.findViewById(R.id.button_send_message)
         buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }

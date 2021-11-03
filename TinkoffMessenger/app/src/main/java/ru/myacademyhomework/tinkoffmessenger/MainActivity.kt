@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     R.id.fragment_container, fragment,
                     FlowFragment.FLOW_FRAGMENT
                 )
-//                .setPrimaryNavigationFragment(fragment)
                 .commit()
         }
     }
@@ -27,7 +26,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
-            //            .setPrimaryNavigationFragment(fragment)
             .commitAllowingStateLoss()
 
     }

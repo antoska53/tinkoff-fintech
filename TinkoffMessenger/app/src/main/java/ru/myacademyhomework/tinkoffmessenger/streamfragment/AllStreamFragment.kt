@@ -41,18 +41,16 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
                 openChatTopic(stream)
             }
         )
-        adapter.channels = ChannelFactory.channels
+        adapter.setData(ChannelFactory.channels)
         recycler?.adapter = adapter
     }
 
     private fun updateStream(streams: List<ItemStream>, position: Int) {
-        ChannelFactory.channels.addAll(position + 1, streams)
-        adapter.updateData(position, streams.size, false)
+        adapter.updateData(streams, position, false)
     }
 
     private fun removeStream(streams: List<ItemStream>, position: Int) {
-        ChannelFactory.channels.removeAll(streams)
-        adapter.updateData(position, streams.size, true)
+        adapter.updateData(streams, position, true)
     }
 
     private fun openChatTopic(stream: ItemStream) {

@@ -2,7 +2,9 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
@@ -40,18 +42,16 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                 openChatTopic(stream)
             }
         )
-        adapter.channels = SubscribeChannelFactory.channels
+        adapter.setData(SubscribeChannelFactory.channels)
         recycler?.adapter = adapter
     }
 
     private fun updateStream(streams: List<ItemStream>, position: Int){
-        SubscribeChannelFactory.channels.addAll(position + 1, streams)
-        adapter.updateData(position, streams.size, false)
+        adapter.updateData(streams , position, false)
     }
 
     private fun removeStream(streams: List<ItemStream>, position: Int){
-        SubscribeChannelFactory.channels.removeAll(streams)
-        adapter.updateData(position, streams.size, true)
+        adapter.updateData(streams, position, true)
     }
 
     private fun openChatTopic(stream: ItemStream) {

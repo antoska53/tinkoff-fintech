@@ -14,7 +14,7 @@ class StreamAdapter(
     private val streamListener: StreamListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var channels: MutableList<Any> = mutableListOf()
+    private val channels: MutableList<Any> = mutableListOf()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -46,9 +46,20 @@ class StreamAdapter(
         }
     }
 
-    fun updateData(position: Int, count: Int, remove: Boolean) {
-        if (remove) notifyItemRangeRemoved(position + 1, count)
-        else notifyItemRangeInserted(position + 1, count)
+    fun updateData(streams: List<Any>, position: Int, remove: Boolean) {
+        if (remove){
+            channels.removeAll(streams)
+            notifyItemRangeRemoved(position + 1, streams.size)
+        }
+        else{
+            channels.addAll(position + 1, streams)
+            notifyItemRangeInserted(position + 1, streams.size)
+        }
+    }
+
+    fun setData(list: List<Any>){
+        channels.clear()
+        channels.addAll(list)
     }
 
 
