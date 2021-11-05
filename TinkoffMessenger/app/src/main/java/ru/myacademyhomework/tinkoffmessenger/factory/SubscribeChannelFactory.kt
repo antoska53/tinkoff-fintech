@@ -1,11 +1,12 @@
 package ru.myacademyhomework.tinkoffmessenger.factory
 
+import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.ItemChannel
 import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
 
 class SubscribeChannelFactory {
     companion object {
-        val channels: MutableList<Any> = mutableListOf(
+       private val channels: MutableList<Item> = mutableListOf(
             ItemChannel(
                 nameChannel = "#general",
                 streams = listOf(
@@ -29,5 +30,9 @@ class SubscribeChannelFactory {
                 )
             )
         )
+
+        fun createChannel(): MutableList<Item> {
+            return channels
+        }
     }
 }

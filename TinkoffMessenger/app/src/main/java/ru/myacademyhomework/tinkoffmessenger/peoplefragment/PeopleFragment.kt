@@ -19,7 +19,6 @@ class PeopleFragment : Fragment(R.layout.fragment_people) {
     companion object {
 
         @JvmStatic
-        fun newInstance() =
-            PeopleFragment()
+        fun newInstance() = PeopleFragment()
     }
 }

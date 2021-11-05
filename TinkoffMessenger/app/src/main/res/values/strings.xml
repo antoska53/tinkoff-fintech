@@ -6,4 +6,5 @@
     <string name="channels">Channels</string>
     <string name="people">People</string>
     <string name="profile">Profile</string>
+    <string name="topic">Topic: #%1$s</string>
 </resources>

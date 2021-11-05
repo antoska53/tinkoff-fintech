@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
+import androidx.activity.OnBackPressedDispatcher
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
@@ -31,7 +32,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         super.onViewCreated(view, savedInstanceState)
         initRecycler(view)
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
-        tvNameTopic.text = "Topic: #$nameTopic"
+        tvNameTopic.text = getString(R.string.topic, nameTopic)
         val tvNameChannel = view.findViewById<TextView>(R.id.textview_name_channel)
         tvNameChannel.text = nameChannel
 
@@ -110,7 +111,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
 
     private fun updateEmoji(emoji: String, idMessage: Int) {
-        val message = MessageFactory.messages[idMessage]
+        val message = MessageFactory.createMessage()[idMessage]
         if (message is Message) {
             message.listEmoji.add(emoji)
             adapter.updateListEmoji(idMessage)

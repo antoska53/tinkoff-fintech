@@ -7,9 +7,9 @@ import ru.myacademyhomework.tinkoffmessenger.BottomSheetListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.factory.SmileFactory
 
-class BottomSheetAdapter(private val idMessage:Int, private val listener: BottomSheetListener) :
+class BottomSheetAdapter(private val idMessage: Int, private val listener: BottomSheetListener) :
     RecyclerView.Adapter<BottomSheetViewHolder>() {
-    private val emojiList: List<String> = SmileFactory.emojiList
+    private val emojiList: List<String> = SmileFactory.createSmile()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BottomSheetViewHolder {

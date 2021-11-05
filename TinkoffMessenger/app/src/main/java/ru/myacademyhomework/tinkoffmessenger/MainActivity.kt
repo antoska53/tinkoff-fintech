@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         }
     }
 
-    override fun changeFlowFragment(fragment: Fragment) {
+    override fun openChatFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
     }
 
-    override fun changeBottomNavFragment(fragment: Fragment, toBackstack: Boolean) {
+    override fun changeFragment(fragment: Fragment, toBackstack: Boolean) {
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flow_fragment_container, fragment)
             if (toBackstack) addToBackStack(null)

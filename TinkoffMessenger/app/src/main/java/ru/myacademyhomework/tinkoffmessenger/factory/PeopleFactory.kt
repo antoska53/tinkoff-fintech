@@ -1,7 +1,11 @@
 package ru.myacademyhomework.tinkoffmessenger.factory
 
 class PeopleFactory {
-    companion object{
-        val listPeople: List<String> = listOf("Hello World", "Qwerty Wasd")
+    companion object {
+        private val listPeople: List<String> = listOf("Hello World", "Qwerty Wasd")
+
+        fun createPeople(): List<String> {
+            return listPeople
+        }
     }
 }

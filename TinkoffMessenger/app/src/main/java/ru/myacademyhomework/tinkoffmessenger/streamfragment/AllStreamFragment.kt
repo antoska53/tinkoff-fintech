@@ -22,6 +22,10 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         super.onAttach(context)
         if (context is FragmentNavigation)
             navigation = context
+        else {
+            throw RuntimeException(context.toString()
+                    + " must implement FragmentNavigation")
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,14 +38,15 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         recycler = view.findViewById<RecyclerView>(R.id.recycler_stream)
 
         adapter = StreamAdapter(
-            { streams, position, isSelected ->
+            channelListener = { streams, position, isSelected ->
                 if (isSelected) updateStream(streams, position)
                 else removeStream(streams, position)
-            }, { stream ->
+            },
+            streamListener = { stream ->
                 openChatTopic(stream)
             }
         )
-        adapter.setData(ChannelFactory.channels)
+        adapter.setData(ChannelFactory.createChannel())
         recycler?.adapter = adapter
     }
 
@@ -54,7 +59,12 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
     }
 
     private fun openChatTopic(stream: ItemStream) {
-        navigation?.changeFlowFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
+        navigation?.openChatFragment(
+            ChatFragment.newInstance(
+                stream.nameChannel,
+                stream.nameStream
+            )
+        )
 
     }
 
@@ -68,7 +78,6 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         const val TYPE_STREAM = 1
 
         @JvmStatic
-        fun newInstance() =
-            AllStreamFragment()
+        fun newInstance() = AllStreamFragment()
     }
 }

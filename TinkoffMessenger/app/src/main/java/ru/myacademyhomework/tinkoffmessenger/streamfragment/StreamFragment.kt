@@ -12,7 +12,6 @@ import ru.myacademyhomework.tinkoffmessenger.R
 
 class StreamFragment : Fragment(R.layout.fragment_stream) {
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val tabs: List<String> = listOf("Subscribed", "All streams")
@@ -21,20 +20,16 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
 
         val viewPager = view.findViewById<ViewPager2>(R.id.viewpager_stream)
         viewPager.adapter = pagerAdapter
-        pagerAdapter.update(listOf(SubscribedFragment(), AllStreamFragment()))
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabs[position]
         }.attach()
 
-
     }
-
 
     companion object {
 
         @JvmStatic
-        fun newInstance() =
-            StreamFragment()
+        fun newInstance() = StreamFragment()
     }
 }

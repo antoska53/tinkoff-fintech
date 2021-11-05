@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.factory.PeopleFactory
 
 class PeopleAdapter: RecyclerView.Adapter<PeopleViewHolder>() {
-    private val people = PeopleFactory.listPeople
+    private val people = PeopleFactory.createPeople()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleViewHolder {
         return PeopleViewHolder.createPeopleViewHolder(parent)

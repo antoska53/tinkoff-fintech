@@ -2,9 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
@@ -24,6 +22,10 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
         super.onAttach(context)
         if (context is FragmentNavigation)
             navigation = context
+        else {
+            throw RuntimeException(context.toString()
+                    + " must implement FragmentNavigation")
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +44,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                 openChatTopic(stream)
             }
         )
-        adapter.setData(SubscribeChannelFactory.channels)
+        adapter.setData(SubscribeChannelFactory.createChannel())
         recycler?.adapter = adapter
     }
 
@@ -55,7 +57,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     }
 
     private fun openChatTopic(stream: ItemStream) {
-        navigation?.changeFlowFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
+        navigation?.openChatFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
 
     }
 
@@ -67,7 +69,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     companion object {
 
         @JvmStatic
-        fun newInstance() =
-            SubscribedFragment()
+        fun newInstance() = SubscribedFragment()
     }
 }

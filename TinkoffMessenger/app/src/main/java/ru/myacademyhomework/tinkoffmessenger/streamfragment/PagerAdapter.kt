@@ -8,15 +8,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class PagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    private val fragments: MutableList<Fragment> = mutableListOf()
+    private val fragments: List<Fragment> =
+        listOf(SubscribedFragment.newInstance(), AllStreamFragment.newInstance())
 
     override fun getItemCount(): Int = fragments.size
 
     override fun createFragment(position: Int): Fragment = fragments[position]
 
-    fun update(fragments: List<Fragment>){
-        this.fragments.clear()
-        this.fragments.addAll(fragments)
-        notifyDataSetChanged()
-    }
 }

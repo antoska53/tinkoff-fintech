@@ -17,7 +17,13 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is FragmentNavigation) navigation = context
+        if (context is FragmentNavigation) {
+            navigation = context
+        } else {
+            throw RuntimeException(
+                context.toString()
+                        + " must implement FragmentNavigation")
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,15 +51,14 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
     }
 
     private fun loadFragment(fragment: Fragment, toBackstack: Boolean) {
-        navigation?.changeBottomNavFragment(fragment, toBackstack)
+        navigation?.changeFragment(fragment, toBackstack)
     }
-
 
 
     companion object {
         const val FLOW_FRAGMENT = "FLOW_FRAGMENT"
+
         @JvmStatic
-        fun newInstance() =
-            FlowFragment()
+        fun newInstance() = FlowFragment()
     }
 }

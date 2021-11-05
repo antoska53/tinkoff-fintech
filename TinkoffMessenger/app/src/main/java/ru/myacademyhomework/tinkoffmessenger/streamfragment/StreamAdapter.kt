@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.ChannelListener
 import ru.myacademyhomework.tinkoffmessenger.StreamListener
+import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.ItemChannel
 import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
 import java.lang.IllegalArgumentException
@@ -14,7 +15,7 @@ class StreamAdapter(
     private val streamListener: StreamListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val channels: MutableList<Any> = mutableListOf()
+    private val channels: MutableList<Item> = mutableListOf()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -46,7 +47,7 @@ class StreamAdapter(
         }
     }
 
-    fun updateData(streams: List<Any>, position: Int, remove: Boolean) {
+    fun updateData(streams: List<Item>, position: Int, remove: Boolean) {
         if (remove){
             channels.removeAll(streams)
             notifyItemRangeRemoved(position + 1, streams.size)
@@ -57,7 +58,7 @@ class StreamAdapter(
         }
     }
 
-    fun setData(list: List<Any>){
+    fun setData(list: List<Item>){
         channels.clear()
         channels.addAll(list)
     }
