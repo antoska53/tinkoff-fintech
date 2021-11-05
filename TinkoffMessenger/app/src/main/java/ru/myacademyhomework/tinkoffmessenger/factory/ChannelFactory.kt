@@ -28,6 +28,13 @@ class ChannelFactory {
                     ItemStream("#Design", "Testing3"),
                     ItemStream("#Design", "BruhDesign")
                 )
+            ),
+            ItemChannel(
+                nameChannel = "#PR",
+                streams = listOf(
+                    ItemStream("#PR", "Testing4"),
+                    ItemStream("#PR", "BruhPR")
+                )
             )
         )
         fun createChannel(): MutableList<Item> {

@@ -38,4 +38,8 @@ dependencies {
     implementation "com.google.android.material:material:$googleMaterialVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation "com.facebook.shimmer:shimmer:$shimmerVersion"
+    implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
 }

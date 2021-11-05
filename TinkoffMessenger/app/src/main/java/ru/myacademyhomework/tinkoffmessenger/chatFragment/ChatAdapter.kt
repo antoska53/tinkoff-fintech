@@ -49,4 +49,10 @@ class ChatAdapter(private val listener: ChatMessageListener) :
     fun updateListEmoji(position: Int) {
         notifyItemChanged(position)
     }
+
+    fun addData(messages: List<Any>){
+        this.messages.clear()
+        this.messages.addAll(messages)
+        notifyDataSetChanged()
+    }
 }
