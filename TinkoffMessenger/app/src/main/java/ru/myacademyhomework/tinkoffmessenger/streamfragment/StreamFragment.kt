@@ -32,6 +32,27 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     private var showStreams = true
     private val compositeDisposable = CompositeDisposable()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object :OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                if (isSearch){
+                    Log.d("RXSEARCH", "handleOnBackPressed: $isSearch")
+                    isSearch = false
+                  //  editTextSearch.text.clear()
+                    childFragmentManager.setFragmentResult(
+                        SUBSCRIBE_RESULT_KEY,
+                        bundleOf(SHOW_STREAMS_KEY to showStreams)
+                    )
+                }
+                else{
+                    isEnabled = false
+                    activity?.onBackPressed()
+                }
+            }
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val tabs: List<String> = listOf("Subscribed", "All streams")
@@ -50,24 +71,6 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             subject.onNext(str.toString())
             Log.d("RXSEARCH", "Listener: $str")
         }
-
-        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object :OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                if (isSearch){
-                    Log.d("RXSEARCH", "handleOnBackPressed: $isSearch")
-                    isSearch = false
-                    editTextSearch.text.clear()
-                    childFragmentManager.setFragmentResult(
-                        SUBSCRIBE_RESULT_KEY,
-                        bundleOf(SHOW_STREAMS_KEY to showStreams)
-                    )
-                }
-                else{
-                    isEnabled = false
-                    activity?.onBackPressed()
-                }
-            }
-        })
 
 
         val disposable =
