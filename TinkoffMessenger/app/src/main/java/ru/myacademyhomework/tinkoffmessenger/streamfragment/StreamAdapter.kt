@@ -61,6 +61,6 @@ class StreamAdapter(
     fun setData(list: List<Item>){
         channels.clear()
         channels.addAll(list)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(0, channels.size)
     }
 }

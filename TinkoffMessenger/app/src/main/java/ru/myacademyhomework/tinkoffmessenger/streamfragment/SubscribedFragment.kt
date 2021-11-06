@@ -45,19 +45,18 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
 
 
-        setFragmentResultListener(StreamFragment.SUBSCRIBE_RESULT_KEY){ key, bundle ->
-           val resultItemStream = bundle.getString(StreamFragment.STREAM_KEY)
+        setFragmentResultListener(StreamFragment.SUBSCRIBE_RESULT_KEY) { key, bundle ->
+            val resultItemStream = bundle.getString(StreamFragment.STREAM_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
             if (resultItemStream != null)
                 adapter.setData(listOf(ItemStream(resultItemStream, resultItemStream)))
-            if (resultShowStreams){
+            if (resultShowStreams) {
                 getStreams()
             }
         }
 
         initRecycler(view)
         getStreams()
-
     }
 
     private fun initRecycler(view: View) {
@@ -82,13 +81,17 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     }
 
     private fun openChatTopic(stream: ItemStream) {
-        navigation?.openChatFragment(ChatFragment.newInstance(stream.nameChannel, stream.nameStream))
-
+        navigation?.openChatFragment(
+            ChatFragment.newInstance(
+                stream.nameChannel,
+                stream.nameStream
+            )
+        )
     }
 
     private fun getStreams() {
         val disposable =
-            Single.just(SubscribeChannelFactory.channels)
+            Single.just(SubscribeChannelFactory.createChannel())
                 .subscribeOn(Schedulers.io())
                 .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())

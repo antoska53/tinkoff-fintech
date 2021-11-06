@@ -91,7 +91,7 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
     private fun getStreams() {
 
         val disposable =
-            Single.just(ChannelFactory.channels)
+            Single.just(ChannelFactory.createChannel())
                 .subscribeOn(Schedulers.io())
                 .delay(3000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())

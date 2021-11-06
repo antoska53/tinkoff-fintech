@@ -3,15 +3,14 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
+import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.Message
-import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
 import java.lang.IllegalArgumentException
-import java.time.LocalDate
 
 class ChatAdapter(private val listener: ChatMessageListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val messages: MutableList<Any> = MessageFactory.createMessage()
+    private val messages: MutableList<Any> = mutableListOf()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -26,7 +25,7 @@ class ChatAdapter(private val listener: ChatMessageListener) :
     override fun getItemViewType(position: Int): Int {
         return when (messages[position]) {
             is Message -> ChatFragment.TYPE_MESSAGE
-            is LocalDate -> ChatFragment.TYPE_DATE
+            is DateMessage -> ChatFragment.TYPE_DATE
             else -> throw IllegalArgumentException()
         }
     }
@@ -34,7 +33,7 @@ class ChatAdapter(private val listener: ChatMessageListener) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ChatViewHolder -> holder.onBind(messages[position] as Message, listener)
-            is DateViewHolder -> holder.onBind(messages[position] as LocalDate)
+            is DateViewHolder -> holder.onBind(messages[position] as DateMessage)
         }
     }
 
@@ -53,6 +52,6 @@ class ChatAdapter(private val listener: ChatMessageListener) :
     fun addData(messages: List<Any>){
         this.messages.clear()
         this.messages.addAll(messages)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(0, messages.size)
     }
 }

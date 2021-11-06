@@ -1,12 +1,14 @@
 package ru.myacademyhomework.tinkoffmessenger.factory
 
+import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.Message
+import ru.myacademyhomework.tinkoffmessenger.data.SealedMessage
 import java.time.LocalDate
 
 class MessageFactory {
     companion object {
-        private val messages: MutableList<Any> = mutableListOf(
-            LocalDate.of(2021, 10, 15),
+        private val messages: MutableList<SealedMessage> = mutableListOf(
+            DateMessage(LocalDate.of(2021, 10, 15)),
             Message(
                 avatar = "",
                 name = "Alice",
@@ -19,7 +21,7 @@ class MessageFactory {
                 message = "hello",
                 listEmoji = mutableListOf("\uD83D\uDE04")
             ),
-            LocalDate.of(2021, 10, 16),
+            DateMessage(LocalDate.of(2021, 10, 16)),
             Message(
                 avatar = "",
                 name = "Hack",
@@ -28,7 +30,7 @@ class MessageFactory {
             )
         )
 
-        fun createMessage(): MutableList<Any> {
+        fun createMessage(): MutableList<SealedMessage> {
             return messages
         }
     }

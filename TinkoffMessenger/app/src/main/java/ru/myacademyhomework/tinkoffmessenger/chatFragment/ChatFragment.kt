@@ -6,12 +6,10 @@ import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
-import androidx.activity.OnBackPressedDispatcher
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,7 +19,6 @@ import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Message
 import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
-import ru.myacademyhomework.tinkoffmessenger.factory.SubscribeChannelFactory
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -85,14 +82,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
 
     private fun initRecycler(view: View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.chat_recycler)
+        recyclerView = view.findViewById(R.id.chat_recycler)
         adapter = ChatAdapter(this)
         recyclerView?.adapter = adapter
     }
 
     private fun getMessages() {
         val disposable =
-            Single.just(MessageFactory.messages)
+            Single.just(MessageFactory.createMessage())
                 .subscribeOn(Schedulers.io())
                 .delay(1000, TimeUnit.MILLISECONDS)
                 .doOnSuccess {
@@ -157,7 +154,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         val randomValue = Random.nextInt(1, 5)
         if (randomValue == 1)
             return Observable.error(IllegalArgumentException())
-        MessageFactory.messages.add(message)
+        MessageFactory.createMessage().add(message)
         return Observable.just(message)
     }
 

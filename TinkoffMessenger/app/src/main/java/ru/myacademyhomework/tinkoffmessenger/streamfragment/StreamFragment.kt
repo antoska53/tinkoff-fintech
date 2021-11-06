@@ -1,7 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.EditText
@@ -33,25 +32,24 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("RXSTREAM", "onCreate: $this")
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, object :OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                if (isSearch){
-                    Log.d("RXSEARCH", "handleOnBackPressed: $isSearch")
-                    isSearch = false
-                    editTextSearch?.text?.clear()
-                    childFragmentManager.setFragmentResult(
-                        SUBSCRIBE_RESULT_KEY,
-                        bundleOf(SHOW_STREAMS_KEY to showStreams)
-                    )
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isSearch) {
+                        isSearch = false
+                        editTextSearch?.text?.clear()
+                        childFragmentManager.setFragmentResult(
+                            SUBSCRIBE_RESULT_KEY,
+                            bundleOf(SHOW_STREAMS_KEY to showStreams)
+                        )
+                    } else {
+                        isEnabled = false
+                        requireActivity().onBackPressed()
+                    }
                 }
-                else{
-                    isEnabled = false
-                    requireActivity().onBackPressed()
-                }
-            }
-        })
+            })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,13 +68,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         editTextSearch = view.findViewById<EditText>(R.id.search_edittext)
         editTextSearch?.addTextChangedListener { str ->
             subject.onNext(str.toString())
-            Log.d("RXSEARCH", "Listener: $str")
         }
-
-        Log.d("RXSTREAM", "onViewCreated: $this")
-
-
-
 
         val disposable =
             subject
@@ -84,20 +76,13 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                 .distinctUntilChanged()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .switchMap { str ->
-                    Log.d("RXSEARCH", "onViewCreated1: $str")
-                    val channels = ChannelFactory.channels
+                    val channels = ChannelFactory.createChannel()
                     var stream: ItemStream? = null
                     for (channel in channels) {
-                        Log.d("RXSEARCH", "For channel: $channel")
                         if (channel is ItemChannel) {
                             stream = channel.streams.find {
-                                Log.d(
-                                    "RXSEARCH",
-                                    "Equals: name= ${it.nameStream} str= $str ${it.nameStream == str}"
-                                )
                                 it.nameStream.equals(str, ignoreCase = true)
                             }
-                            Log.d("RXSEARCH", "onViewCreated2: $stream")
                             if (stream != null) return@switchMap Observable.just(stream)
                         }
                     }
@@ -107,7 +92,6 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { itemStream ->
-                        Log.d("RXSEARCH", "onViewCreated: ПОПАЛ")
                         if (itemStream.nameStream.isNotEmpty()) {
                             Snackbar.make(view, itemStream.nameStream, Snackbar.LENGTH_SHORT).show()
                             viewPager.currentItem = 0
@@ -121,42 +105,18 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                         }
                     },
                     {
-                        Log.d("RXSEARCH", "onViewCreated: ОШИБКА!!!!!")
-                        Log.d("RXSEARCH", "onViewCreated: ОШИБКА!!!!! $it")
                         Snackbar.make(view, "ERROR", Snackbar.LENGTH_SHORT).show()
                     }
                 )
 
         compositeDisposable.add(disposable)
-
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("RXSEARCH", "onDetach: ")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("RXSEARCH", "onPause: ")
-    }
-
-    override fun onStop() {
-        Log.d("RXSEARCH", "onStop: ")
-        super.onStop()
-//        isSearch = false
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("RXSEARCH", "onDestroyView: ")
         isSearch = false
         compositeDisposable.clear()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-//        isSearch = false
     }
 
 
@@ -164,7 +124,8 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         const val SUBSCRIBE_RESULT_KEY = "SUBSCRIBE_RESULT_KEY"
         const val ALL_STREAM_RESULT_KEY = "ALL_STREAM_RESULT_KEY"
         const val STREAM_KEY = "STREAM_KEY"
-        const val SHOW_STREAMS_KEY ="SHOW_STREAMS_KEY"
+        const val SHOW_STREAMS_KEY = "SHOW_STREAMS_KEY"
+
         @JvmStatic
         fun newInstance() = StreamFragment()
     }
