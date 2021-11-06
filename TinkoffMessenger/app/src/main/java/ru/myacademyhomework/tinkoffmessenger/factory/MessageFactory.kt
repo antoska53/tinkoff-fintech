@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 class MessageFactory {
     companion object {
-        val messages: MutableList<Any> = mutableListOf(
+        private val messages: MutableList<Any> = mutableListOf(
             LocalDate.of(2021, 10, 15),
             Message(
                 avatar = "",
@@ -27,5 +27,9 @@ class MessageFactory {
                 listEmoji = mutableListOf("\uD83D\uDE04")
             )
         )
+
+        fun createMessage(): MutableList<Any> {
+            return messages
+        }
     }
 }

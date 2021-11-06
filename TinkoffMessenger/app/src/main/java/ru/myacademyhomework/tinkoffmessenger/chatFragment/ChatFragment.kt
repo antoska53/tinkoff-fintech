@@ -5,8 +5,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
+import android.widget.*
+import androidx.activity.OnBackPressedDispatcher
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
@@ -16,6 +16,12 @@ import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
 
 
 class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
+    private val nameChannel by lazy {
+        arguments?.getString(NAME_CHANNEL)
+    }
+    private val nameTopic by lazy {
+        arguments?.getString(NAME_TOPIC)
+    }
     private lateinit var adapter: ChatAdapter
     private var recyclerView: RecyclerView? = null
     private lateinit var editTextMessage: EditText
@@ -25,6 +31,16 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler(view)
+        val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
+        tvNameTopic.text = getString(R.string.topic, nameTopic)
+        val tvNameChannel = view.findViewById<TextView>(R.id.textview_name_channel)
+        tvNameChannel.text = nameChannel
+
+        val buttonBack = view.findViewById<ImageView>(R.id.imageView_arrow_back)
+        buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         buttonSendMessage = view.findViewById(R.id.button_send_message)
         buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }
         editTextMessage = view.findViewById(R.id.edittext_message)
@@ -36,7 +52,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
             override fun afterTextChanged(s: Editable) {
                 buttonSendMessage.setImageResource(
-                    if (s.toString().isNotEmpty()) R.drawable.plane else R.drawable.cross)
+                    if (s.toString().isNotEmpty()) R.drawable.plane else R.drawable.cross
+                )
             }
         })
     }
@@ -94,7 +111,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
 
     private fun updateEmoji(emoji: String, idMessage: Int) {
-        val message = MessageFactory.messages[idMessage]
+        val message = MessageFactory.createMessage()[idMessage]
         if (message is Message) {
             message.listEmoji.add(emoji)
             adapter.updateListEmoji(idMessage)
@@ -103,10 +120,17 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     companion object {
         const val TYPE_DATE = 0
-
         const val TYPE_MESSAGE = 1
+        const val NAME_CHANNEL = "NAME_CHANNEL"
+        const val NAME_TOPIC = "NAME_STREAM"
 
         @JvmStatic
-        fun newInstance() = ChatFragment()
+        fun newInstance(nameChannel: String, nameTopic: String) =
+            ChatFragment().apply {
+                arguments = Bundle().apply {
+                    putString(NAME_CHANNEL, nameChannel)
+                    putString(NAME_TOPIC, nameTopic)
+                }
+            }
     }
 }

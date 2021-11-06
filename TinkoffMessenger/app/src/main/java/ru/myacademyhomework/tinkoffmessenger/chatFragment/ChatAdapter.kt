@@ -11,7 +11,7 @@ import java.time.LocalDate
 class ChatAdapter(private val listener: ChatMessageListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val messages: MutableList<Any> = MessageFactory.messages
+    private val messages: MutableList<Any> = MessageFactory.createMessage()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -47,6 +47,6 @@ class ChatAdapter(private val listener: ChatMessageListener) :
     }
 
     fun updateListEmoji(position: Int) {
-            notifyItemChanged(position)
+        notifyItemChanged(position)
     }
 }

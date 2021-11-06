@@ -2,7 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.factory
 
 class SmileFactory {
     companion object{
-        val emojiList: List<String> =
+        private val emojiList: List<String> =
             listOf(
                 "\uD83D\uDE00",
                 "\uD83D\uDE03",
@@ -15,5 +15,9 @@ class SmileFactory {
                 "\uD83D\uDE42",
                 "\uD83D\uDE43"
             )
+
+        fun createSmile(): List<String> {
+            return emojiList
+        }
     }
 }
