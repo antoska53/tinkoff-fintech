@@ -20,12 +20,9 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is FragmentNavigation)
-            navigation = context
-        else {
-            throw RuntimeException(context.toString()
-                    + " must implement FragmentNavigation")
-        }
+
+        require(context is FragmentNavigation)
+        navigation = context
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
