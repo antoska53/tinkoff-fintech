@@ -64,11 +64,15 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             tab.text = tabs[position]
         }.attach()
 
-        editTextSearch = view.findViewById<EditText>(R.id.search_edittext)
+        editTextSearch = view.findViewById(R.id.search_edittext)
         editTextSearch?.addTextChangedListener { str ->
             subject.onNext(str.toString())
         }
 
+        initSearch(view, viewPager)
+    }
+
+    private fun initSearch(view: View, viewPager: ViewPager2) {
         val disposable =
             subject
                 .filter { str -> str.isNotEmpty() }
@@ -82,7 +86,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                             stream = channel.streams.find {
                                 it.nameStream.equals(str, ignoreCase = true)
                             }
-                            if (stream != null) return@switchMap Observable.just(stream)
+                            if (stream != null) return@switchMap Observable.just(ItemStream("", ""))
                         }
                     }
                     Observable.just(ItemStream("", ""))
@@ -110,7 +114,6 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
 
         compositeDisposable.add(disposable)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

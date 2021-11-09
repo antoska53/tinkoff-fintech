@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -15,10 +16,10 @@ import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
+import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
-import ru.myacademyhomework.tinkoffmessenger.factory.ChannelFactory
-import ru.myacademyhomework.tinkoffmessenger.factory.SubscribeChannelFactory
-import java.util.concurrent.TimeUnit
+import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
 
 class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
@@ -60,40 +61,57 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     }
 
     private fun initRecycler(view: View) {
-        recycler = view.findViewById<RecyclerView>(R.id.recycler_subscribe_stream)
+        recycler = view.findViewById(R.id.recycler_subscribe_stream)
         adapter = StreamAdapter(
             { streams, position, isSelected ->
                 if (isSelected) updateStream(streams, position)
                 else removeStream(streams, position)
-            }, { stream ->
-                openChatTopic(stream)
+            }, { topic ->
+                openChatTopic(topic)
             }
         )
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(streams: List<ItemStream>, position: Int) {
-        adapter.updateData(streams, position, false)
+    private fun updateStream(topics: List<Topic>, position: Int) {
+        adapter.updateData(topics, position, false)
     }
 
-    private fun removeStream(streams: List<ItemStream>, position: Int) {
-        adapter.updateData(streams, position, true)
+    private fun removeStream(topics: List<Topic>, position: Int) {
+        adapter.updateData(topics, position, true)
     }
 
-    private fun openChatTopic(stream: ItemStream) {
+    private fun openChatTopic(topic: Topic) {
         navigation?.openChatFragment(
             ChatFragment.newInstance(
-                stream.nameChannel,
-                stream.nameStream
+                topic.nameStream,
+                topic.name
             )
         )
     }
 
+
     private fun getStreams() {
+        val chatApi = RetrofitModule.chatApi
         val disposable =
-            Single.just(SubscribeChannelFactory.createChannel())
+            chatApi.getStreams()
                 .subscribeOn(Schedulers.io())
-                .delay(500, TimeUnit.MILLISECONDS)
+                .flatMap {
+                    Single.just(it.subscriptions)
+                }
+                .flatMapObservable {
+                    Observable.fromIterable(it)
+                }
+                .flatMap { subscription ->
+                    chatApi.getTopics(subscription.streamID)
+                        .map { topicResponse ->
+                            Stream(subscription.name, topicResponse.topics.map { topic ->
+                                topic.nameStream = subscription.name
+                                topic
+                            })
+                        }
+                }
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
                     shimmer?.visibility = View.VISIBLE
@@ -108,6 +126,8 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     errorView?.visibility = View.GONE
                     adapter.setData(it)
                 }, {
+                    shimmer?.stopShimmer()
+                    shimmer?.visibility = View.GONE
                     recycler?.visibility = View.GONE
                     errorView?.visibility = View.VISIBLE
                 })
@@ -131,7 +151,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance() = SubscribedFragment()
     }

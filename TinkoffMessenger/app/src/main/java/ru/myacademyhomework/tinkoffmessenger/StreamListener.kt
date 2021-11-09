@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger
 
-import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
+import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
 fun interface StreamListener {
-    fun onClickStream(stream: ItemStream)
+    fun itemChannelClicked(streams: List<Topic>, position: Int, isSelected: Boolean)
 }

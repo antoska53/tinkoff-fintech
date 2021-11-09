@@ -2,12 +2,14 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -16,8 +18,9 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
-import ru.myacademyhomework.tinkoffmessenger.factory.ChannelFactory
-import java.util.concurrent.TimeUnit
+import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
 
 class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
@@ -51,49 +54,61 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
 
         initRecycler(view)
         getStreams()
-
     }
 
     private fun initRecycler(view: View) {
-        recycler = view.findViewById<RecyclerView>(R.id.recycler_stream)
+        recycler = view.findViewById(R.id.recycler_stream)
 
         adapter = StreamAdapter(
-            channelListener = { streams, position, isSelected ->
+            streamListener = { streams, position, isSelected ->
                 if (isSelected) updateStream(streams, position)
                 else removeStream(streams, position)
             },
-            streamListener = { stream ->
-                openChatTopic(stream)
+            topicListener = { topic ->
+                openChatTopic(topic)
             }
         )
-        adapter.setData(ChannelFactory.createChannel())
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(streams: List<ItemStream>, position: Int) {
-        adapter.updateData(streams, position, false)
+    private fun updateStream(topics: List<Topic>, position: Int) {
+        adapter.updateData(topics, position, false)
     }
 
-    private fun removeStream(streams: List<ItemStream>, position: Int) {
-        adapter.updateData(streams, position, true)
+    private fun removeStream(topics: List<Topic>, position: Int) {
+        adapter.updateData(topics, position, true)
     }
 
-    private fun openChatTopic(stream: ItemStream) {
+    private fun openChatTopic(topic: Topic) {
         navigation?.openChatFragment(
             ChatFragment.newInstance(
-                stream.nameChannel,
-                stream.nameStream
+                topic.nameStream,
+                topic.name
             )
         )
-
     }
 
     private fun getStreams() {
-
+        val chatApi = RetrofitModule.chatApi
         val disposable =
-            Single.just(ChannelFactory.createChannel())
+            chatApi.getStreams()
                 .subscribeOn(Schedulers.io())
-                .delay(3000, TimeUnit.MILLISECONDS)
+                .flatMap {
+                    Single.just(it.subscriptions)
+                }
+                .flatMapObservable {
+                    Observable.fromIterable(it)
+                }
+                .flatMap { subscription ->
+                    chatApi.getTopics(subscription.streamID)
+                        .map { topicResponse ->
+                            Stream(subscription.name, topicResponse.topics.map { topic ->
+                                topic.nameStream = subscription.name
+                                topic
+                            })
+                        }
+                }
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
                     shimmer?.visibility = View.VISIBLE
@@ -102,18 +117,21 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
                     errorView?.visibility = View.GONE
                 }
                 .subscribe({
+                    Log.d("CHATAPI", "getStreams: $it")
                     shimmer?.stopShimmer()
                     shimmer?.visibility = View.GONE
                     recycler?.visibility = View.VISIBLE
                     errorView?.visibility = View.GONE
                     adapter.setData(it)
                 }, {
+                    Log.d("CHATAPI", "getStreams: ERROR $it")
+                    shimmer?.stopShimmer()
+                    shimmer?.visibility = View.GONE
                     recycler?.visibility = View.GONE
                     errorView?.visibility = View.VISIBLE
                 })
 
         compositeDisposable.add(disposable)
-
     }
 
     override fun onDestroyView() {
@@ -132,8 +150,8 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
     }
 
     companion object {
-        const val TYPE_ITEM_CHANNEL = 0
-        const val TYPE_STREAM = 1
+        const val TYPE_STREAM = 0
+        const val TYPE_TOPIC = 1
 
         @JvmStatic
         fun newInstance() = AllStreamFragment()

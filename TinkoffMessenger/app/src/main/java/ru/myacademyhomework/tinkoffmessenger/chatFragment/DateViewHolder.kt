@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
-import java.time.LocalDate
 
 
 class DateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
