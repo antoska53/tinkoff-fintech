@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -15,6 +16,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.delay
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Message
@@ -91,30 +93,30 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         val disposable =
             Single.just(MessageFactory.createMessage())
                 .subscribeOn(Schedulers.io())
-                .delay(1000, TimeUnit.MILLISECONDS)
-                .doOnSuccess {
+                .delay(3000, TimeUnit.MILLISECONDS)
+                .doOnSuccess{
                     val randomValue = Random.nextInt(0, 3)
                     if (randomValue == 0)
                         throw IllegalArgumentException()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    shimmer?.visibility = View.VISIBLE
+                    shimmer?.isVisible = true
                     shimmer?.startShimmer()
-                    recyclerView?.visibility = View.GONE
-                    errorView?.visibility = View.GONE
+                    recyclerView?.isVisible = false
+                    errorView?.isVisible = false
+                }
+                .doOnTerminate {
+                    shimmer?.stopShimmer()
+                    shimmer?.isVisible = false
                 }
                 .subscribe({
-                    shimmer?.stopShimmer()
-                    shimmer?.visibility = View.GONE
-                    recyclerView?.visibility = View.VISIBLE
-                    errorView?.visibility = View.GONE
+                    recyclerView?.isVisible = true
+                    errorView?.isVisible = false
                     adapter.addData(it)
                 }, {
-                    shimmer?.stopShimmer()
-                    shimmer?.visibility = View.GONE
-                    recyclerView?.visibility = View.GONE
-                    errorView?.visibility = View.VISIBLE
+                    errorView?.isVisible = true
+                    recyclerView?.isVisible = false
                 })
         compositeDisposable.add(disposable)
 
@@ -135,8 +137,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                            updateRecycler(it)
-                            editTextMessage.text.clear()
+                            showMessage(it)
                         },
                         {
                             Snackbar.make(
@@ -148,6 +149,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     )
             compositeDisposable.add(disposable)
         }
+    }
+
+    private fun showMessage(message: Message){
+        updateRecycler(message)
+        editTextMessage.text.clear()
     }
 
     private fun sendMessage(message: Message): Observable<Message> {
