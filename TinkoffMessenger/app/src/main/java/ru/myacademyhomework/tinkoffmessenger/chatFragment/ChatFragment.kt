@@ -126,9 +126,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     shimmer?.isVisible = false
                 }
                 .subscribe({
-                    adapter.addData(it.message)
                     recyclerView?.isVisible = true
                     errorView?.isVisible = false
+                    adapter.addData(it.messages)
                 }, {
                     errorView?.isVisible = true
                     recyclerView?.isVisible = false
