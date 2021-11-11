@@ -61,6 +61,26 @@
         app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
         app:layout_constraintVertical_bias="1.0" />
 
+    <include
+        layout="@layout/shimmer_chat_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
+        app:layout_constraintBottom_toTopOf="@id/edittext_message"/>
+
+    <include
+        layout="@layout/error_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
+        app:layout_constraintBottom_toTopOf="@id/edittext_message"/>
+
     <EditText
         android:id="@+id/edittext_message"
         android:layout_width="0dp"
@@ -85,11 +105,11 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@drawable/bg_button_send_message"
-        android:src="@drawable/cross"
+        android:src="@drawable/ic_cross"
         android:layout_margin="10dp"
         app:layout_constraintStart_toEndOf="@id/edittext_message"
-        app:layout_constraintTop_toBottomOf="@id/chat_recycler"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/edittext_message"
+        app:layout_constraintBottom_toBottomOf="@id/edittext_message"
         app:layout_constraintEnd_toEndOf="parent"
         />
 

@@ -24,4 +24,5 @@
     <color name="textview_online_color">#4AB54D</color>
     <color name="textview_meeting_color">#BCBCBC</color>
     <color name="textview_name_profile_color">#FFFFFF</color>
+    <color name="bg_shimmer">#999999</color>
 </resources>

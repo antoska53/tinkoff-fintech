@@ -6,13 +6,23 @@ import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
-import androidx.activity.OnBackPressedDispatcher
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.delay
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Message
 import ru.myacademyhomework.tinkoffmessenger.factory.MessageFactory
+import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 
 class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
@@ -27,14 +37,23 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private lateinit var editTextMessage: EditText
     private lateinit var buttonSendMessage: ImageButton
     private lateinit var dialog: BottomSheetDialog
+    private val compositeDisposable = CompositeDisposable()
+    private var errorView: View? = null
+    private var shimmer: ShimmerFrameLayout? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        errorView = view.findViewById(R.id.error_view)
+        shimmer = view.findViewById(R.id.shimmer_chat_layout)
         initRecycler(view)
+        getMessages()
+
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
         tvNameTopic.text = getString(R.string.topic, nameTopic)
         val tvNameChannel = view.findViewById<TextView>(R.id.textview_name_channel)
         tvNameChannel.text = nameChannel
+        val buttonReload = view.findViewById<Button>(R.id.button_reload)
+        buttonReload.setOnClickListener { getMessages() }
 
         val buttonBack = view.findViewById<ImageView>(R.id.imageView_arrow_back)
         buttonBack.setOnClickListener {
@@ -52,7 +71,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
             override fun afterTextChanged(s: Editable) {
                 buttonSendMessage.setImageResource(
-                    if (s.toString().isNotEmpty()) R.drawable.plane else R.drawable.cross
+                    if (s.toString().isNotEmpty()) R.drawable.ic_plane else R.drawable.ic_cross
                 )
             }
         })
@@ -65,9 +84,42 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
 
     private fun initRecycler(view: View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.chat_recycler)
+        recyclerView = view.findViewById(R.id.chat_recycler)
         adapter = ChatAdapter(this)
         recyclerView?.adapter = adapter
+    }
+
+    private fun getMessages() {
+        val disposable =
+            Single.just(MessageFactory.createMessage())
+                .subscribeOn(Schedulers.io())
+                .delay(3000, TimeUnit.MILLISECONDS)
+                .doOnSuccess{
+                    val randomValue = Random.nextInt(0, 3)
+                    if (randomValue == 0)
+                        throw IllegalArgumentException()
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    shimmer?.isVisible = true
+                    shimmer?.startShimmer()
+                    recyclerView?.isVisible = false
+                    errorView?.isVisible = false
+                }
+                .doOnTerminate {
+                    shimmer?.stopShimmer()
+                    shimmer?.isVisible = false
+                }
+                .subscribe({
+                    recyclerView?.isVisible = true
+                    errorView?.isVisible = false
+                    adapter.addData(it)
+                }, {
+                    errorView?.isVisible = true
+                    recyclerView?.isVisible = false
+                })
+        compositeDisposable.add(disposable)
+
     }
 
     private fun onClickButtonSendMessage() {
@@ -78,9 +130,38 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                 message = editTextMessage.text.toString(),
                 listEmoji = mutableListOf()
             )
-            editTextMessage.text.clear()
-            updateRecycler(message)
+
+            val disposable =
+                sendMessage(message)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        {
+                            showMessage(it)
+                        },
+                        {
+                            Snackbar.make(
+                                recyclerView!!,
+                                "Сообщение не отправлено",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+            compositeDisposable.add(disposable)
         }
+    }
+
+    private fun showMessage(message: Message){
+        updateRecycler(message)
+        editTextMessage.text.clear()
+    }
+
+    private fun sendMessage(message: Message): Observable<Message> {
+        val randomValue = Random.nextInt(1, 5)
+        if (randomValue == 1)
+            return Observable.error(IllegalArgumentException())
+        MessageFactory.createMessage().add(message)
+        return Observable.just(message)
     }
 
     override fun itemLongClicked(idMessage: Int): Boolean {
@@ -116,6 +197,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
             message.listEmoji.add(emoji)
             adapter.updateListEmoji(idMessage)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     companion object {
