@@ -1,6 +1,8 @@
 package ru.myacademyhomework.tinkoffmessenger.profilefragment
 
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -8,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -69,6 +72,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     status?.visibility = View.VISIBLE
                     errorView?.visibility = View.GONE
 
+                    getStatus(view)
+
                 }, {
                     shimmerProfile?.visibility = View.GONE
                     shimmerProfile?.stopShimmer()
@@ -109,6 +114,40 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     errorView?.visibility = View.VISIBLE
                 })
         compositeDisposable.add(disposable)
+    }
+
+    private fun getStatus(view: View) {
+        val disposable =
+            RetrofitModule.chatApi.getUserPresence(userId!!)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                   setStatus(it.presence.userStatus.status)
+                }, {
+                    Snackbar.make(
+                        view,
+                        "Неудалось загрузить статус",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                })
+        compositeDisposable.add(disposable)
+    }
+
+    private fun setStatus(userStatus: String){
+        when (userStatus) {
+            "active" -> {
+                status?.text = getString(R.string.status_online)
+                status?.setTextColor(requireContext().getColor(R.color.status_online_color))
+            }
+            "offline" -> {
+                status?.text = getString(R.string.status_offline)
+                status?.setTextColor(requireContext().getColor(R.color.status_offline_color))
+            }
+            "idle" -> {
+                status?.text = getString(R.string.status_idle)
+                status?.setTextColor(requireContext().getColor(R.color.status_idle_color))
+            }
+        }
     }
 
 

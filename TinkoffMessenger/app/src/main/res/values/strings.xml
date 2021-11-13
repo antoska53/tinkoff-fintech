@@ -7,4 +7,7 @@
     <string name="people">People</string>
     <string name="profile">Profile</string>
     <string name="topic">Topic: #%1$s</string>
+    <string name="status_online">online</string>
+    <string name="status_offline">offline</string>
+    <string name="status_idle">idle</string>
 </resources>

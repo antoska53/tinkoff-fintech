@@ -93,7 +93,7 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             }
             emojiView.smile = emoji.emojiCode.split("-").joinToString("") {
                 if(it == "zulip"){
-                    "Z"
+                    "Z "
                 }else {
                     String(Character.toChars(it.toInt(16)))
                 }
