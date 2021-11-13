@@ -45,6 +45,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                             bundleOf(SHOW_STREAMS_KEY to showStreams)
                         )
                     } else {
+                        isEnabled = false
                         requireActivity().onBackPressed()
                     }
                 }

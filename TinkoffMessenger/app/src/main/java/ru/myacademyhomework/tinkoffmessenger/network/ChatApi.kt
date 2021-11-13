@@ -31,13 +31,15 @@ interface ChatApi {
     @POST("messages/{message_id}/reactions")
     fun addReaction(
         @Path("message_id") messageId: Int,
-        @Query("emoji_name") emojiName: String
+        @Query("emoji_name") emojiName: String,
     ): Completable
 
     @DELETE("messages/{message_id}/reactions")
     fun removeReaction(
         @Path("message_id") messageId: Int,
-        @Query("emoji_name") emojiName: String
+        @Query("emoji_name") emojiName: String,
+        @Query("emoji_code") emojiCode: String,
+        @Query("reaction_type") reactionType: String
     ): Completable
 
     @GET("users/{user_id}")

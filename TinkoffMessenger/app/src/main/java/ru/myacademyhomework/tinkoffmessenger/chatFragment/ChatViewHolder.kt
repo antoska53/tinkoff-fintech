@@ -67,7 +67,7 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                                 })
                 } else {
                     val disposable =
-                        RetrofitModule.chatApi.removeReaction(message.id, emoji.emojiName)
+                        RetrofitModule.chatApi.removeReaction(message.id, emoji.emojiName, emoji.emojiCode, emoji.reactionType)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
@@ -91,7 +91,13 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
                 }
             }
-            emojiView.smile = String(Character.toChars(emoji.emojiCode.toInt(16)))
+            emojiView.smile = emoji.emojiCode.split("-").joinToString("") {
+                if(it == "zulip"){
+                    "Z"
+                }else {
+                    String(Character.toChars(it.toInt(16)))
+                }
+            }
             emojiView.textCount = message.reactions.count {
                 it.emojiName == emoji.emojiName
             }.toString()
