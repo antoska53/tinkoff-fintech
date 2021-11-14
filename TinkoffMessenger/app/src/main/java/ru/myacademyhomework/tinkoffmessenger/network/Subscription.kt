@@ -10,7 +10,7 @@ data class Subscription (
     val name: String,
 
     @SerialName("stream_id")
-    val streamID: Int,
+    val streamID: Long,
 
     @SerialName("description")
     val description: String,

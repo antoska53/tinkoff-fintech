@@ -15,6 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
@@ -54,6 +55,7 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         }
 
         initRecycler(view)
+        getStreamsFromDb()
         getStreams()
     }
 
@@ -84,9 +86,40 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         navigation?.openChatFragment(
             ChatFragment.newInstance(
                 topic.nameStream,
-                topic.name
+                topic.name,
+                topic.streamId
             )
         )
+    }
+
+    private fun getStreamsFromDb(){
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        val disposable =
+            chatDao
+                .getStreams()
+                .map {
+                    it.map {streamDb ->
+                        val listTopics = chatDao.getTopics(streamDb.nameChannel).map{ topicDb ->
+                            Topic(0, topicDb.nameTopic, topicDb.nameStream)
+                        }
+                        Stream(streamDb.nameChannel, listTopics)
+                    }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.d("GETSTREAMS", "getStreamsFromDb: onSUcces $it")
+                    if (it.isEmpty()){
+                        shimmer?.visibility = View.VISIBLE
+                        shimmer?.startShimmer()
+                        recycler?.visibility = View.GONE
+                        errorView?.visibility = View.GONE
+                    }else{
+                        adapter.setData(it)
+                    }
+                },{
+                    Log.d("GETSTREAMS", "getStreamsFromDb: ERROR $it")
+                })
+        compositeDisposable.add(disposable)
     }
 
     private fun getStreams() {
@@ -110,19 +143,19 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
                 }
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    shimmer?.visibility = View.VISIBLE
-                    shimmer?.startShimmer()
-                    recycler?.visibility = View.GONE
-                    errorView?.visibility = View.GONE
-                }
+//                .doOnSubscribe {
+//                    shimmer?.visibility = View.VISIBLE
+//                    shimmer?.startShimmer()
+//                    recycler?.visibility = View.GONE
+//                    errorView?.visibility = View.GONE
+//                }
                 .subscribe({
                     Log.d("CHATAPI", "getStreams: $it")
                     shimmer?.stopShimmer()
                     shimmer?.visibility = View.GONE
                     recycler?.visibility = View.VISIBLE
                     errorView?.visibility = View.GONE
-                    adapter.setData(it)
+//                    adapter.setData(it)
                 }, {
                     Log.d("CHATAPI", "getStreams: ERROR $it")
                     shimmer?.stopShimmer()

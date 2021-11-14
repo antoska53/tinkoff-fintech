@@ -29,17 +29,11 @@ data class UserMessage (
     @SerialName("avatar_url")
     val avatarURL: String,
 
-    @SerialName("client")
-    val client: String,
-
     @SerialName("content")
     val content: String,
 
-    @SerialName("content_type")
-    val contentType: String,
-
     @SerialName("id")
-    val id: Int,
+    val id: Long,
 
     @SerialName("is_me_message")
     val isMeMessage: Boolean,
@@ -52,9 +46,6 @@ data class UserMessage (
 
     @SerialName("timestamp")
     val timestamp: Long,
-
-    @SerialName("type")
-    val type: String,
 
     @SerialName("stream_id")
     val streamID: Long?

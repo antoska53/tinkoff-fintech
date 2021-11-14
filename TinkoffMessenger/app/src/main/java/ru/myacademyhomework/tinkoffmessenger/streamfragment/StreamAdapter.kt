@@ -15,7 +15,7 @@ class StreamAdapter(
     private val topicListener: TopicListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val streams: MutableList<Item> = mutableListOf()
+    private var streams: MutableList<Item> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {

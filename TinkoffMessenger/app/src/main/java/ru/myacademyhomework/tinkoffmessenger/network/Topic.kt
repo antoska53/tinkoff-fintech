@@ -7,8 +7,8 @@ import ru.myacademyhomework.tinkoffmessenger.data.Item
 
 @Serializable
 data class Topic(
-    @SerialName("max_id")
-    val maxID: Int,
+    @Transient
+    val streamId: Long = 0,
 
     @SerialName("name")
     val name: String,

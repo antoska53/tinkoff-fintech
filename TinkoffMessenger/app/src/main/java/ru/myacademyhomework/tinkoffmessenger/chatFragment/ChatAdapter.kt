@@ -52,7 +52,9 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
     }
 
     fun addData(messages: List<Any>) {
+        val size = this.messages.size
         this.messages.clear()
+        notifyItemRangeRemoved(0, size)
         this.messages.addAll(messages)
         notifyItemRangeInserted(0, messages.size)
     }

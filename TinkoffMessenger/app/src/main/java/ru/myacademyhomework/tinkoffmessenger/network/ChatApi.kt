@@ -19,7 +19,7 @@ interface ChatApi {
     ): Single<MessageResponse>
 
     @GET("users/me/{stream_id}/topics")
-    fun getTopics(@Path("stream_id") stream_id: Int): Observable<TopicResponse>
+    fun getTopics(@Path("stream_id") stream_id: Long): Observable<TopicResponse>
 
     @POST("messages")
     fun sendMessage(
@@ -31,13 +31,13 @@ interface ChatApi {
 
     @POST("messages/{message_id}/reactions")
     fun addReaction(
-        @Path("message_id") messageId: Int,
+        @Path("message_id") messageId: Long,
         @Query("emoji_name") emojiName: String,
     ): Completable
 
     @DELETE("messages/{message_id}/reactions")
     fun removeReaction(
-        @Path("message_id") messageId: Int,
+        @Path("message_id") messageId: Long,
         @Query("emoji_name") emojiName: String,
         @Query("emoji_code") emojiCode: String,
         @Query("reaction_type") reactionType: String
