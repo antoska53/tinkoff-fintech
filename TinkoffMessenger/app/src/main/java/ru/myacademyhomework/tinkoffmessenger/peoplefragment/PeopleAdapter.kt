@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.PeopleListener
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
-class PeopleAdapter(private val listener: PeopleListener) :
-    RecyclerView.Adapter<PeopleViewHolder>() {
+class PeopleAdapter(private val listener: PeopleListener) : RecyclerView.Adapter<PeopleViewHolder>() {
+
     private val people = mutableListOf<User>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleViewHolder {

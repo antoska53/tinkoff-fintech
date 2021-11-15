@@ -14,6 +14,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -74,7 +75,6 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     }
 
     private fun initSearch(view: View, viewPager: ViewPager2) {
-        val disposable =
             subject
                 .filter { str -> str.isNotEmpty() }
                 .distinctUntilChanged()
@@ -112,8 +112,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                         Snackbar.make(view, "ERROR", Snackbar.LENGTH_SHORT).show()
                     }
                 )
-
-        compositeDisposable.add(disposable)
+                .addTo(compositeDisposable)
     }
 
     override fun onDestroyView() {

@@ -6,6 +6,7 @@ import io.reactivex.Single
 import retrofit2.http.*
 
 interface ChatApi {
+
     @GET("users/me/subscriptions")
     fun getStreams(): Single<StreamsSubscribeResponse>
 

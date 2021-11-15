@@ -13,7 +13,7 @@ class BottomSheetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     fun onBind(emoji: String, idMessage: Int, positionMessage: Int, listener: BottomSheetListener) {
         emojiTextView.text = emoji
         emojiTextView.setOnClickListener {
-            listener.itemEmojiClicked(emoji, idMessage, positionMessage)
+            listener.itemEmojiClicked(emoji = emoji, idMessage = idMessage, position = positionMessage)
         }
     }
 }

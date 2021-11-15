@@ -5,8 +5,10 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -36,20 +38,23 @@ class PeopleFragment : Fragment(R.layout.fragment_people) {
         }
         recycler?.adapter = adapter
 
-        getAllUsers()
+        getAllUsers(view)
     }
 
-    private fun getAllUsers() {
-        val disposable =
+    private fun getAllUsers(view: View) {
             RetrofitModule.chatApi.getAllUsers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     updateRecycler(it.users)
                 }, {
-
+                    Snackbar.make(
+                        view,
+                        "Неудалось загрузить список пользователей \uD83D\uDE2D",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 })
-        compositeDisposable.add(disposable)
+                .addTo(compositeDisposable)
     }
 
     private fun updateRecycler(users: List<User>) {
@@ -60,11 +65,12 @@ class PeopleFragment : Fragment(R.layout.fragment_people) {
         navigation?.openChatFragment(ProfileFragment.newInstance(userId))
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         recycler?.adapter = null
         compositeDisposable.clear()
     }
+
 
     companion object {
 

@@ -39,11 +39,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { getUser(view) }
-        if (userId == 0) {
-            getOwnUser(view)
-        } else {
-            getUser(view)
-        }
+        if (userId == 0) getOwnUser(view) else getUser(view)
     }
 
     private fun getUser(view: View) {

@@ -12,6 +12,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -93,7 +94,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
     private fun getStreams() {
         val chatApi = RetrofitModule.chatApi
-        val disposable =
             chatApi.getStreams()
                 .subscribeOn(Schedulers.io())
                 .flatMap {
@@ -131,8 +131,8 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     recycler?.visibility = View.GONE
                     errorView?.visibility = View.VISIBLE
                 })
+                .addTo(compositeDisposable)
 
-        compositeDisposable.add(disposable)
     }
 
     override fun onDestroyView() {

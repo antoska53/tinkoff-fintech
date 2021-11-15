@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.delay
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
@@ -51,9 +52,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         tvNameChannel.text = nameChannel
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener {
-            if(isInitRecycler) {
+            if (isInitRecycler) {
                 getMessages(nameChannel!!, nameTopic!!)
-            }else{
+            } else {
                 initRecycler(view)
             }
         }
@@ -87,7 +88,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
 
     private fun initRecycler(view: View) {
-        val disposable =
         RetrofitModule.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -98,75 +98,77 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                 adapter = ChatAdapter(this, it.userID)
                 recyclerView?.adapter = adapter
                 getMessages(nameChannel!!, nameTopic!!)
-            },{
+            }, {
                 errorView?.visibility = View.VISIBLE
             })
-        compositeDisposable.add(disposable)
+            .addTo(compositeDisposable)
     }
 
     private fun getMessages(streamName: String, topicName: String) {
         val chatApi = RetrofitModule.chatApi
-        val disposable =
-                chatApi.getMessages(
-                "newest",
-                5,
-                15,
-                "[{\"operand\":\"$streamName\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
-                )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    shimmer?.isVisible = true
-                    shimmer?.startShimmer()
-                    recyclerView?.isVisible = false
-                    errorView?.isVisible = false
-                }
-                .doOnTerminate {
-                    shimmer?.stopShimmer()
-                    shimmer?.isVisible = false
-                }
-                .subscribe({
-                    recyclerView?.isVisible = true
-                    errorView?.isVisible = false
-                    adapter.addData(it.messages)
-                }, {
-                    errorView?.isVisible = true
-                    recyclerView?.isVisible = false
-                })
-        compositeDisposable.add(disposable)
+        chatApi.getMessages(
+            "newest",
+            5,
+            15,
+            "[{\"operand\":\"$streamName\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                shimmer?.isVisible = true
+                shimmer?.startShimmer()
+                recyclerView?.isVisible = false
+                errorView?.isVisible = false
+            }
+            .doOnTerminate {
+                shimmer?.stopShimmer()
+                shimmer?.isVisible = false
+            }
+            .subscribe({
+                recyclerView?.isVisible = true
+                errorView?.isVisible = false
+                adapter.addData(it.messages)
+            }, {
+                errorView?.isVisible = true
+                recyclerView?.isVisible = false
+            })
+            .addTo(compositeDisposable)
     }
 
-    private fun getMessage(messageId: Int, position: Int){
+    private fun getMessage(messageId: Int, position: Int) {
         val chatApi = RetrofitModule.chatApi
-        val disposable =
-            chatApi.getMessages(
-                "newest",
-                5,
-                15,
-                "[{\"operand\":\"$nameChannel\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
-            )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if(position < 0){
-                        updateRecycler(it.messages[0])
-                    }else{
-                        updateRecycler(it.messages[0], position)
-                    }
-                }, {
-                })
-        compositeDisposable.add(disposable)
+        chatApi.getMessages(
+            "newest",
+            5,
+            15,
+            "[{\"operand\":\"$nameChannel\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (position < 0) {
+                    updateRecycler(it.messages[0])
+                } else {
+                    updateRecycler(it.messages[0], position)
+                }
+            }, {
+                Snackbar.make(
+                    recyclerView!!,
+                    "Неудалось загрузить сообщения",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun onClickButtonSendMessage() {
         if (editTextMessage.text.isNotEmpty()) {
-            sendMessage( message = editTextMessage.text.toString())
+            sendMessage(message = editTextMessage.text.toString())
         }
     }
 
 
-    private fun sendMessage(message: String){
-        val disposable =
+    private fun sendMessage(message: String) {
         RetrofitModule.chatApi.sendMessage("stream", nameChannel!!, nameTopic!!, message)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -183,26 +185,27 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     ).show()
                 }
             )
-        compositeDisposable.add(disposable)
+            .addTo(compositeDisposable)
     }
 
-    override fun itemLongClicked(idMessage: Int, position:Int): Boolean {
+    override fun itemLongClicked(idMessage: Int, position: Int): Boolean {
         showBottomSheetDialog(idMessage, position)
         return true
     }
 
 
-    private fun showBottomSheetDialog(idMessage: Int, positionMessage:Int) {
+    private fun showBottomSheetDialog(idMessage: Int, positionMessage: Int) {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
         dialog = BottomSheetDialog(this.requireContext(), R.style.BottomSheetDialogTheme)
         dialog.setContentView(bottomSheet)
 
 
         val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
-        val adapterBottomSheet = BottomSheetAdapter(idMessage, positionMessage) { emoji, id, position ->
-            updateEmoji(emoji, id, position)
-            dialog.dismiss()
-        }
+        val adapterBottomSheet =
+            BottomSheetAdapter(idMessage, positionMessage) { emoji, id, position ->
+                updateEmoji(emoji, id, position)
+                dialog.dismiss()
+            }
         recyclerBottomSheet.adapter = adapterBottomSheet
         dialog.show()
     }
@@ -212,30 +215,30 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         recyclerView?.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
-    private fun updateRecycler(message: UserMessage, position: Int){
+    private fun updateRecycler(message: UserMessage, position: Int) {
         adapter.updateListEmoji(message, position)
     }
 
 
     private fun updateEmoji(emoji: String, idMessage: Int, position: Int) {
-        val emojiName =  Emoji.values().find {
+        val emojiName = Emoji.values().find {
             it.unicode == emoji
         }
 
-        val disposable =
-            RetrofitModule.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    getMessage(idMessage, position)
-                },
-                    {
-                        Snackbar.make(
-                            recyclerView!!,
-                            "Неудалось добавить эмодзи \uD83D\uDE2D",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    })
+        RetrofitModule.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                getMessage(idMessage, position)
+            },
+                {
+                    Snackbar.make(
+                        recyclerView!!,
+                        "Неудалось добавить эмодзи \uD83D\uDE2D",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                })
+            .addTo(compositeDisposable)
     }
 
     override fun onDestroy() {

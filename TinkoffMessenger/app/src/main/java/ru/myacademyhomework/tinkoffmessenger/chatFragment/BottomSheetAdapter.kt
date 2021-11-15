@@ -24,7 +24,12 @@ class BottomSheetAdapter(
     }
 
     override fun onBindViewHolder(holder: BottomSheetViewHolder, position: Int) {
-        holder.onBind(emojiList[position], idMessage, positionMessage, listener)
+        holder.onBind(
+            emoji = emojiList[position],
+            idMessage = idMessage,
+            positionMessage = positionMessage,
+            listener = listener
+        )
     }
 
     override fun getItemCount(): Int = emojiList.size

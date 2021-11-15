@@ -18,6 +18,7 @@ android {
 
         buildConfigField "String", "BASE_URL",'"https://tinkoff-android-fall21.zulipchat.com/api/v1/"'
         buildConfigField "String", "API_KEY",'"MPfDdAmz2mfOQLM3ynU5PNuBXUdTwYiw"'
+        buildConfigField "String", "USER_EMAIL", '"tosha170@outlook.com"'
     }
 
     buildTypes {
@@ -44,6 +45,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"
     implementation "com.facebook.shimmer:shimmer:$shimmerVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"

@@ -17,7 +17,7 @@ object RetrofitModule {
     private val contentType = "application/json".toMediaType()
     private val client = OkHttpClient().newBuilder()
         .authenticator(Authenticator { route, response ->
-            val credentials: String = Credentials.basic("tosha170@outlook.com", BuildConfig.API_KEY)
+            val credentials: String = Credentials.basic(BuildConfig.USER_EMAIL, BuildConfig.API_KEY)
             response.request.newBuilder().header("Authorization", credentials).build()
         })
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
