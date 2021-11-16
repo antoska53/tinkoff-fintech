@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.Database
+package ru.myacademyhomework.tinkoffmessenger.database
 
 import android.content.Context
 import androidx.room.Database
@@ -15,17 +15,14 @@ import androidx.room.RoomDatabase
     ), version = 1
 )
 abstract class ChatDatabase : RoomDatabase() {
+
     abstract fun chatDao(): ChatDao
 
     companion object {
-        // Singleton prevents multiple instances of database opening at the
-        // same time.
         @Volatile
         private var INSTANCE: ChatDatabase? = null
 
         fun getDatabase(context: Context): ChatDatabase {
-            // if the INSTANCE is not null, then return it,
-            // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
@@ -33,7 +30,6 @@ abstract class ChatDatabase : RoomDatabase() {
                     "chat_database"
                 ).build()
                 INSTANCE = instance
-                // return instance
                 instance
             }
         }

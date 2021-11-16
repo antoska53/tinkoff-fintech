@@ -67,7 +67,12 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                                 })
                 } else {
                     val disposable =
-                        RetrofitModule.chatApi.removeReaction(message.id, emoji.emojiName, emoji.emojiCode, emoji.reactionType)
+                        RetrofitModule.chatApi.removeReaction(
+                            message.id,
+                            emoji.emojiName,
+                            emoji.emojiCode,
+                            emoji.reactionType
+                        )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
@@ -88,13 +93,12 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                                     Snackbar.LENGTH_SHORT
                                 ).show()
                             })
-
                 }
             }
             emojiView.smile = emoji.emojiCode.split("-").joinToString("") {
-                if(it == "zulip"){
+                if (it == "zulip") {
                     "Z "
-                }else {
+                } else {
                     String(Character.toChars(it.toInt(16)))
                 }
             }
@@ -116,6 +120,7 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         Glide.with(itemView)
             .load(message.avatarURL)
+            .circleCrop()
             .into(imageviewAvatar)
     }
 

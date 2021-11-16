@@ -3,7 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
@@ -17,10 +16,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
-import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
-import ru.myacademyhomework.tinkoffmessenger.Database.MessageDb
-import ru.myacademyhomework.tinkoffmessenger.Database.ReactionDb
-import ru.myacademyhomework.tinkoffmessenger.Database.UserDb
+import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.database.MessageDb
+import ru.myacademyhomework.tinkoffmessenger.database.ReactionDb
+import ru.myacademyhomework.tinkoffmessenger.database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.network.Reaction
@@ -30,14 +29,12 @@ import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 
 class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
+
     private val nameStream by lazy {
         arguments?.getString(NAME_CHANNEL)
     }
     private val nameTopic by lazy {
         arguments?.getString(NAME_TOPIC)
-    }
-    private val streamId by lazy {
-        arguments?.getLong(STREAM_ID)
     }
 
     private lateinit var adapter: ChatAdapter
@@ -112,14 +109,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     )
                 }
             }
-            .doOnComplete {
-                Log.d("USERDB", "initRecycler: suc ")
-            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (it.isEmpty()) {
-                    Log.d("USERDB", "initRecycler: $it")
                     getOwnUser()
                 } else {
                     errorView?.visibility = View.GONE
@@ -128,22 +121,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     adapter = ChatAdapter(this, it[0].userID)
                     recyclerView?.adapter = adapter
                     getMessagesFromDb(view)
-//                    getMessages(view)
                 }
-                Log.d("USERDB", "initRecycler: $it")
-//                errorView?.visibility = View.GONE
-//                isInitRecycler = true
-//                recyclerView = view.findViewById(R.id.chat_recycler)
-//                adapter = ChatAdapter(this, it.userID)
-//                recyclerView?.adapter = adapter
-//                getMessagesFromDb()
-//                getMessages(view)
             }, {
-                Log.d("USERDB", "initRecycler: ERROR $it")
             })
             .addTo(compositeDisposable)
-
-
     }
 
     private fun getOwnUser() {
@@ -164,13 +145,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                    errorView?.visibility = View.GONE
-//                    isInitRecycler = true
-//                    recyclerView = view.findViewById(R.id.chat_recycler)
-//                    adapter = ChatAdapter(this, it.userID)
-//                    recyclerView?.adapter = adapter
-//                    getMessagesFromDb()
-//                    getMessages(view)
+                errorView?.visibility = View.GONE
             }, {
                 errorView?.visibility = View.VISIBLE
             })
@@ -179,143 +154,136 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     private fun getMessagesFromDb(view: View) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        val disposable =
-            chatDao.getMessages(nameTopic!!)
-                .map {
-                    it.map { messageDb ->
-                        UserMessage(
-                            avatarURL = messageDb.avatarURL,
-                            content = messageDb.content,
-                            id = messageDb.id,
-                            isMeMessage = messageDb.isMeMessage,
-                            senderFullName = messageDb.senderFullName,
-                            timestamp = messageDb.timestamp,
-                            streamID = messageDb.streamID,
-                            reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                                Reaction(
-                                    reactionDb.emojiCode,
-                                    reactionDb.emojiName,
-                                    reactionDb.reactionType,
-                                    reactionDb.userId
-                                )
-                            }
-                        )
-                    }
+        chatDao.getMessages(nameTopic!!)
+            .map {
+                it.map { messageDb ->
+                    UserMessage(
+                        avatarURL = messageDb.avatarURL,
+                        content = messageDb.content,
+                        id = messageDb.id,
+                        isMeMessage = messageDb.isMeMessage,
+                        senderFullName = messageDb.senderFullName,
+                        timestamp = messageDb.timestamp,
+                        streamID = messageDb.streamID,
+                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+                            Reaction(
+                                reactionDb.emojiCode,
+                                reactionDb.emojiName,
+                                reactionDb.reactionType,
+                                reactionDb.userId
+                            )
+                        }
+                    )
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.d("GETMESSAGES", "getMessagesFromDb: $it")
-                    if(it.isEmpty()){
-                        shimmer?.isVisible = true
-                        shimmer?.startShimmer()
-                        recyclerView?.isVisible = false
-                        errorView?.isVisible = false
-                    }else{
-                        databaseIsNotEmpty = true
-                        adapter.addData(it)
-                    }
-                    if(!databaseIsRefresh) getMessages(view)
-                }, {
-                    Log.d("GETMESSAGES", "getMessagesFromDb:ERROR $it")
-                })
-        compositeDisposable.add(disposable)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.isEmpty()) {
+                    shimmer?.isVisible = true
+                    shimmer?.startShimmer()
+                    recyclerView?.isVisible = false
+                    errorView?.isVisible = false
+                } else {
+                    databaseIsNotEmpty = true
+                    adapter.addData(it)
+                    recyclerView?.smoothScrollToPosition(adapter.itemCount)
+                }
+                if (!databaseIsRefresh) getMessages(view)
+            }, {
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun getMessages(view: View) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
         val chatApi = RetrofitModule.chatApi
-        val disposable =
-            chatApi.getMessages(
-                "newest",
-                5,
-                15,
-                "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
-            )
-                .subscribeOn(Schedulers.io())
-                .map {
-                    it.messages.map { userMessage ->
-                        chatDao.insertReaction(
-                            userMessage.reactions.map { reaction ->
-                                ReactionDb(
-                                    reaction.emojiCode,
-                                    reaction.emojiName,
-                                    reaction.reactionType,
-                                    reaction.userId,
-                                    userMessage.id
-                                )
-                            })
+        chatApi.getMessages(
+            "newest",
+            5,
+            15,
+            "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
+        )
+            .subscribeOn(Schedulers.io())
+            .map {
+                it.messages.map { userMessage ->
+                    chatDao.insertReaction(
+                        userMessage.reactions.map { reaction ->
+                            ReactionDb(
+                                reaction.emojiCode,
+                                reaction.emojiName,
+                                reaction.reactionType,
+                                reaction.userId,
+                                userMessage.id
+                            )
+                        })
 
-                        MessageDb(
-                            avatarURL = userMessage.avatarURL,
-                            content = userMessage.content,
-                            id = userMessage.id,
-                            isMeMessage = userMessage.isMeMessage,
-                            senderFullName = userMessage.senderFullName,
-                            timestamp = userMessage.timestamp,
-                            streamID = userMessage.streamID,
-                            nameTopic = nameTopic!!
-                        )
-                    }
+                    MessageDb(
+                        avatarURL = userMessage.avatarURL,
+                        content = userMessage.content,
+                        id = userMessage.id,
+                        isMeMessage = userMessage.isMeMessage,
+                        senderFullName = userMessage.senderFullName,
+                        timestamp = userMessage.timestamp,
+                        streamID = userMessage.streamID,
+                        nameTopic = nameTopic!!
+                    )
                 }
-                .doOnSuccess {
-                    databaseIsRefresh = true
-                    databaseIsNotEmpty = true
-                    chatDao.insertMessages(it)
-                    Log.d("GETMESSAGES", "getMessages: dosuk $it")
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    if(!databaseIsNotEmpty) {
-                        shimmer?.isVisible = true
-                        shimmer?.startShimmer()
-                        recyclerView?.isVisible = false
-                        errorView?.isVisible = false
-                    }
-                }
-                .doOnTerminate {
-                    shimmer?.stopShimmer()
-                    shimmer?.isVisible = false
-                }
-                .subscribe({
-                    recyclerView?.isVisible = true
+            }
+            .doOnSuccess {
+                databaseIsRefresh = true
+                databaseIsNotEmpty = true
+                chatDao.insertMessages(it)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                if (!databaseIsNotEmpty) {
+                    shimmer?.isVisible = true
+                    shimmer?.startShimmer()
+                    recyclerView?.isVisible = false
                     errorView?.isVisible = false
-//                    adapter.addData(it.messages)
-//                    recyclerView?.smoothScrollToPosition(adapter.itemCount - 1)
-                }, {
-                    if (databaseIsNotEmpty) {
-                        Snackbar.make(
-                            view,
-                            "Неудалось обновить данные",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }else{
-                        errorView?.isVisible = true
-                        recyclerView?.isVisible = false
-                    }
-                })
-        compositeDisposable.add(disposable)
+                }
+            }
+            .doOnTerminate {
+                shimmer?.stopShimmer()
+                shimmer?.isVisible = false
+            }
+            .subscribe({
+                recyclerView?.isVisible = true
+                errorView?.isVisible = false
+            }, {
+                if (databaseIsNotEmpty) {
+                    Snackbar.make(
+                        view,
+                        "Неудалось обновить данные",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                } else {
+                    errorView?.isVisible = true
+                    recyclerView?.isVisible = false
+                }
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun getMessage(messageId: Long, position: Int) {
         val chatApi = RetrofitModule.chatApi
-        val disposable =
-            chatApi.getMessages(
-                "newest",
-                5,
-                15,
-                "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
-            )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (position < 0) {
-                        updateRecycler(it.messages[0])
-                    } else {
-                        updateRecycler(it.messages[0], position)
-                    }
-                }, {
-                })
-        compositeDisposable.add(disposable)
+        chatApi.getMessages(
+            "newest",
+            5,
+            15,
+            "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (position == SEND_MESSAGE_POSITION) {
+                    updateRecycler(it.messages[0])
+                } else {
+                    updateRecycler(it.messages[0], position)
+                }
+            }, {
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun onClickButtonSendMessage() {
@@ -333,7 +301,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                 .subscribe(
                     {
                         editTextMessage.text.clear()
-                        getMessage(it.id, -1)
+                        getMessage(it.id, SEND_MESSAGE_POSITION)
                     },
                     {
                         Snackbar.make(
@@ -410,15 +378,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         const val TYPE_MESSAGE = 1
         const val NAME_CHANNEL = "NAME_CHANNEL"
         const val NAME_TOPIC = "NAME_STREAM"
-        const val STREAM_ID = "STREAM_ID"
+        const val SEND_MESSAGE_POSITION = -1
 
         @JvmStatic
-        fun newInstance(nameChannel: String, nameTopic: String, streamId: Long) =
+        fun newInstance(nameChannel: String, nameTopic: String) =
             ChatFragment().apply {
                 arguments = Bundle().apply {
                     putString(NAME_CHANNEL, nameChannel)
                     putString(NAME_TOPIC, nameTopic)
-                    putLong(STREAM_ID, streamId)
                 }
             }
     }

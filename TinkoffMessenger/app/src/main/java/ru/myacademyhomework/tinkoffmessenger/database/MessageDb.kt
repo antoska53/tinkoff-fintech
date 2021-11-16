@@ -1,9 +1,8 @@
-package ru.myacademyhomework.tinkoffmessenger.Database
+package ru.myacademyhomework.tinkoffmessenger.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.myacademyhomework.tinkoffmessenger.network.Reaction
 
 @Entity(tableName = "message_table")
 class MessageDb(
@@ -20,9 +19,6 @@ class MessageDb(
 
     @ColumnInfo(name = "is_me_message")
     val isMeMessage: Boolean,
-
-//    @ColumnInfo(name = "reaction")
-//    val reactions: List<Reaction>,
 
     @ColumnInfo(name = "sender_full_name")
     val senderFullName: String,

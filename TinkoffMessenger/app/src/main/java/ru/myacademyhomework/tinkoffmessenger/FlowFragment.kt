@@ -47,7 +47,7 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
                 navigation?.changeFragment(PeopleFragment.newInstance(), toBackstack)
             }
             R.id.navigation_profile -> {
-                navigation?.changeFragment(ProfileFragment.newInstance(0), toBackstack)
+                navigation?.changeFragment(ProfileFragment.newInstance(ProfileFragment.USER_OWNER), toBackstack)
             }
             else -> throw IllegalArgumentException()
         }

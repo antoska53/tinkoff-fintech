@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.Database
+package ru.myacademyhomework.tinkoffmessenger.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,8 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "topic_table")
 class TopicDb (
-//    @PrimaryKey(autoGenerate = true)
-//    val id: Int,
+
     @PrimaryKey
     @ColumnInfo(name = "name_topic")
     val nameTopic: String,

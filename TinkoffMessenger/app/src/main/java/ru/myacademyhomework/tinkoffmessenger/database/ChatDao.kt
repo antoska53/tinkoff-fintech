@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.Database
+package ru.myacademyhomework.tinkoffmessenger.database
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,11 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.Flowable
 import io.reactivex.Single
-import ru.myacademyhomework.tinkoffmessenger.network.User
-import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 @Dao
 interface ChatDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertStream(streams: List<StreamDb>)
 

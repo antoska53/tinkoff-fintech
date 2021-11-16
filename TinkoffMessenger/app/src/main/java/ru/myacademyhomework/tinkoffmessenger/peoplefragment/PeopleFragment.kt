@@ -10,8 +10,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
-import ru.myacademyhomework.tinkoffmessenger.Database.UserDb
+import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
@@ -20,6 +20,7 @@ import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
 
 
 class PeopleFragment : Fragment(R.layout.fragment_people) {
+
     private var adapter: PeopleAdapter? = null
     private var recycler: RecyclerView? = null
     private var navigation: FragmentNavigation? = null

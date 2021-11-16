@@ -13,13 +13,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
+
     private var avatar: ImageView? = null
     private var nameUser: TextView? = null
     private var status: TextView? = null
@@ -40,43 +41,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { getOwnUser(view) }
-        if (userId == 0) {
+        if (userId == USER_OWNER) {
             getOwnUser(view)
-//            getOwnUserFromDb(view)
         } else {
-//            getUser(view)
             getUserFromDb(view)
         }
     }
 
-    private fun getOwnUserFromDb(view: View) {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        chatDao.getOwnUser()
-            .map {
-                it.map { userDb ->
-                    User(
-                        avatarURL = userDb.avatarURL,
-                        email = userDb.email,
-                        fullName = userDb.fullName,
-                        userID = userDb.userID
-                    )
-                }
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    nameUser?.text = it[0].fullName
-                    Glide.with(view)
-                        .load(it[0].avatarURL)
-                        .circleCrop()
-                        .into(avatar!!)
-                }, {
-
-                }
-            )
-            .addTo(compositeDisposable)
-    }
 
     private fun getUserFromDb(view: View) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
@@ -105,42 +76,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             )
             .addTo(compositeDisposable)
     }
-
-//    private fun getUser(view: View) {
-//        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-//        RetrofitModule.chatApi.getUser(userId!!)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .doOnSubscribe {
-//                shimmerProfile?.visibility = View.VISIBLE
-//                shimmerProfile?.startShimmer()
-//                avatar?.visibility = View.GONE
-//                nameUser?.visibility = View.GONE
-//                status?.visibility = View.GONE
-//                errorView?.visibility = View.GONE
-//            }
-//            .subscribe({
-//                nameUser?.text = it.user.fullName
-//                Glide.with(view)
-//                    .load(it.user.avatarURL)
-//                    .circleCrop()
-//                    .into(avatar!!)
-//                shimmerProfile?.visibility = View.GONE
-//                shimmerProfile?.stopShimmer()
-//                avatar?.visibility = View.VISIBLE
-//                nameUser?.visibility = View.VISIBLE
-//                status?.visibility = View.VISIBLE
-//                errorView?.visibility = View.GONE
-//
-//                getStatus(view)
-//
-//            }, {
-//                shimmerProfile?.visibility = View.GONE
-//                shimmerProfile?.stopShimmer()
-//                errorView?.visibility = View.VISIBLE
-//            })
-//            .addTo(compositeDisposable)
-//    }
 
     private fun getOwnUser(view: View) {
         RetrofitModule.chatApi.getOwnUser()
@@ -216,6 +151,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     companion object {
         const val USER_ID = "USER_ID"
+        const val USER_OWNER = 0
 
         @JvmStatic
         fun newInstance(userId: Int) = ProfileFragment().apply {

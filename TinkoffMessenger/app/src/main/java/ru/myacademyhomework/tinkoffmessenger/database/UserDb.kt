@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.Database
+package ru.myacademyhomework.tinkoffmessenger.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

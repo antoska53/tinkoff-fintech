@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
@@ -10,16 +9,15 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
-import ru.myacademyhomework.tinkoffmessenger.Database.StreamDb
-import ru.myacademyhomework.tinkoffmessenger.Database.TopicDb
+import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
+import ru.myacademyhomework.tinkoffmessenger.database.TopicDb
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
@@ -27,7 +25,6 @@ import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.factory.StreamData
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
-import java.util.concurrent.TimeUnit
 
 
 class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
@@ -97,7 +94,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
             ChatFragment.newInstance(
                 topic.nameStream,
                 topic.name,
-                topic.streamId
             )
         )
     }
@@ -117,7 +113,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Log.d("GETSTREAMS", "getStreamsFromDb: onSUcces $it")
                 if (it.isEmpty()){
                     shimmer?.visibility = View.VISIBLE
                     shimmer?.startShimmer()
@@ -130,7 +125,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                 }
                 if(!databaseIsRefresh) getStreams(view)
             },{
-                Log.d("GETSTREAMS", "getStreamsFromDb: ERROR $it")
             })
         compositeDisposable.add(disposable)
     }
@@ -164,7 +158,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
                     if(!databaseIsNotEmpty){
-                        Log.d("GETSTREAMS", "getStreams: sub $databaseIsNotEmpty")
                         shimmer?.visibility = View.VISIBLE
                         shimmer?.startShimmer()
                         recycler?.visibility = View.GONE
@@ -180,7 +173,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     StreamData.streams.addAll(it)
                     adapter.setData(it)
                 }, {
-                    Log.d("GETSTREAMS", "getStreams: ERROR $it")
                     if (databaseIsNotEmpty){
                         Snackbar.make(
                             view,
