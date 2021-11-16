@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.Flowable
+import io.reactivex.Single
+import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 @Dao
@@ -24,12 +26,27 @@ interface ChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMessages(messages: List<MessageDb>)
 
-    @Query("SELECT * FROM message_table WHERE stream_id = :streamId")
-    fun getMessages(streamId: Long): Flowable<List<MessageDb>>
+    @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic")
+    fun getMessages(nameTopic: String): Flowable<List<MessageDb>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReaction(messages: List<ReactionDb>)
 
     @Query("SELECT * FROM reaction_table WHERE message_id = :messageId")
     fun getReaction(messageId: Long): List<ReactionDb>
+
+    @Query("SELECT * FROM user_table WHERE is_own = 1")
+    fun getOwnUser(): Flowable<List<UserDb>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOwnUser(user: UserDb)
+
+    @Query("SELECT * FROM user_table")
+    fun getAllUsers(): Flowable<List<UserDb>>
+
+    @Query("SELECT * FROM user_table WHERE user_id = :userId")
+    fun getUser(userId: Int): Single<UserDb>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertUsers(users: List<UserDb>)
 }

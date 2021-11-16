@@ -20,10 +20,12 @@ import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.Database.MessageDb
 import ru.myacademyhomework.tinkoffmessenger.Database.ReactionDb
+import ru.myacademyhomework.tinkoffmessenger.Database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.network.Reaction
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 
@@ -47,6 +49,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
     private var isInitRecycler = false
+    private var databaseIsRefresh = false
+    private var databaseIsNotEmpty = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,28 +100,87 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
 
     private fun initRecycler(view: View) {
-        val disposable =
-            RetrofitModule.chatApi.getOwnUser()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
+        ChatDatabase.getDatabase(requireContext()).chatDao()
+            .getOwnUser()
+            .map {
+                it.map { userDb ->
+                    User(
+                        avatarURL = userDb.avatarURL,
+                        email = userDb.email,
+                        fullName = userDb.fullName,
+                        userID = userDb.userID
+                    )
+                }
+            }
+            .doOnComplete {
+                Log.d("USERDB", "initRecycler: suc ")
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.isEmpty()) {
+                    Log.d("USERDB", "initRecycler: $it")
+                    getOwnUser()
+                } else {
                     errorView?.visibility = View.GONE
                     isInitRecycler = true
                     recyclerView = view.findViewById(R.id.chat_recycler)
-                    adapter = ChatAdapter(this, it.userID)
+                    adapter = ChatAdapter(this, it[0].userID)
                     recyclerView?.adapter = adapter
-                    getMessagesFromDb()
-                    getMessages(view)
-                }, {
-                    errorView?.visibility = View.VISIBLE
-                })
-        compositeDisposable.add(disposable)
+                    getMessagesFromDb(view)
+//                    getMessages(view)
+                }
+                Log.d("USERDB", "initRecycler: $it")
+//                errorView?.visibility = View.GONE
+//                isInitRecycler = true
+//                recyclerView = view.findViewById(R.id.chat_recycler)
+//                adapter = ChatAdapter(this, it.userID)
+//                recyclerView?.adapter = adapter
+//                getMessagesFromDb()
+//                getMessages(view)
+            }, {
+                Log.d("USERDB", "initRecycler: ERROR $it")
+            })
+            .addTo(compositeDisposable)
+
+
     }
 
-    private fun getMessagesFromDb() {
+    private fun getOwnUser() {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        RetrofitModule.chatApi.getOwnUser()
+            .subscribeOn(Schedulers.io())
+            .map {
+                UserDb(
+                    avatarURL = it.avatarURL,
+                    email = it.email,
+                    fullName = it.fullName,
+                    userID = it.userID,
+                    isOwn = true
+                )
+            }
+            .doOnSuccess {
+                chatDao.insertOwnUser(it)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                    errorView?.visibility = View.GONE
+//                    isInitRecycler = true
+//                    recyclerView = view.findViewById(R.id.chat_recycler)
+//                    adapter = ChatAdapter(this, it.userID)
+//                    recyclerView?.adapter = adapter
+//                    getMessagesFromDb()
+//                    getMessages(view)
+            }, {
+                errorView?.visibility = View.VISIBLE
+            })
+            .addTo(compositeDisposable)
+    }
+
+    private fun getMessagesFromDb(view: View) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
         val disposable =
-            chatDao.getMessages(streamId!!)
+            chatDao.getMessages(nameTopic!!)
                 .map {
                     it.map { messageDb ->
                         UserMessage(
@@ -142,7 +205,16 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     Log.d("GETMESSAGES", "getMessagesFromDb: $it")
-                    adapter.addData(it)
+                    if(it.isEmpty()){
+                        shimmer?.isVisible = true
+                        shimmer?.startShimmer()
+                        recyclerView?.isVisible = false
+                        errorView?.isVisible = false
+                    }else{
+                        databaseIsNotEmpty = true
+                        adapter.addData(it)
+                    }
+                    if(!databaseIsRefresh) getMessages(view)
                 }, {
                     Log.d("GETMESSAGES", "getMessagesFromDb:ERROR $it")
                 })
@@ -180,20 +252,26 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                             isMeMessage = userMessage.isMeMessage,
                             senderFullName = userMessage.senderFullName,
                             timestamp = userMessage.timestamp,
-                            streamID = userMessage.streamID
+                            streamID = userMessage.streamID,
+                            nameTopic = nameTopic!!
                         )
                     }
                 }
                 .doOnSuccess {
+                    databaseIsRefresh = true
+                    databaseIsNotEmpty = true
                     chatDao.insertMessages(it)
+                    Log.d("GETMESSAGES", "getMessages: dosuk $it")
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-//                .doOnSubscribe {
-//                    shimmer?.isVisible = true
-//                    shimmer?.startShimmer()
-//                    recyclerView?.isVisible = false
-//                    errorView?.isVisible = false
-//                }
+                .doOnSubscribe {
+                    if(!databaseIsNotEmpty) {
+                        shimmer?.isVisible = true
+                        shimmer?.startShimmer()
+                        recyclerView?.isVisible = false
+                        errorView?.isVisible = false
+                    }
+                }
                 .doOnTerminate {
                     shimmer?.stopShimmer()
                     shimmer?.isVisible = false
@@ -204,13 +282,16 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 //                    adapter.addData(it.messages)
 //                    recyclerView?.smoothScrollToPosition(adapter.itemCount - 1)
                 }, {
-                    Snackbar.make(
-                        view,
-                        "Неудалось обновить данные",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-//                    errorView?.isVisible = true
-//                    recyclerView?.isVisible = false
+                    if (databaseIsNotEmpty) {
+                        Snackbar.make(
+                            view,
+                            "Неудалось обновить данные",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }else{
+                        errorView?.isVisible = true
+                        recyclerView?.isVisible = false
+                    }
                 })
         compositeDisposable.add(disposable)
     }

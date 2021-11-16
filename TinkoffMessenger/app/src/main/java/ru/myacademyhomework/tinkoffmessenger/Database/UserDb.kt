@@ -2,9 +2,11 @@ package ru.myacademyhomework.tinkoffmessenger.Database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_table")
-class UserDb (
+class UserDb(
+
     @ColumnInfo(name = "avatar_url")
     val avatarURL: String,
 
@@ -14,9 +16,10 @@ class UserDb (
     @ColumnInfo(name = "full_name")
     val fullName: String,
 
+    @PrimaryKey
     @ColumnInfo(name = "user_id")
-    val userID: Long,
+    val userID: Int,
 
-    @ColumnInfo(name = "own_user")
-    val ownUser: Boolean = false
+    @ColumnInfo(name = "is_own")
+    val isOwn: Boolean
 )

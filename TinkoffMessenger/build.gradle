@@ -42,5 +42,6 @@ ext{
     retrofitSerializationVersion = '0.8.0'
     loggingInteceptorVersion = '4.8.1'
     roomVersion = '2.3.0'
+    rxKotlinVersion = '2.4.0'
 
 }

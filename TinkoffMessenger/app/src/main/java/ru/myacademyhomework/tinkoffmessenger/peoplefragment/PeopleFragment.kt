@@ -10,6 +10,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.Database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
@@ -38,23 +40,54 @@ class PeopleFragment : Fragment(R.layout.fragment_people) {
         }
         recycler?.adapter = adapter
 
-        getAllUsers(view)
+        getAllUsersFromDb()
+        getAllUsers()
     }
 
-    private fun getAllUsers(view: View) {
-            RetrofitModule.chatApi.getAllUsers()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    updateRecycler(it.users)
-                }, {
-                    Snackbar.make(
-                        view,
-                        "Неудалось загрузить список пользователей \uD83D\uDE2D",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+    private fun getAllUsersFromDb() {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        chatDao.getAllUsers()
+            .map {
+                it.map { userDb ->
+                    User(
+                        avatarURL = userDb.avatarURL,
+                        email = userDb.email,
+                        fullName = userDb.fullName,
+                        userID = userDb.userID
+                    )
+                }
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                updateRecycler(it)
+            }, {
+
+            })
+            .addTo(compositeDisposable)
+    }
+
+    private fun getAllUsers() {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        RetrofitModule.chatApi.getAllUsers()
+            .subscribeOn(Schedulers.io())
+            .doOnSuccess {
+                chatDao.insertUsers(it.users.map { user ->
+                    UserDb(
+                        avatarURL = user.avatarURL,
+                        email = user.email,
+                        fullName = user.fullName,
+                        userID = user.userID,
+                        isOwn = false
+                    )
                 })
-                .addTo(compositeDisposable)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+//                    updateRecycler(it.users)
+            }, {
+
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun updateRecycler(users: List<User>) {

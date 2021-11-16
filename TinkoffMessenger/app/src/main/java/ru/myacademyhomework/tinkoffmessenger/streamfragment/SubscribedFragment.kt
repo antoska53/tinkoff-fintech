@@ -38,6 +38,8 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
     private val compositeDisposable = CompositeDisposable()
+    private var databaseIsNotEmpty = false
+    private var databaseIsRefresh = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -66,8 +68,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
         }
 
         initRecycler(view)
-        getStreamsFromDb()
-        getStreams(view)
+        getStreamsFromDb(view)
     }
 
     private fun initRecycler(view: View) {
@@ -101,7 +102,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
         )
     }
 
-    private fun getStreamsFromDb(){
+    private fun getStreamsFromDb(view: View){
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
         val disposable =
             chatDao
@@ -122,9 +123,12 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     shimmer?.startShimmer()
                     recycler?.visibility = View.GONE
                     errorView?.visibility = View.GONE
+                    getStreams(view)
                 }else{
+                    databaseIsNotEmpty = true
                     adapter.setData(it)
                 }
+                if(!databaseIsRefresh) getStreams(view)
             },{
                 Log.d("GETSTREAMS", "getStreamsFromDb: ERROR $it")
             })
@@ -155,14 +159,18 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                 .toList()
                 .doOnSuccess {
                     chatDao.insertStream(it)
+                    databaseIsRefresh = true
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-//                .doOnSubscribe {
-//                    shimmer?.visibility = View.VISIBLE
-//                    shimmer?.startShimmer()
-//                    recycler?.visibility = View.GONE
-//                    errorView?.visibility = View.GONE
-//                }
+                .doOnSubscribe {
+                    if(!databaseIsNotEmpty){
+                        Log.d("GETSTREAMS", "getStreams: sub $databaseIsNotEmpty")
+                        shimmer?.visibility = View.VISIBLE
+                        shimmer?.startShimmer()
+                        recycler?.visibility = View.GONE
+                        errorView?.visibility = View.GONE
+                    }
+                }
                 .subscribe({
                     shimmer?.stopShimmer()
                     shimmer?.visibility = View.GONE
@@ -173,15 +181,18 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     adapter.setData(it)
                 }, {
                     Log.d("GETSTREAMS", "getStreams: ERROR $it")
-                    shimmer?.stopShimmer()
-                    shimmer?.visibility = View.GONE
-//                    recycler?.visibility = View.GONE
-//                    errorView?.visibility = View.VISIBLE
-                    Snackbar.make(
-                        view,
-                        "Неудалось обновить данные",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    if (databaseIsNotEmpty){
+                        Snackbar.make(
+                            view,
+                            "Неудалось обновить данные",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }else {
+                        shimmer?.stopShimmer()
+                        shimmer?.visibility = View.GONE
+                        recycler?.visibility = View.GONE
+                        errorView?.visibility = View.VISIBLE
+                    }
                 })
                 .addTo(compositeDisposable)
 

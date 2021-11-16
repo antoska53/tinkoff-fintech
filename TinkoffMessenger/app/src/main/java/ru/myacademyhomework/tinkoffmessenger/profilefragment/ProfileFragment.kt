@@ -1,8 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.profilefragment
 
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -13,9 +11,12 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import ru.myacademyhomework.tinkoffmessenger.Database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.network.User
 
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
@@ -38,98 +39,159 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         errorView = view.findViewById(R.id.error_view)
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
-        buttonReload.setOnClickListener { getUser(view) }
-        if (userId == 0) getOwnUser(view) else getUser(view)
+        buttonReload.setOnClickListener { getOwnUser(view) }
+        if (userId == 0) {
+            getOwnUser(view)
+//            getOwnUserFromDb(view)
+        } else {
+//            getUser(view)
+            getUserFromDb(view)
+        }
     }
 
-    private fun getUser(view: View) {
-        val disposable =
-            RetrofitModule.chatApi.getUser(userId!!)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    shimmerProfile?.visibility = View.VISIBLE
-                    shimmerProfile?.startShimmer()
-                    avatar?.visibility = View.GONE
-                    nameUser?.visibility = View.GONE
-                    status?.visibility = View.GONE
-                    errorView?.visibility = View.GONE
+    private fun getOwnUserFromDb(view: View) {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        chatDao.getOwnUser()
+            .map {
+                it.map { userDb ->
+                    User(
+                        avatarURL = userDb.avatarURL,
+                        email = userDb.email,
+                        fullName = userDb.fullName,
+                        userID = userDb.userID
+                    )
                 }
-                .subscribe({
-                    nameUser?.text = it.user.fullName
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    nameUser?.text = it[0].fullName
                     Glide.with(view)
-                        .load(it.user.avatarURL)
+                        .load(it[0].avatarURL)
                         .circleCrop()
                         .into(avatar!!)
-                    shimmerProfile?.visibility = View.GONE
-                    shimmerProfile?.stopShimmer()
-                    avatar?.visibility = View.VISIBLE
-                    nameUser?.visibility = View.VISIBLE
-                    status?.visibility = View.VISIBLE
-                    errorView?.visibility = View.GONE
-
-                    getStatus(view)
-
                 }, {
-                    shimmerProfile?.visibility = View.GONE
-                    shimmerProfile?.stopShimmer()
-                    errorView?.visibility = View.VISIBLE
-                })
-        compositeDisposable.add(disposable)
+
+                }
+            )
+            .addTo(compositeDisposable)
     }
 
-    private fun getOwnUser(view: View) {
-        val disposable =
-            RetrofitModule.chatApi.getOwnUser()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    shimmerProfile?.visibility = View.VISIBLE
-                    shimmerProfile?.startShimmer()
-                    avatar?.visibility = View.GONE
-                    nameUser?.visibility = View.GONE
-                    status?.visibility = View.GONE
-                    errorView?.visibility = View.GONE
-                }
-                .subscribe({
+    private fun getUserFromDb(view: View) {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        chatDao.getUser(userId!!)
+            .map {
+                User(
+                    avatarURL = it.avatarURL,
+                    email = it.email,
+                    fullName = it.fullName,
+                    userID = it.userID
+                )
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
                     nameUser?.text = it.fullName
                     Glide.with(view)
                         .load(it.avatarURL)
                         .circleCrop()
                         .into(avatar!!)
-                    shimmerProfile?.visibility = View.GONE
-                    shimmerProfile?.stopShimmer()
-                    avatar?.visibility = View.VISIBLE
-                    nameUser?.visibility = View.VISIBLE
-                    status?.visibility = View.VISIBLE
-                    errorView?.visibility = View.GONE
-
+                    getStatus(view)
                 }, {
-                    shimmerProfile?.visibility = View.GONE
-                    shimmerProfile?.stopShimmer()
-                    errorView?.visibility = View.VISIBLE
-                })
-        compositeDisposable.add(disposable)
+
+                }
+            )
+            .addTo(compositeDisposable)
+    }
+
+//    private fun getUser(view: View) {
+//        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+//        RetrofitModule.chatApi.getUser(userId!!)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .doOnSubscribe {
+//                shimmerProfile?.visibility = View.VISIBLE
+//                shimmerProfile?.startShimmer()
+//                avatar?.visibility = View.GONE
+//                nameUser?.visibility = View.GONE
+//                status?.visibility = View.GONE
+//                errorView?.visibility = View.GONE
+//            }
+//            .subscribe({
+//                nameUser?.text = it.user.fullName
+//                Glide.with(view)
+//                    .load(it.user.avatarURL)
+//                    .circleCrop()
+//                    .into(avatar!!)
+//                shimmerProfile?.visibility = View.GONE
+//                shimmerProfile?.stopShimmer()
+//                avatar?.visibility = View.VISIBLE
+//                nameUser?.visibility = View.VISIBLE
+//                status?.visibility = View.VISIBLE
+//                errorView?.visibility = View.GONE
+//
+//                getStatus(view)
+//
+//            }, {
+//                shimmerProfile?.visibility = View.GONE
+//                shimmerProfile?.stopShimmer()
+//                errorView?.visibility = View.VISIBLE
+//            })
+//            .addTo(compositeDisposable)
+//    }
+
+    private fun getOwnUser(view: View) {
+        RetrofitModule.chatApi.getOwnUser()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                shimmerProfile?.visibility = View.VISIBLE
+                shimmerProfile?.startShimmer()
+                avatar?.visibility = View.GONE
+                nameUser?.visibility = View.GONE
+                status?.visibility = View.GONE
+                errorView?.visibility = View.GONE
+            }
+            .subscribe({
+                nameUser?.text = it.fullName
+                Glide.with(view)
+                    .load(it.avatarURL)
+                    .circleCrop()
+                    .into(avatar!!)
+                shimmerProfile?.visibility = View.GONE
+                shimmerProfile?.stopShimmer()
+                avatar?.visibility = View.VISIBLE
+                nameUser?.visibility = View.VISIBLE
+                status?.visibility = View.VISIBLE
+                errorView?.visibility = View.GONE
+
+            }, {
+                shimmerProfile?.visibility = View.GONE
+                shimmerProfile?.stopShimmer()
+                errorView?.visibility = View.VISIBLE
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun getStatus(view: View) {
-        val disposable =
-            RetrofitModule.chatApi.getUserPresence(userId!!)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                   setStatus(it.presence.userStatus.status)
-                }, {
-                    Snackbar.make(
-                        view,
-                        "Неудалось загрузить статус",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                })
-        compositeDisposable.add(disposable)
+        RetrofitModule.chatApi.getUserPresence(userId!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                setStatus(it.presence.userStatus.status)
+            }, {
+                Snackbar.make(
+                    view,
+                    "Неудалось загрузить статус",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            })
+            .addTo(compositeDisposable)
     }
 
-    private fun setStatus(userStatus: String){
+    private fun setStatus(userStatus: String) {
         when (userStatus) {
             "active" -> {
                 status?.text = getString(R.string.status_online)
