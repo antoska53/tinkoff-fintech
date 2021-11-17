@@ -57,8 +57,10 @@ class StreamAdapter(
     }
 
     fun setData(list: List<Item>) {
+        val size = streams.size
         streams.clear()
+        notifyItemRangeRemoved(0, size)
         streams.addAll(list)
-        notifyItemRangeInserted(0, streams.size)
+        notifyItemRangeInserted(0, list.size)
     }
 }

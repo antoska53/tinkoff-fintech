@@ -48,7 +48,7 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
 
         setFragmentResultListener(StreamFragment.ALL_STREAM_RESULT_KEY){ key, bundle ->
-            val result = bundle.getString(StreamFragment.STREAM_KEY)
+            val result = bundle.getString(StreamFragment.TOPIC_KEY)
             if (result != null)
                 adapter.setData(listOf(ItemStream(result, result)))
         }
