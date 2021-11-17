@@ -18,9 +18,9 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.ItemChannel
-import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
-import ru.myacademyhomework.tinkoffmessenger.factory.ChannelFactory
+import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.factory.StreamData
+import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import java.util.concurrent.TimeUnit
 
 
@@ -80,28 +80,29 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                 .distinctUntilChanged()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .switchMap { str ->
-                    val channels = ChannelFactory.createChannel()
-                    var stream: ItemStream? = null
-                    for (channel in channels) {
-                        if (channel is ItemChannel) {
-                            stream = channel.streams.find {
-                                it.nameStream.equals(str, ignoreCase = true)
+                    val streams = StreamData.streams
+                    var topic: Topic? = null
+                    for (stream in streams) {
+                        if (stream is Stream) {
+                            topic = stream.topics.find {
+                                it.name.equals(str, ignoreCase = true)
                             }
-                            if (stream != null) return@switchMap Observable.just(ItemStream("", ""))
+                            if (topic != null) return@switchMap Observable.just(topic)
                         }
                     }
-                    Observable.just(ItemStream("", ""))
+                    Observable.just(Topic(0, ""))
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { itemStream ->
-                        if (itemStream.nameStream.isNotEmpty()) {
-                            Snackbar.make(view, itemStream.nameStream, Snackbar.LENGTH_SHORT).show()
+                    { topic ->
+                        if (topic.name.isNotEmpty()) {
+                            Snackbar.make(view, topic.name, Snackbar.LENGTH_SHORT).show()
                             viewPager.currentItem = 0
                             childFragmentManager.setFragmentResult(
                                 SUBSCRIBE_RESULT_KEY,
-                                bundleOf(STREAM_KEY to itemStream.nameStream)
+                                bundleOf(TOPIC_KEY to topic.name,
+                                        STREAM_KKEY to topic.nameStream)
                             )
                             isSearch = true
                         } else {
@@ -125,7 +126,8 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     companion object {
         const val SUBSCRIBE_RESULT_KEY = "SUBSCRIBE_RESULT_KEY"
         const val ALL_STREAM_RESULT_KEY = "ALL_STREAM_RESULT_KEY"
-        const val STREAM_KEY = "STREAM_KEY"
+        const val TOPIC_KEY = "STREAM_KEY"
+        const val STREAM_KKEY = "STREAM_KKEY"
         const val SHOW_STREAMS_KEY = "SHOW_STREAMS_KEY"
 
         @JvmStatic
