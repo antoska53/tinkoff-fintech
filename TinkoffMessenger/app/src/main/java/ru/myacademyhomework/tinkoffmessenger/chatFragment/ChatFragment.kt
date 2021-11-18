@@ -1,5 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -48,11 +51,17 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private var isInitRecycler = false
     private var databaseIsRefresh = false
     private var databaseIsNotEmpty = false
+    private var isLoading = true
+    private var firstMessageId = "newest"
+    private var foundOldest = false
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         errorView = view.findViewById(R.id.error_view)
         shimmer = view.findViewById(R.id.shimmer_chat_layout)
+        val sharedPref = requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
         initRecycler(view)
 
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
@@ -62,7 +71,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener {
             if (isInitRecycler) {
-                getMessages(view)
+                getMessages(view, firstMessageId)
             } else {
                 initRecycler(view)
             }
@@ -120,11 +129,30 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     recyclerView = view.findViewById(R.id.chat_recycler)
                     adapter = ChatAdapter(this, it[0].userID)
                     recyclerView?.adapter = adapter
+                    recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            pagingChat(recyclerView, view)
+                        }
+                    })
                     getMessagesFromDb(view)
                 }
             }, {
             })
             .addTo(compositeDisposable)
+    }
+
+    private fun pagingChat(recyclerView: RecyclerView, view: View){
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+        if (!isLoading) {
+            if (!foundOldest) {
+                if (firstVisibleItem - POSITION_FOR_LOAD <= FIRST_POSITION) {
+                    isLoading = true
+                    getMessages(view, firstMessageId)
+                }
+            }
+        }
     }
 
     private fun getOwnUser() {
@@ -185,26 +213,32 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     errorView?.isVisible = false
                 } else {
                     databaseIsNotEmpty = true
+                    val oldSize = adapter.itemCount
                     adapter.addData(it)
-                    recyclerView?.smoothScrollToPosition(adapter.itemCount)
+                    recyclerView?.scrollToPosition(if (it.size > oldSize) (it.size - oldSize - 1) else oldSize - 1)
+                    isLoading = false
                 }
-                if (!databaseIsRefresh) getMessages(view)
+                if (!databaseIsRefresh) getMessages(view, "newest")
             }, {
             })
             .addTo(compositeDisposable)
     }
 
-    private fun getMessages(view: View) {
+    private fun getMessages(view: View, anchor: String) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
         val chatApi = RetrofitModule.chatApi
         chatApi.getMessages(
-            "newest",
-            5,
-            15,
-            "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
+            anchor = anchor,
+            num_after = 0,
+            num_before = 20,
+            narrow = "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
         )
             .subscribeOn(Schedulers.io())
             .map {
+                if(it.foundOldest){
+                    foundOldest = it.foundOldest
+                    addToSharedpref(foundOldest)
+                }
                 it.messages.map { userMessage ->
                     chatDao.insertReaction(
                         userMessage.reactions.map { reaction ->
@@ -233,6 +267,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                 databaseIsRefresh = true
                 databaseIsNotEmpty = true
                 chatDao.insertMessages(it)
+                firstMessageId = it.first().id.toString()
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -242,6 +277,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     recyclerView?.isVisible = false
                     errorView?.isVisible = false
                 }
+                isLoading = true
             }
             .doOnTerminate {
                 shimmer?.stopShimmer()
@@ -261,6 +297,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     errorView?.isVisible = true
                     recyclerView?.isVisible = false
                 }
+                isLoading = false
             })
             .addTo(compositeDisposable)
     }
@@ -269,8 +306,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         val chatApi = RetrofitModule.chatApi
         chatApi.getMessages(
             "newest",
-            5,
-            15,
+            1,
+            1,
             "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
         )
             .subscribeOn(Schedulers.io())
@@ -368,6 +405,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         compositeDisposable.add(disposable)
     }
 
+    private fun addToSharedpref(foundOldest: Boolean){
+        val pref: SharedPreferences = requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = pref.edit()
+
+        editor.putBoolean(FOUND_OLDEST_KEY, foundOldest)
+        editor.apply()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.clear()
@@ -379,6 +424,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
         const val NAME_CHANNEL = "NAME_CHANNEL"
         const val NAME_TOPIC = "NAME_STREAM"
         const val SEND_MESSAGE_POSITION = -1
+        const val SHARED_PREF_NAME = "CHAT_SHARED_PREF"
+        const val FOUND_OLDEST_KEY = "FOUND_OLDEST_KEY"
+        const val FIRST_POSITION = 1
+        const val POSITION_FOR_LOAD = 5
 
         @JvmStatic
         fun newInstance(nameChannel: String, nameTopic: String) =

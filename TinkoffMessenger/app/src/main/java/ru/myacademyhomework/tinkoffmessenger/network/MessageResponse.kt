@@ -14,6 +14,9 @@ data class MessageResponse (
     @SerialName("found_newest")
     val foundNewest: Boolean,
 
+    @SerialName("found_oldest")
+    val foundOldest: Boolean,
+
     @SerialName("messages")
     val messages: List<UserMessage>,
 
