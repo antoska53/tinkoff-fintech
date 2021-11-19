@@ -26,7 +26,10 @@ interface ChatDao {
     fun insertMessages(messages: List<MessageDb>)
 
     @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic")
-    fun getMessages(nameTopic: String): Flowable<List<MessageDb>>
+    fun getAllMessages(nameTopic: String): Flowable<List<MessageDb>>
+
+    @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic AND id < :idMessage LIMIT 20")
+    fun getOldMessages(nameTopic: String, idMessage: Long): Flowable<List<MessageDb>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReaction(messages: List<ReactionDb>)

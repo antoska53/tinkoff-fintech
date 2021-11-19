@@ -41,7 +41,7 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
     override fun getItemCount(): Int = messages.size
 
 
-    fun updateData(message: UserMessage) {
+    fun updateMessage(message: UserMessage) {
         messages.add(message)
         notifyItemInserted(messages.size)
     }
@@ -51,11 +51,16 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         notifyItemChanged(position)
     }
 
-    fun addData(messages: List<Any>) {
+    fun updateData(messages: List<Any>) {
         val size = this.messages.size
         this.messages.clear()
         notifyItemRangeRemoved(0, size)
         this.messages.addAll(messages)
+        notifyItemRangeInserted(0, messages.size)
+    }
+
+    fun addData(messages: List<Any>){
+        this.messages.addAll(0, messages)
         notifyItemRangeInserted(0, messages.size)
     }
 }
