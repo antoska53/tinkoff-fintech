@@ -17,41 +17,40 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is FragmentNavigation) {
-            navigation = context
-        } else {
-            throw RuntimeException(
-                context.toString()
-                        + " must implement FragmentNavigation")
-        }
+        require(context is FragmentNavigation)
+        navigation = context
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadFragment(StreamFragment.newInstance(), false)
 
         val bottomNavigation = view.findViewById<BottomNavigationView>(R.id.nav_view)
+        val itemId = bottomNavigation.selectedItemId
+        loadFragment(itemId, false)
+
         bottomNavigation.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_channels -> {
-                    loadFragment(StreamFragment.newInstance(), true)
-                    true
-                }
-                R.id.navigation_people -> {
-                    loadFragment(PeopleFragment.newInstance(), true)
-                    true
-                }
-                R.id.navigation_profile -> {
-                    loadFragment(ProfileFragment.newInstance(), true)
-                    true
-                }
-                else -> throw IllegalArgumentException()
+            if (it.itemId == bottomNavigation.selectedItemId) {
+                false
+            } else {
+                loadFragment(it.itemId, false)
+                true
             }
         }
     }
 
-    private fun loadFragment(fragment: Fragment, toBackstack: Boolean) {
-        navigation?.changeFragment(fragment, toBackstack)
+    private fun loadFragment(itemId: Int, toBackstack: Boolean) {
+        when (itemId) {
+            R.id.navigation_channels -> {
+                navigation?.changeFragment(StreamFragment.newInstance(), toBackstack)
+            }
+            R.id.navigation_people -> {
+                navigation?.changeFragment(PeopleFragment.newInstance(), toBackstack)
+            }
+            R.id.navigation_profile -> {
+                navigation?.changeFragment(ProfileFragment.newInstance(0), toBackstack)
+            }
+            else -> throw IllegalArgumentException()
+        }
     }
 
 
