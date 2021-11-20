@@ -53,10 +53,11 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
 
         setFragmentResultListener(StreamFragment.SUBSCRIBE_RESULT_KEY) { key, bundle ->
-            val resultItemStream = bundle.getString(StreamFragment.TOPIC_KEY)
+            val resultTopic = bundle.getString(StreamFragment.TOPIC_KEY)
+            val resultStream = bundle.getString(StreamFragment.STREAM_KKEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
-            if (resultItemStream != null)
-                adapter.setData(listOf(ItemStream(resultItemStream, resultItemStream)))
+            if (resultTopic != null && resultStream != null)
+                adapter.setData(listOf(Topic( 0, resultTopic, resultStream)))
             if (resultShowStreams) {
                 getStreams(view)
             }

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
@@ -148,8 +147,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private fun pagingChat(recyclerView: RecyclerView, view: View){
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
         val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-        Log.d("PAGING", "pagingChat: $firstVisibleItem")
-        Log.d("PAGING", "pagingChat: ${adapter.itemCount}")
         if (!isLoading) {
             if (!foundOldest) {
                 if (firstVisibleItem - POSITION_FOR_LOAD <= FIRST_POSITION) {

@@ -51,4 +51,7 @@ interface ChatDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUsers(users: List<UserDb>)
+
+    @Query("SELECT * FROM topic_table WHERE name_topic = :nameTopic")
+    fun getTopic(nameTopic: String): TopicDb
 }
