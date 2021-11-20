@@ -13,7 +13,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
@@ -22,7 +21,7 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
-import ru.myacademyhomework.tinkoffmessenger.factory.StreamData
+import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
@@ -54,11 +53,10 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
 
         setFragmentResultListener(StreamFragment.SUBSCRIBE_RESULT_KEY) { key, bundle ->
-            val resultTopic = bundle.getString(StreamFragment.TOPIC_KEY)
-            val resultStream = bundle.getString(StreamFragment.STREAM_KKEY)
+            val resultItemStream = bundle.getString(StreamFragment.TOPIC_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
-            if (resultTopic != null && resultStream != null)
-                adapter.setData(listOf(Topic( 0, resultTopic, resultStream)))
+            if (resultItemStream != null)
+                adapter.setData(listOf(ItemStream(resultItemStream, resultItemStream)))
             if (resultShowStreams) {
                 getStreams(view)
             }
@@ -102,30 +100,30 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
         val disposable =
             chatDao
-            .getStreams()
-            .map {
-               it.map {streamDb ->
-                   val listTopics = chatDao.getTopics(streamDb.nameChannel).map{ topicDb ->
-                       Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
-                   }
-                   Stream(streamDb.nameChannel, listTopics)
-               }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it.isEmpty()){
-                    shimmer?.visibility = View.VISIBLE
-                    shimmer?.startShimmer()
-                    recycler?.visibility = View.GONE
-                    errorView?.visibility = View.GONE
-                    getStreams(view)
-                }else{
-                    databaseIsNotEmpty = true
-                    adapter.setData(it)
+                .getStreams()
+                .map {
+                    it.map {streamDb ->
+                        val listTopics = chatDao.getTopics(streamDb.nameChannel).map{ topicDb ->
+                            Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                        }
+                        Stream(streamDb.nameChannel, listTopics)
+                    }
                 }
-                if(!databaseIsRefresh) getStreams(view)
-            },{
-            })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it.isEmpty()){
+                        shimmer?.visibility = View.VISIBLE
+                        shimmer?.startShimmer()
+                        recycler?.visibility = View.GONE
+                        errorView?.visibility = View.GONE
+                        getStreams(view)
+                    }else{
+                        databaseIsNotEmpty = true
+                        adapter.setData(it)
+                    }
+                    if(!databaseIsRefresh) getStreams(view)
+                },{
+                })
         compositeDisposable.add(disposable)
     }
 
@@ -145,7 +143,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     chatApi.getTopics(subscription.streamID)
                         .map { topicResponse ->
                             chatDao.insertTopics(topicResponse.topics.map{ topic ->
-                                    TopicDb(topic.name, subscription.name , subscription.streamID)
+                                TopicDb(topic.name, subscription.name , subscription.streamID)
                             })
                             StreamDb(subscription.streamID, subscription.name)
                         }
@@ -169,9 +167,6 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                     shimmer?.visibility = View.GONE
                     recycler?.visibility = View.VISIBLE
                     errorView?.visibility = View.GONE
-                    StreamData.streams.clear()
-                    StreamData.streams.addAll(it)
-                    adapter.setData(it)
                 }, {
                     if (databaseIsNotEmpty){
                         Snackbar.make(
@@ -186,8 +181,8 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
                         errorView?.visibility = View.VISIBLE
                     }
                 })
-                .addTo(compositeDisposable)
 
+        compositeDisposable.add(disposable)
     }
 
     override fun onDestroyView() {

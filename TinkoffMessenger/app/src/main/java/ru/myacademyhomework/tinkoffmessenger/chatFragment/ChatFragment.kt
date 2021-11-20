@@ -221,9 +221,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     errorView?.isVisible = false
                 } else {
                     databaseIsNotEmpty = true
-                    val oldSize = adapter.itemCount
                     adapter.updateData(it)
-//                    recyclerView?.scrollToPosition(if (it.size > oldSize) (it.size - oldSize - 1) else oldSize - 1)
                     recyclerView?.scrollToPosition(it.size - 1)
 
                     isLoading = false
@@ -259,13 +257,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                  }
              }
             .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                adapter.addData(it)
-//            },{
-//
-//            })
-//            .addTo(compositeDisposable)
-
     }
 
     private fun getMessages(view: View, anchor: String) {
