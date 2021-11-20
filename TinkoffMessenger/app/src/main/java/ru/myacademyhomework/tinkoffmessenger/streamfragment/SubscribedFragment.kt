@@ -21,7 +21,6 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
-import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 

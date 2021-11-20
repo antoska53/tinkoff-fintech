@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
-import ru.myacademyhomework.tinkoffmessenger.data.Message
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import java.lang.IllegalArgumentException
 

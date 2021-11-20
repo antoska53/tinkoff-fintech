@@ -21,7 +21,6 @@ import ru.myacademyhomework.tinkoffmessenger.database.TopicDb
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
-import ru.myacademyhomework.tinkoffmessenger.data.ItemStream
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
@@ -51,12 +50,6 @@ class AllStreamFragment : Fragment(R.layout.fragment_all_stream) {
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { getStreams(view) }
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
-
-        setFragmentResultListener(StreamFragment.ALL_STREAM_RESULT_KEY) { key, bundle ->
-            val result = bundle.getString(StreamFragment.TOPIC_KEY)
-            if (result != null)
-                adapter.setData(listOf(ItemStream(result, result)))
-        }
 
         initRecycler(view)
         getStreamsFromDb(view)
