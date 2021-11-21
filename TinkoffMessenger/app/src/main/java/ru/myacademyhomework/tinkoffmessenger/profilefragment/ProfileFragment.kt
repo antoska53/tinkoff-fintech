@@ -5,28 +5,24 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.common.PresenterFragment
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
 
-class ProfileFragment : Fragment(R.layout.fragment_profile) {
+class ProfileFragment : PresenterFragment<ProfilePresenter>(R.layout.fragment_profile), ProfileView {
 
     private var avatar: ImageView? = null
     private var nameUser: TextView? = null
     private var status: TextView? = null
     private var shimmerProfile: ShimmerFrameLayout? = null
     private var errorView: View? = null
-    private val compositeDisposable = CompositeDisposable()
+    private var profilePresenter: ProfilePresenter? = null
     private val userId: Int? by lazy {
         arguments?.getInt(USER_ID)
     }
@@ -39,94 +35,34 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         status = view.findViewById(R.id.textview_status_profile)
         errorView = view.findViewById(R.id.error_view)
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
+
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        profilePresenter = ProfilePresenter(this, chatDao, userId!!)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
-        buttonReload.setOnClickListener { getOwnUser(view) }
+        buttonReload.setOnClickListener { profilePresenter?.getOwnUser() }
+
+        refreshData()
+
+    }
+
+    private fun refreshData() {
         if (userId == USER_OWNER) {
-            getOwnUser(view)
+            profilePresenter?.getOwnUser()
         } else {
-            getUserFromDb(view)
+            profilePresenter?.getUserFromDb()
+            profilePresenter?.getStatus()
         }
     }
 
-
-    private fun getUserFromDb(view: View) {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        chatDao.getUser(userId!!)
-            .map {
-                User(
-                    avatarURL = it.avatarURL,
-                    email = it.email,
-                    fullName = it.fullName,
-                    userID = it.userID
-                )
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    nameUser?.text = it.fullName
-                    Glide.with(view)
-                        .load(it.avatarURL)
-                        .circleCrop()
-                        .into(avatar!!)
-                    getStatus(view)
-                }, {
-
-                }
-            )
-            .addTo(compositeDisposable)
+    override fun showUserProfile(user: User) {
+        nameUser?.text = user.fullName
+        Glide.with(requireContext())
+            .load(user.avatarURL)
+            .circleCrop()
+            .into(avatar!!)
     }
 
-    private fun getOwnUser(view: View) {
-        RetrofitModule.chatApi.getOwnUser()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                shimmerProfile?.visibility = View.VISIBLE
-                shimmerProfile?.startShimmer()
-                avatar?.visibility = View.GONE
-                nameUser?.visibility = View.GONE
-                status?.visibility = View.GONE
-                errorView?.visibility = View.GONE
-            }
-            .subscribe({
-                nameUser?.text = it.fullName
-                Glide.with(view)
-                    .load(it.avatarURL)
-                    .circleCrop()
-                    .into(avatar!!)
-                shimmerProfile?.visibility = View.GONE
-                shimmerProfile?.stopShimmer()
-                avatar?.visibility = View.VISIBLE
-                nameUser?.visibility = View.VISIBLE
-                status?.visibility = View.VISIBLE
-                errorView?.visibility = View.GONE
-
-            }, {
-                shimmerProfile?.visibility = View.GONE
-                shimmerProfile?.stopShimmer()
-                errorView?.visibility = View.VISIBLE
-            })
-            .addTo(compositeDisposable)
-    }
-
-    private fun getStatus(view: View) {
-        RetrofitModule.chatApi.getUserPresence(userId!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                setStatus(it.presence.userStatus.status)
-            }, {
-                Snackbar.make(
-                    view,
-                    "Неудалось загрузить статус",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            })
-            .addTo(compositeDisposable)
-    }
-
-    private fun setStatus(userStatus: String) {
+    override fun showStatus(userStatus: String) {
         when (userStatus) {
             "active" -> {
                 status?.text = getString(R.string.status_online)
@@ -143,11 +79,38 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.clear()
+    override fun showErrorLoadStatus() {
+        Snackbar.make(
+            requireView(), "Неудалось загрузить статус",
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
+
+    override fun showRefresh() {
+        shimmerProfile?.isVisible = true
+        shimmerProfile?.startShimmer()
+        avatar?.isVisible = false
+        nameUser?.isVisible = false
+        status?.isVisible = false
+        errorView?.isVisible = false
+    }
+
+    override fun hideRefresh() {
+        shimmerProfile?.isVisible = false
+        shimmerProfile?.stopShimmer()
+        avatar?.isVisible = true
+        nameUser?.isVisible = true
+        status?.isVisible = true
+        errorView?.isVisible = false
+    }
+
+    override fun showError() {
+        shimmerProfile?.isVisible = false
+        shimmerProfile?.stopShimmer()
+        errorView?.isVisible = true
+    }
+
+    override fun getPresenter(): ProfilePresenter? = profilePresenter
 
     companion object {
         const val USER_ID = "USER_ID"

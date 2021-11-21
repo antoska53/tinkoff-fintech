@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.streamfragment
+package ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments
 
 import android.content.Context
 import android.os.Bundle
@@ -23,6 +23,7 @@ import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
+import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
 
 
 class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
@@ -53,7 +54,7 @@ class SubscribedFragment : Fragment(R.layout.fragment_subscribed) {
 
         setFragmentResultListener(StreamFragment.SUBSCRIBE_RESULT_KEY) { key, bundle ->
             val resultTopic = bundle.getString(StreamFragment.TOPIC_KEY)
-            val resultStream = bundle.getString(StreamFragment.STREAM_KKEY)
+            val resultStream = bundle.getString(StreamFragment.STREAM_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
             if (resultTopic != null && resultStream != null)
                 adapter.setData(listOf(Topic( 0, resultTopic, resultStream)))

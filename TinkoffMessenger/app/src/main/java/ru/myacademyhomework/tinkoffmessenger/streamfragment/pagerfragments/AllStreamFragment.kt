@@ -1,11 +1,10 @@
-package ru.myacademyhomework.tinkoffmessenger.streamfragment
+package ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments
 
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
-import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar

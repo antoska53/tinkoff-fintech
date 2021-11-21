@@ -4,6 +4,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.AllStreamFragment
+import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.SubscribedFragment
 
 class PagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
