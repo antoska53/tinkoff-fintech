@@ -1,7 +1,9 @@
 package ru.myacademyhomework.tinkoffmessenger.profilefragment
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -9,22 +11,39 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
+import moxy.MvpFragment
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.common.PresenterFragment
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
 
-class ProfileFragment : PresenterFragment<ProfilePresenter>(R.layout.fragment_profile), ProfileView {
+class ProfileFragment : MvpFragment(), ProfileView {
 
     private var avatar: ImageView? = null
     private var nameUser: TextView? = null
     private var status: TextView? = null
     private var shimmerProfile: ShimmerFrameLayout? = null
     private var errorView: View? = null
-    private var profilePresenter: ProfilePresenter? = null
+    @InjectPresenter
+    public var profilePresenter: ProfilePresenter? = null
     private val userId: Int? by lazy {
         arguments?.getInt(USER_ID)
+    }
+
+    @ProvidePresenter
+    fun providePresenter(){
+        val chatDao = ChatDatabase.getDatabase(context).chatDao()
+        ProfilePresenter(chatDao, userId!!)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater?,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater?.inflate(R.layout.fragment_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,8 +55,8 @@ class ProfileFragment : PresenterFragment<ProfilePresenter>(R.layout.fragment_pr
         errorView = view.findViewById(R.id.error_view)
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
 
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        profilePresenter = ProfilePresenter(this, chatDao, userId!!)
+
+
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { profilePresenter?.getOwnUser() }
 
@@ -56,7 +75,7 @@ class ProfileFragment : PresenterFragment<ProfilePresenter>(R.layout.fragment_pr
 
     override fun showUserProfile(user: User) {
         nameUser?.text = user.fullName
-        Glide.with(requireContext())
+        Glide.with(context)
             .load(user.avatarURL)
             .circleCrop()
             .into(avatar!!)
@@ -66,22 +85,22 @@ class ProfileFragment : PresenterFragment<ProfilePresenter>(R.layout.fragment_pr
         when (userStatus) {
             "active" -> {
                 status?.text = getString(R.string.status_online)
-                status?.setTextColor(requireContext().getColor(R.color.status_online_color))
+                status?.setTextColor(context.getColor(R.color.status_online_color))
             }
             "offline" -> {
                 status?.text = getString(R.string.status_offline)
-                status?.setTextColor(requireContext().getColor(R.color.status_offline_color))
+                status?.setTextColor(context.getColor(R.color.status_offline_color))
             }
             "idle" -> {
                 status?.text = getString(R.string.status_idle)
-                status?.setTextColor(requireContext().getColor(R.color.status_idle_color))
+                status?.setTextColor(context.getColor(R.color.status_idle_color))
             }
         }
     }
 
     override fun showErrorLoadStatus() {
         Snackbar.make(
-            requireView(), "Неудалось загрузить статус",
+            view!!, "Неудалось загрузить статус",
             Snackbar.LENGTH_SHORT
         ).show()
     }
@@ -110,7 +129,7 @@ class ProfileFragment : PresenterFragment<ProfilePresenter>(R.layout.fragment_pr
         errorView?.isVisible = true
     }
 
-    override fun getPresenter(): ProfilePresenter? = profilePresenter
+//    override fun getPresenter(): ProfilePresenter? = profilePresenter
 
     companion object {
         const val USER_ID = "USER_ID"

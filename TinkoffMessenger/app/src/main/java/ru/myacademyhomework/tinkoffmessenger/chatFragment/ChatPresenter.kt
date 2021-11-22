@@ -19,7 +19,7 @@ class ChatPresenter(
     private val nameStream: String,
     private val nameTopic: String,
     private var foundOldest: Boolean
-) : BasePresenter() {
+) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
     private var databaseIsNotEmpty = false

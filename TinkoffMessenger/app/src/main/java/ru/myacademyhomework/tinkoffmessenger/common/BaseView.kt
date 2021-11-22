@@ -1,6 +1,8 @@
 package ru.myacademyhomework.tinkoffmessenger.common
 
-interface BaseView {
+import moxy.MvpView
+
+interface BaseView: MvpView {
 
     fun showRefresh()
 

@@ -1,10 +1,10 @@
 package ru.myacademyhomework.tinkoffmessenger.common
 
-import androidx.fragment.app.Fragment
+import moxy.MvpFragment
 
-abstract class PresenterFragment<P : BasePresenter>(val layout: Int) : Fragment(layout) {
+abstract class PresenterFragment(val layout: Int) : MvpFragment() {
 
-    abstract fun getPresenter(): P?
+    abstract fun getPresenter(): BasePresenter<BaseView>?
 
     override fun onDetach() {
         if (getPresenter() != null) {

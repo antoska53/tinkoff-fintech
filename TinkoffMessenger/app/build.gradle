@@ -68,4 +68,10 @@ dependencies {
     // optional - RxJava2 support for Room
     implementation "androidx.room:room-rxjava2:$roomVersion"
 
+    // moxy
+    implementation "com.github.moxy-community:moxy:$moxyVersion"
+    kapt "com.github.moxy-community:moxy-compiler:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-android:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-ktx:$moxyVersion"
+
 }
