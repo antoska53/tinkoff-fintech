@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.network
 
 
 import kotlinx.serialization.*
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 
 @Serializable
 data class MessageResponse (
@@ -52,5 +53,5 @@ data class UserMessage (
 
     @SerialName("stream_id")
     val streamID: Long?
-)
+): ChatMessage
 

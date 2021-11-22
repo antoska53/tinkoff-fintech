@@ -3,6 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import java.lang.IllegalArgumentException
@@ -10,7 +11,7 @@ import java.lang.IllegalArgumentException
 class ChatAdapter(private val listener: ChatMessageListener, private val userId: Int) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val messages: MutableList<Any> = mutableListOf()
+    val messages: MutableList<ChatMessage> = mutableListOf()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -50,15 +51,12 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         notifyItemChanged(position)
     }
 
-    fun updateData(messages: List<Any>) {
-        val size = this.messages.size
+    fun updateData(messages: List<ChatMessage>) {
         this.messages.clear()
-        notifyItemRangeRemoved(0, size)
         this.messages.addAll(messages)
-        notifyItemRangeInserted(0, messages.size)
     }
 
-    fun addData(messages: List<Any>){
+    fun addData(messages: List<ChatMessage>){
         this.messages.addAll(0, messages)
         notifyItemRangeInserted(0, messages.size)
     }

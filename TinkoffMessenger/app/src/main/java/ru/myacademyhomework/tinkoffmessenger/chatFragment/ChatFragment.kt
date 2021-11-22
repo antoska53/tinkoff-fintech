@@ -9,16 +9,17 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.*
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import ru.myacademyhomework.tinkoffmessenger.ChatDiffUtilCallback
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.database.MessageDb
@@ -35,10 +36,10 @@ import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     private val nameStream by lazy {
-        arguments?.getString(NAME_CHANNEL)
+        arguments?.getString(NAME_CHANNEL) ?: ""
     }
     private val nameTopic by lazy {
-        arguments?.getString(NAME_TOPIC)
+        arguments?.getString(NAME_TOPIC) ?: ""
     }
 
     private lateinit var adapter: ChatAdapter
@@ -53,9 +54,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
     private var databaseIsRefresh = false
     private var databaseIsNotEmpty = false
     private var isLoading = true
-    private var firstMessageId = "newest"
+    private var firstMessageId = "-1"
     private var foundOldest = false
-    private var oldMessageSubscriber: Flowable<List<UserMessage>>? = null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -153,7 +153,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
                     isLoading = true
                     compositeDisposable.clear()
-                    getOldMessageFromDb()
                     getMessages(view, firstMessageId)
                 }
             }
@@ -187,7 +186,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     private fun getAllMessagesFromDb(view: View) {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        chatDao.getAllMessages(nameTopic!!)
+        chatDao.getAllMessages(nameTopic)
             .map {
                 it.map { messageDb ->
                     UserMessage(
@@ -218,7 +217,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                     errorView?.isVisible = false
                 } else {
                     databaseIsNotEmpty = true
+                    val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, it)
+                    val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
                     adapter.updateData(it)
+                    chatDiffResult.dispatchUpdatesTo(adapter)
                     recyclerView?.scrollToPosition(it.size - 1)
 
                     isLoading = false
@@ -231,7 +233,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     private fun getOldMessageFromDb(){
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        oldMessageSubscriber = chatDao.getOldMessages(nameTopic!!, firstMessageId.toLong())
+        chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
             .map {
                  it.map { messageDb ->
                      UserMessage(
@@ -254,6 +256,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                  }
              }
             .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{
+                adapter.addData(it)
+                isLoading = false
+            }.addTo(compositeDisposable)
     }
 
     private fun getMessages(view: View, anchor: String) {
@@ -291,7 +297,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                         senderFullName = userMessage.senderFullName,
                         timestamp = userMessage.timestamp,
                         streamID = userMessage.streamID,
-                        nameTopic = nameTopic!!
+                        nameTopic = nameTopic
                     )
                 }
             }
@@ -299,6 +305,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
                 databaseIsRefresh = true
                 databaseIsNotEmpty = true
                 chatDao.insertMessages(it)
+                if(isLoading) getOldMessageFromDb()
                 firstMessageId = it.first().id.toString()
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -318,11 +325,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
             .subscribe({
                 recyclerView?.isVisible = true
                 errorView?.isVisible = false
-                if(isLoading) oldMessageSubscriber?.subscribe{
-                    adapter.addData(it)
-                    isLoading = false
-                }?.addTo(compositeDisposable)
-
             }, {
                 if (databaseIsNotEmpty) {
                     Snackbar.make(
@@ -369,7 +371,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat), ChatMessageListener {
 
     private fun sendMessage(message: String) {
         val disposable =
-            RetrofitModule.chatApi.sendMessage("stream", nameStream!!, nameTopic!!, message)
+            RetrofitModule.chatApi.sendMessage("stream", nameStream, nameTopic, message)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
