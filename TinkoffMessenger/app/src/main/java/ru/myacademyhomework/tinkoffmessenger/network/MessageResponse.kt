@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.network
 
 
 import kotlinx.serialization.*
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 
 @Serializable
 data class MessageResponse (
@@ -13,6 +14,9 @@ data class MessageResponse (
 
     @SerialName("found_newest")
     val foundNewest: Boolean,
+
+    @SerialName("found_oldest")
+    val foundOldest: Boolean,
 
     @SerialName("messages")
     val messages: List<UserMessage>,
@@ -29,17 +33,11 @@ data class UserMessage (
     @SerialName("avatar_url")
     val avatarURL: String,
 
-    @SerialName("client")
-    val client: String,
-
     @SerialName("content")
     val content: String,
 
-    @SerialName("content_type")
-    val contentType: String,
-
     @SerialName("id")
-    val id: Int,
+    val id: Long,
 
     @SerialName("is_me_message")
     val isMeMessage: Boolean,
@@ -53,10 +51,7 @@ data class UserMessage (
     @SerialName("timestamp")
     val timestamp: Long,
 
-    @SerialName("type")
-    val type: String,
-
     @SerialName("stream_id")
     val streamID: Long?
-)
+): ChatMessage
 

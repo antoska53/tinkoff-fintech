@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SendMessageResponse(
     @SerialName("id")
-    val id: Int,
+    val id: Long,
 
     @SerialName("msg")
     val msg: String,

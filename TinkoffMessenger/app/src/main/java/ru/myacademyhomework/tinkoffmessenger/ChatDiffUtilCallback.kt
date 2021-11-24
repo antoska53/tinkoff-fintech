@@ -1,0 +1,40 @@
+package ru.myacademyhomework.tinkoffmessenger
+
+import androidx.recyclerview.widget.DiffUtil
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
+import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
+
+class ChatDiffUtilCallback(
+    private val oldLIst: List<ChatMessage>,
+    private val newLIst: List<ChatMessage>
+) : DiffUtil.Callback() {
+
+    override fun getOldListSize(): Int = oldLIst.size
+
+    override fun getNewListSize(): Int = newLIst.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldChatMessage = oldLIst[oldItemPosition]
+        val newChatMessage = newLIst[newItemPosition]
+        if (oldChatMessage is UserMessage && newChatMessage is DateMessage)
+            return false
+        if (oldChatMessage is UserMessage && newChatMessage is UserMessage) {
+            return oldChatMessage.id == newChatMessage.id
+        }
+        if (oldChatMessage is DateMessage && newChatMessage is DateMessage) {
+            return oldChatMessage.date == newChatMessage.date
+        }
+        return false
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldChatMessage = oldLIst[oldItemPosition]
+        val newChatMessage = newLIst[newItemPosition]
+        return if (oldChatMessage is UserMessage && newChatMessage is UserMessage) {
+            oldChatMessage == newChatMessage
+        } else {
+            (oldChatMessage as DateMessage) == (newChatMessage as DateMessage)
+        }
+    }
+}

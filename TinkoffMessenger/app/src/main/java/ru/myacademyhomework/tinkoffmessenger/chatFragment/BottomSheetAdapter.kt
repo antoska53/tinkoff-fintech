@@ -8,7 +8,7 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.factory.SmileFactory
 
 class BottomSheetAdapter(
-    private val idMessage: Int,
+    private val idMessage: Long,
     private val positionMessage: Int,
     private val listener: BottomSheetListener
 ) :

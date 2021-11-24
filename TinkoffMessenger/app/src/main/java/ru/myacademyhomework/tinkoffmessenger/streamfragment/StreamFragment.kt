@@ -18,8 +18,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
-import ru.myacademyhomework.tinkoffmessenger.factory.StreamData
+import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import java.util.concurrent.TimeUnit
 
@@ -75,22 +74,22 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     }
 
     private fun initSearch(view: View, viewPager: ViewPager2) {
-            subject
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        subject
                 .filter { str -> str.isNotEmpty() }
                 .distinctUntilChanged()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .switchMap { str ->
-                    val streams = StreamData.streams
-                    var topic: Topic? = null
-                    for (stream in streams) {
-                        if (stream is Stream) {
-                            topic = stream.topics.find {
-                                it.name.equals(str, ignoreCase = true)
-                            }
-                            if (topic != null) return@switchMap Observable.just(topic)
-                        }
+                    val topicA = chatDao.getTopic(str)
+                    if(topicA != null){
+                        Observable.just(Topic(
+                            streamId = topicA.streamId,
+                            name = topicA.nameTopic,
+                            nameStream = topicA.nameStream
+                        ))
+                    } else {
+                        Observable.just(Topic(0, ""))
                     }
-                    Observable.just(Topic(0, ""))
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -126,7 +125,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     companion object {
         const val SUBSCRIBE_RESULT_KEY = "SUBSCRIBE_RESULT_KEY"
         const val ALL_STREAM_RESULT_KEY = "ALL_STREAM_RESULT_KEY"
-        const val TOPIC_KEY = "STREAM_KEY"
+        const val TOPIC_KEY = "TOPIC_KEY"
         const val STREAM_KKEY = "STREAM_KKEY"
         const val SHOW_STREAMS_KEY = "SHOW_STREAMS_KEY"
 
