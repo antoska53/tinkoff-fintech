@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import moxy.MvpFragment
+import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -25,7 +27,7 @@ import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 
-class ChatFragment : MvpFragment(), ChatMessageListener,
+class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener,
     ChatView {
 
     private val nameStream by lazy {
@@ -44,15 +46,15 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
     private var shimmer: ShimmerFrameLayout? = null
     private var isInitRecycler = false
     private var foundOldest = false
-    private var chatPresenter: ChatPresenter? = null
+    @InjectPresenter
+    var chatPresenter: ChatPresenter? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater?,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater?.inflate(R.layout.fragment_chat, container, false)
+    @ProvidePresenter
+    fun providePresenter(){
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        chatPresenter = ChatPresenter(this, chatDao, nameStream, nameTopic, foundOldest)
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,11 +62,11 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
         errorView = view.findViewById(R.id.error_view)
         shimmer = view.findViewById(R.id.shimmer_chat_layout)
         val sharedPref =
-            context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
         recyclerView = view.findViewById(R.id.chat_recycler)
-        val chatDao = ChatDatabase.getDatabase(context).chatDao()
-        chatPresenter = ChatPresenter(this, chatDao, nameStream, nameTopic, foundOldest)
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+//        chatPresenter = ChatPresenter(this, chatDao, nameStream, nameTopic, foundOldest)
         chatPresenter?.initRecycler()
 
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
@@ -82,7 +84,7 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
 
         val buttonBack = view.findViewById<ImageView>(R.id.imageView_arrow_back)
         buttonBack.setOnClickListener {
-            activity.onBackPressed()
+            requireActivity().onBackPressed()
         }
 
         buttonSendMessage = view.findViewById(R.id.button_send_message)
@@ -132,7 +134,7 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
 
     private fun showBottomSheetDialog(idMessage: Long, positionMessage: Int) {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
-        dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+        dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         dialog.setContentView(bottomSheet)
 
         val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
@@ -156,7 +158,7 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
 
     override fun addToSharedpref(foundOldest: Boolean) {
         val pref: SharedPreferences =
-            context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = pref.edit()
 
         editor.putBoolean(FOUND_OLDEST_KEY, foundOldest)
@@ -193,7 +195,7 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
 
     override fun showErrorUpdateData() {
         Snackbar.make(
-            view!!,
+            requireView(),
             "Неудалось обновить данные",
             Snackbar.LENGTH_SHORT
         ).show()
@@ -201,7 +203,7 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
 
     override fun showErrorSendMessage() {
         Snackbar.make(
-            view!!,
+            requireView(),
             "Сообщение не отправлено",
             Snackbar.LENGTH_SHORT
         ).show()
@@ -217,7 +219,7 @@ class ChatFragment : MvpFragment(), ChatMessageListener,
 
     override fun showErrorUpdateEmoji() {
         Snackbar.make(
-            view!!,
+            requireView(),
             "Неудалось добавить эмодзи \uD83D\uDE2D",
             Snackbar.LENGTH_SHORT
         ).show()

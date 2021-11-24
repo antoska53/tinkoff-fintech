@@ -1,9 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.profilefragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,7 +9,8 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
-import moxy.MvpFragment
+import moxy.MvpAppCompatFragment
+import moxy.ktx.moxyPresenter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
@@ -19,32 +18,28 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
 
-class ProfileFragment : MvpFragment(), ProfileView {
+class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), ProfileView {
 
     private var avatar: ImageView? = null
     private var nameUser: TextView? = null
     private var status: TextView? = null
     private var shimmerProfile: ShimmerFrameLayout? = null
     private var errorView: View? = null
-    @InjectPresenter
-    public var profilePresenter: ProfilePresenter? = null
     private val userId: Int? by lazy {
         arguments?.getInt(USER_ID)
     }
-
-    @ProvidePresenter
-    fun providePresenter(){
-        val chatDao = ChatDatabase.getDatabase(context).chatDao()
-        ProfilePresenter(chatDao, userId!!)
+    private val chatDao by lazy { ChatDatabase.getDatabase(requireContext()).chatDao()}
+    private val profilePresenter by moxyPresenter {
+//        ProfilePresenter(chatDao, userId!!)
+        ProfilePresenterTest()
     }
+//
+//    @ProvidePresenter
+//    fun providePresenter(): ProfilePresenter{
+//        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+//        return ProfilePresenter(chatDao, userId!!)
+//    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater?,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater?.inflate(R.layout.fragment_profile, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,13 +50,10 @@ class ProfileFragment : MvpFragment(), ProfileView {
         errorView = view.findViewById(R.id.error_view)
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
 
-
-
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { profilePresenter?.getOwnUser() }
 
         refreshData()
-
     }
 
     private fun refreshData() {
@@ -75,7 +67,7 @@ class ProfileFragment : MvpFragment(), ProfileView {
 
     override fun showUserProfile(user: User) {
         nameUser?.text = user.fullName
-        Glide.with(context)
+        Glide.with(requireContext())
             .load(user.avatarURL)
             .circleCrop()
             .into(avatar!!)
@@ -85,22 +77,23 @@ class ProfileFragment : MvpFragment(), ProfileView {
         when (userStatus) {
             "active" -> {
                 status?.text = getString(R.string.status_online)
-                status?.setTextColor(context.getColor(R.color.status_online_color))
+                status?.setTextColor(requireContext().getColor(R.color.status_online_color))
             }
             "offline" -> {
                 status?.text = getString(R.string.status_offline)
-                status?.setTextColor(context.getColor(R.color.status_offline_color))
+                status?.setTextColor(requireContext().getColor(R.color.status_offline_color))
             }
             "idle" -> {
                 status?.text = getString(R.string.status_idle)
-                status?.setTextColor(context.getColor(R.color.status_idle_color))
+                status?.setTextColor(requireContext().getColor(R.color.status_idle_color))
             }
         }
     }
 
     override fun showErrorLoadStatus() {
         Snackbar.make(
-            view!!, "Неудалось загрузить статус",
+            requireView(),
+            "Неудалось загрузить статус",
             Snackbar.LENGTH_SHORT
         ).show()
     }

@@ -1,7 +1,9 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
@@ -10,25 +12,31 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.common.PresenterFragment
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
 
-class StreamFragment :  PresenterFragment<StreamPresenter>(R.layout.fragment_stream), StreamView{
+class StreamFragment :  MvpAppCompatFragment(R.layout.fragment_stream), StreamView{
 //    private val subject = PublishSubject.create<String>()
     private var isSearch = false
     private var showStreams = true
     private var editTextSearch: EditText? = null
-    private var streamPresenter: StreamPresenter? = null
     private var viewPager: ViewPager2? = null
+    @InjectPresenter
+    private var streamPresenter: StreamPresenter? = null
+
+    @ProvidePresenter
+    fun providePresenter(){
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        streamPresenter = StreamPresenter(this, chatDao)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        streamPresenter = StreamPresenter(this, chatDao)
 
         requireActivity().onBackPressedDispatcher.addCallback(
             this,
@@ -103,7 +111,7 @@ class StreamFragment :  PresenterFragment<StreamPresenter>(R.layout.fragment_str
         Snackbar.make(requireView(), "ERROR", Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun getPresenter(): StreamPresenter? = streamPresenter
+//    override fun getPresenter(): StreamPresenter? = streamPresenter
 
     companion object {
         const val SUBSCRIBE_RESULT_KEY = "SUBSCRIBE_RESULT_KEY"

@@ -5,12 +5,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import moxy.InjectViewState
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import java.util.concurrent.TimeUnit
 
-class StreamPresenter(private val view: StreamView, private val chatDao: ChatDao): BasePresenter() {
+@InjectViewState
+class StreamPresenter(private val view: StreamView, private val chatDao: ChatDao): BasePresenter<StreamView>() {
 
     private val subject = PublishSubject.create<String>()
 

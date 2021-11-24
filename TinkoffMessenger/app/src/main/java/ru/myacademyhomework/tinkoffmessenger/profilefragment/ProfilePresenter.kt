@@ -12,7 +12,7 @@ import ru.myacademyhomework.tinkoffmessenger.network.User
 @InjectViewState
 class ProfilePresenter(
 //    private val view: ProfileView,
-    private val chatDao: ChatDao,
+    private val chatDao: ChatDao ,
     private val userId: Int
 ): BasePresenter<ProfileView>() {
 
