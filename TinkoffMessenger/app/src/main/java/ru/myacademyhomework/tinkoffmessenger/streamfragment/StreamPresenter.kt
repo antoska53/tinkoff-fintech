@@ -5,18 +5,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import moxy.InjectViewState
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import java.util.concurrent.TimeUnit
 
-@InjectViewState
-class StreamPresenter(private val view: StreamView, private val chatDao: ChatDao): BasePresenter<StreamView>() {
+class StreamPresenter(private val chatDao: ChatDao) : BasePresenter<StreamView>() {
 
     private val subject = PublishSubject.create<String>()
 
-    fun search(str: String){
+    fun search(str: String) {
         subject.onNext(str)
     }
 
@@ -27,13 +25,13 @@ class StreamPresenter(private val view: StreamView, private val chatDao: ChatDao
             .debounce(1000, TimeUnit.MILLISECONDS)
             .switchMap { str ->
                 val topic = chatDao.getTopic(str)
-                if(topic != null){
+                if (topic != null) {
                     Observable.just(
                         Topic(
-                        streamId = topic.streamId,
-                        name = topic.nameTopic,
-                        nameStream = topic.nameStream
-                    )
+                            streamId = topic.streamId,
+                            name = topic.nameTopic,
+                            nameStream = topic.nameStream
+                        )
                     )
                 } else {
                     Observable.just(Topic(0, ""))
@@ -44,13 +42,13 @@ class StreamPresenter(private val view: StreamView, private val chatDao: ChatDao
             .subscribe(
                 { topic ->
                     if (topic.name.isNotEmpty()) {
-                        view.showResultSearch(topic)
+                        viewState.showResultSearch(topic)
                     } else {
-                        view.showIsEmptyResultSearch()
+                        viewState.showIsEmptyResultSearch()
                     }
                 },
                 {
-                    view.showError()
+                    viewState.showError()
                 }
             )
             .addTo(compositeDisposable)

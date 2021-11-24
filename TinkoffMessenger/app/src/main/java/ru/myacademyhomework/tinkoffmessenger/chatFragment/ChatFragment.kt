@@ -5,9 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -17,8 +15,7 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
+import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
@@ -46,13 +43,9 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private var shimmer: ShimmerFrameLayout? = null
     private var isInitRecycler = false
     private var foundOldest = false
-    @InjectPresenter
-    var chatPresenter: ChatPresenter? = null
-
-    @ProvidePresenter
-    fun providePresenter(){
+    private val chatPresenter: ChatPresenter by moxyPresenter {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        chatPresenter = ChatPresenter(this, chatDao, nameStream, nameTopic, foundOldest)
+        ChatPresenter(chatDao, nameStream, nameTopic, foundOldest)
     }
 
 
@@ -65,9 +58,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
         recyclerView = view.findViewById(R.id.chat_recycler)
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-//        chatPresenter = ChatPresenter(this, chatDao, nameStream, nameTopic, foundOldest)
-        chatPresenter?.initRecycler()
+        chatPresenter.initRecycler()
 
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
         tvNameTopic.text = getString(R.string.topic, nameTopic)
@@ -76,9 +67,9 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener {
             if (isInitRecycler) {
-                chatPresenter?.getMessages()
+                chatPresenter.getMessages()
             } else {
-                chatPresenter?.initRecycler()
+                chatPresenter.initRecycler()
             }
         }
 
@@ -116,14 +107,14 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                chatPresenter?.pagingChat(recyclerView)
+                chatPresenter.pagingChat(recyclerView)
             }
         })
     }
 
     private fun onClickButtonSendMessage() {
         if (editTextMessage.text.isNotEmpty()) {
-            chatPresenter?.sendMessage(message = editTextMessage.text.toString())
+            chatPresenter.sendMessage(message = editTextMessage.text.toString())
         }
     }
 
@@ -140,7 +131,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
         val adapterBottomSheet =
             BottomSheetAdapter(idMessage, positionMessage) { emoji, id, position ->
-                chatPresenter?.updateEmoji(emoji, id, position)
+                chatPresenter.updateEmoji(emoji, id, position)
                 dialog.dismiss()
             }
         recyclerBottomSheet.adapter = adapterBottomSheet
@@ -164,8 +155,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         editor.putBoolean(FOUND_OLDEST_KEY, foundOldest)
         editor.apply()
     }
-
-//    override fun getPresenter(): ChatPresenter? = chatPresenter
 
     override fun updateRecyclerData(listUseMessage: List<UserMessage>) {
         adapter.updateData(listUseMessage)

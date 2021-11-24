@@ -2,29 +2,26 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
+import moxy.MvpAppCompatFragment
+import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
-import ru.myacademyhomework.tinkoffmessenger.database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
 
 
-class PeopleFragment : Fragment(R.layout.fragment_people) {
+class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleView {
 
     private var adapter: PeopleAdapter? = null
     private var recycler: RecyclerView? = null
     private var navigation: FragmentNavigation? = null
-    private val compositeDisposable = CompositeDisposable()
+    private val peoplePresenter by moxyPresenter {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        PeoplePresenter(chatDao)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -41,58 +38,25 @@ class PeopleFragment : Fragment(R.layout.fragment_people) {
         }
         recycler?.adapter = adapter
 
-        getAllUsersFromDb()
-        getAllUsers()
+        peoplePresenter.getAllUsersFromDb()
+        peoplePresenter.getAllUsers()
     }
 
-    private fun getAllUsersFromDb() {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        chatDao.getAllUsers()
-            .map {
-                it.map { userDb ->
-                    User(
-                        avatarURL = userDb.avatarURL,
-                        email = userDb.email,
-                        fullName = userDb.fullName,
-                        userID = userDb.userID
-                    )
-                }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                updateRecycler(it)
-            }, {
 
-            })
-            .addTo(compositeDisposable)
-    }
-
-    private fun getAllUsers() {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        RetrofitModule.chatApi.getAllUsers()
-            .subscribeOn(Schedulers.io())
-            .doOnSuccess {
-                chatDao.insertUsers(it.users.map { user ->
-                    UserDb(
-                        avatarURL = user.avatarURL,
-                        email = user.email,
-                        fullName = user.fullName,
-                        userID = user.userID,
-                        isOwn = false
-                    )
-                })
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-//                    updateRecycler(it.users)
-            }, {
-
-            })
-            .addTo(compositeDisposable)
-    }
-
-    private fun updateRecycler(users: List<User>) {
+    override fun updateRecycler(users: List<User>) {
         adapter?.addData(users)
+    }
+
+    override fun showRefresh() {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideRefresh() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showError() {
+        TODO("Not yet implemented")
     }
 
     private fun openProfileFragment(userId: Int) {
@@ -102,7 +66,6 @@ class PeopleFragment : Fragment(R.layout.fragment_people) {
     override fun onDestroyView() {
         super.onDestroyView()
         recycler?.adapter = null
-        compositeDisposable.clear()
     }
 
 

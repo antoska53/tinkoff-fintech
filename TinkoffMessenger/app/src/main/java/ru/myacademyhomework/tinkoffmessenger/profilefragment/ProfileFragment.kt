@@ -11,8 +11,6 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.User
@@ -28,18 +26,10 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
     private val userId: Int? by lazy {
         arguments?.getInt(USER_ID)
     }
-    private val chatDao by lazy { ChatDatabase.getDatabase(requireContext()).chatDao()}
     private val profilePresenter by moxyPresenter {
-//        ProfilePresenter(chatDao, userId!!)
-        ProfilePresenterTest()
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        ProfilePresenter(chatDao, userId!!)
     }
-//
-//    @ProvidePresenter
-//    fun providePresenter(): ProfilePresenter{
-//        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-//        return ProfilePresenter(chatDao, userId!!)
-//    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,17 +41,17 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
         shimmerProfile = view.findViewById(R.id.shimmer_profile_layout)
 
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
-        buttonReload.setOnClickListener { profilePresenter?.getOwnUser() }
+        buttonReload.setOnClickListener { profilePresenter.getOwnUser() }
 
         refreshData()
     }
 
     private fun refreshData() {
         if (userId == USER_OWNER) {
-            profilePresenter?.getOwnUser()
+            profilePresenter.getOwnUser()
         } else {
-            profilePresenter?.getUserFromDb()
-            profilePresenter?.getStatus()
+            profilePresenter.getUserFromDb()
+            profilePresenter.getStatus()
         }
     }
 
@@ -121,8 +111,6 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
         shimmerProfile?.stopShimmer()
         errorView?.isVisible = true
     }
-
-//    override fun getPresenter(): ProfilePresenter? = profilePresenter
 
     companion object {
         const val USER_ID = "USER_ID"

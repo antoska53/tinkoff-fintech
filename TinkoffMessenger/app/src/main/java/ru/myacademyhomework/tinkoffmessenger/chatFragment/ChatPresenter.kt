@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
@@ -14,9 +13,7 @@ import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
-@InjectViewState
 class ChatPresenter(
-    private val view: ChatView,
     private val chatDao: ChatDao,
     private val nameStream: String,
     private val nameTopic: String,
@@ -47,8 +44,8 @@ class ChatPresenter(
                 if (it.isEmpty()) {
                     getOwnUser()
                 } else {
-                    view.hideError()
-                    view.initRecycler(it)
+                    viewState.hideError()
+                    viewState.initRecycler(it)
                     getAllMessagesFromDb()
                 }
             }, {
@@ -88,9 +85,9 @@ class ChatPresenter(
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                view.hideError()
+                viewState.hideError()
             }, {
-                view.showError()
+                viewState.showError()
             })
             .addTo(compositeDisposable)
     }
@@ -120,7 +117,7 @@ class ChatPresenter(
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                view.addRecyclerData(it)
+                viewState.addRecyclerData(it)
                 isLoading = false
             }.addTo(compositeDisposable)
 
@@ -152,10 +149,10 @@ class ChatPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (it.isEmpty()) {
-                    view.showRefresh()
+                    viewState.showRefresh()
                 } else {
                     databaseIsNotEmpty = true
-                    view.updateRecyclerData(it)
+                    viewState.updateRecyclerData(it)
                     isLoading = false
                 }
                 if (!databaseIsRefresh) getMessages("newest")
@@ -180,7 +177,7 @@ class ChatPresenter(
             .map {
                 if (it.foundOldest) {
                     foundOldest = it.foundOldest
-                    view.addToSharedpref(foundOldest)
+                    viewState.addToSharedpref(foundOldest)
                 }
                 it.messages.map { userMessage ->
                     chatDao.insertReaction(
@@ -216,20 +213,20 @@ class ChatPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 if (!databaseIsNotEmpty) {
-                    view.showRefresh()
+                    viewState.showRefresh()
                 }
                 isLoading = true
             }
             .doOnTerminate {
-                view.hideRefresh()
+                viewState.hideRefresh()
             }
             .subscribe({
-                view.showRecycler()
+                viewState.showRecycler()
             }, {
                 if (databaseIsNotEmpty) {
-                    view.showErrorUpdateData()
+                    viewState.showErrorUpdateData()
                 } else {
-                    view.showError()
+                    viewState.showError()
                 }
                 isLoading = false
             })
@@ -248,9 +245,9 @@ class ChatPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (position == ChatFragment.SEND_MESSAGE_POSITION) {
-                    view.updateMessage(it.messages[0])
+                    viewState.updateMessage(it.messages[0])
                 } else {
-                    view.updateMessage(it.messages[0], position)
+                    viewState.updateMessage(it.messages[0], position)
                 }
             }, {
             })
@@ -263,11 +260,11 @@ class ChatPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    view.clearEditText()
+                    viewState.clearEditText()
                     getMessage(it.id, ChatFragment.SEND_MESSAGE_POSITION)
                 },
                 {
-                    view.showErrorSendMessage()
+                    viewState.showErrorSendMessage()
                 }
             )
             .addTo(compositeDisposable)
@@ -285,7 +282,7 @@ class ChatPresenter(
                 getMessage(idMessage, position)
             },
                 {
-                    view.showErrorUpdateEmoji()
+                    viewState.showErrorUpdateEmoji()
                 })
             .addTo(compositeDisposable)
     }

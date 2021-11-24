@@ -4,7 +4,7 @@ import moxy.viewstate.strategy.alias.AddToEndSingle
 import ru.myacademyhomework.tinkoffmessenger.common.BaseView
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
-interface ProfileView: BaseView {
+interface ProfileView : BaseView {
 
     @AddToEndSingle
     fun showUserProfile(user: User)

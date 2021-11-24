@@ -1,9 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
@@ -13,27 +11,22 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
+import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
 
-class StreamFragment :  MvpAppCompatFragment(R.layout.fragment_stream), StreamView{
-//    private val subject = PublishSubject.create<String>()
+class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamView {
     private var isSearch = false
     private var showStreams = true
     private var editTextSearch: EditText? = null
     private var viewPager: ViewPager2? = null
-    @InjectPresenter
-    private var streamPresenter: StreamPresenter? = null
-
-    @ProvidePresenter
-    fun providePresenter(){
+    private val streamPresenter: StreamPresenter by moxyPresenter {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        streamPresenter = StreamPresenter(this, chatDao)
+        StreamPresenter(chatDao)
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +65,10 @@ class StreamFragment :  MvpAppCompatFragment(R.layout.fragment_stream), StreamVi
 
         editTextSearch = view.findViewById(R.id.search_edittext)
         editTextSearch?.addTextChangedListener { str ->
-            streamPresenter?.search(str.toString())
+            streamPresenter.search(str.toString())
         }
 
-        streamPresenter?.initSearch()
+        streamPresenter.initSearch()
     }
 
 
@@ -92,7 +85,8 @@ class StreamFragment :  MvpAppCompatFragment(R.layout.fragment_stream), StreamVi
             SUBSCRIBE_RESULT_KEY,
             bundleOf(
                 TOPIC_KEY to topic.name,
-                STREAM_KEY to topic.nameStream)
+                STREAM_KEY to topic.nameStream
+            )
         )
         isSearch = true
     }
@@ -101,17 +95,13 @@ class StreamFragment :  MvpAppCompatFragment(R.layout.fragment_stream), StreamVi
         Snackbar.make(requireView(), "ничего не найдено", Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun showRefresh() {
-    }
+    override fun showRefresh() {}
 
-    override fun hideRefresh() {
-    }
+    override fun hideRefresh() {}
 
     override fun showError() {
         Snackbar.make(requireView(), "ERROR", Snackbar.LENGTH_SHORT).show()
     }
-
-//    override fun getPresenter(): StreamPresenter? = streamPresenter
 
     companion object {
         const val SUBSCRIBE_RESULT_KEY = "SUBSCRIBE_RESULT_KEY"
@@ -122,6 +112,4 @@ class StreamFragment :  MvpAppCompatFragment(R.layout.fragment_stream), StreamVi
         @JvmStatic
         fun newInstance() = StreamFragment()
     }
-
-
 }
