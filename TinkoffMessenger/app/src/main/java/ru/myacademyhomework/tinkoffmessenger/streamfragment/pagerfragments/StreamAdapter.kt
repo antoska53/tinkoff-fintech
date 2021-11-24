@@ -7,9 +7,6 @@ import ru.myacademyhomework.tinkoffmessenger.TopicListener
 import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.AllStreamFragment
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.StreamViewHolder
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.TopicViewHolder
 import java.lang.IllegalArgumentException
 
 

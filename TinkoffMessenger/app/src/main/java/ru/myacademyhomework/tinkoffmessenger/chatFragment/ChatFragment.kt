@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -156,9 +155,12 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         editor.apply()
     }
 
-    override fun updateRecyclerData(listUseMessage: List<UserMessage>) {
-        adapter.updateData(listUseMessage)
-        recyclerView?.scrollToPosition(listUseMessage.size - 1)
+    override fun updateRecyclerData(listUserMessage: List<UserMessage>) {
+        adapter.updateData(listUserMessage)
+        val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
+        val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
+        chatDiffResult.dispatchUpdatesTo(adapter)
+        recyclerView?.scrollToPosition(listUserMessage.size - 1)
     }
 
     override fun addRecyclerData(listUserMessage: List<UserMessage>) {
