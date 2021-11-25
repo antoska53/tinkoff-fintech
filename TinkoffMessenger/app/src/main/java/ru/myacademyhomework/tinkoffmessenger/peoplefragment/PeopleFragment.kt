@@ -3,6 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -11,6 +12,7 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
+import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.StreamDiffUtilCallback
 
 
 class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleView {
@@ -44,20 +46,19 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
 
 
     override fun updateRecycler(users: List<User>) {
-        adapter?.addData(users)
+        adapter?.let {
+            val peopleDiffUtilCallback = PeopleDiffUtilCallback(it.people, users)
+            val peopleDiffResult = DiffUtil.calculateDiff(peopleDiffUtilCallback)
+            it.addData(users)
+            peopleDiffResult.dispatchUpdatesTo(it)
+        }
     }
 
-    override fun showRefresh() {
-        TODO("Not yet implemented")
-    }
+    override fun showRefresh() {}
 
-    override fun hideRefresh() {
-        TODO("Not yet implemented")
-    }
+    override fun hideRefresh() {}
 
-    override fun showError() {
-        TODO("Not yet implemented")
-    }
+    override fun showError() {}
 
     private fun openProfileFragment(userId: Int) {
         navigation?.openChatFragment(ProfileFragment.newInstance(userId))

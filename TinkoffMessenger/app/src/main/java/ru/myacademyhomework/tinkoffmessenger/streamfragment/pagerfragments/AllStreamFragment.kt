@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
@@ -71,7 +72,10 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
     }
 
     override fun setDataToRecycler(listStream: List<Stream>) {
+        val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listStream)
+        val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
         adapter.setData(listStream)
+        streamDiffResult.dispatchUpdatesTo(adapter)
     }
 
     override fun openChatTopic(topic: Topic) {

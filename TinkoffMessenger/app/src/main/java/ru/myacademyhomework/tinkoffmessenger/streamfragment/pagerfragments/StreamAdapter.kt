@@ -15,7 +15,7 @@ class StreamAdapter(
     private val topicListener: TopicListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var streams: MutableList<Item> = mutableListOf()
+    var streams: MutableList<Item> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -57,10 +57,7 @@ class StreamAdapter(
     }
 
     fun setData(list: List<Item>) {
-        val size = streams.size
         streams.clear()
-        notifyItemRangeRemoved(0, size)
         streams.addAll(list)
-        notifyItemRangeInserted(0, list.size)
     }
 }

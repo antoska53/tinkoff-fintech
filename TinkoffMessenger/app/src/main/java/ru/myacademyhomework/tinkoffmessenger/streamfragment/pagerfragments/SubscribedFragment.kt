@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
@@ -14,7 +15,9 @@ import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatDiffUtilCallback
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
+import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
@@ -81,10 +84,14 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
 
     private fun removeStream(topics: List<Topic>, position: Int) {
         adapter.updateData(topics, position, true)
+
     }
 
     override fun setDataToRecycler(listStream: List<Stream>) {
+        val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listStream)
+        val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
         adapter.setData(listStream)
+        streamDiffResult.dispatchUpdatesTo(adapter)
     }
 
     override fun openChatTopic(topic: Topic) {
