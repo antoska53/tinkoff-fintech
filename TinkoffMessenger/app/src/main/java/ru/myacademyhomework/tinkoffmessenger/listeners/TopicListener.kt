@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.listeners
 
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 

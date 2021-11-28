@@ -44,4 +44,5 @@ ext{
     roomVersion = '2.3.0'
     rxKotlinVersion = '2.4.0'
     moxyVersion = '2.2.2'
+    daggerVersion = '2.40.2'
 }

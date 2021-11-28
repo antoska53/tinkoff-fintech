@@ -10,24 +10,37 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
-import ru.myacademyhomework.tinkoffmessenger.network.Reaction
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
-import ru.myacademyhomework.tinkoffmessenger.network.User
-import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.network.*
+import java.lang.Appendable
+import javax.inject.Inject
 
-class ChatPresenter(
+class ChatPresenter @Inject constructor(
     private val chatDao: ChatDao,
-    private val nameStream: String,
-    private val nameTopic: String,
+    private val chatApi: ChatApi
+//    private val nameStream: String,
+//    private val nameTopic: String,
+//    private var foundOldest: Boolean
 ) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
     private var databaseIsNotEmpty = false
     private var isLoading = true
     private var firstMessageId = "-1"
+    private var nameStream: String = ""
+    private var nameTopic: String = ""
+    private var foundOldest: Boolean = false
+//    @Inject
+//    lateinit var chatApi: ChatApi
     private var isInitRecycler = false
     private var foundOldest = false
 
+    fun load(nameStream: String, nameTopic: String, foundOldest: Boolean){
+        this.nameStream = nameStream
+        this.nameTopic = nameTopic
+        this.foundOldest = foundOldest
+    }
+
+    fun initRecycler() {
 
     fun buttonReloadClick(){
         if (isInitRecycler) {
@@ -97,7 +110,7 @@ class ChatPresenter(
     }
 
     private fun getOwnUser() {
-        RetrofitModule.chatApi.getOwnUser()
+        chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .map {
                 UserDb(
@@ -194,7 +207,7 @@ class ChatPresenter(
     }
 
     fun getMessages(anchor: String) {
-        val chatApi = RetrofitModule.chatApi
+//        val chatApi = RetrofitModule.chatApi
         chatApi.getMessages(
             anchor = anchor,
             num_after = 0,
@@ -262,7 +275,7 @@ class ChatPresenter(
     }
 
     private fun getMessage(messageId: Long, position: Int) {
-        val chatApi = RetrofitModule.chatApi
+//        val chatApi = RetrofitModule.chatApi
         chatApi.getMessages(
             "newest",
             1,
@@ -283,7 +296,8 @@ class ChatPresenter(
     }
 
     fun sendMessage(message: String) {
-        RetrofitModule.chatApi.sendMessage("stream", nameStream, nameTopic, message)
+//        RetrofitModule.
+        chatApi.sendMessage("stream", nameStream, nameTopic, message)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -303,7 +317,8 @@ class ChatPresenter(
             it.unicode == emoji
         }
 
-        RetrofitModule.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
+//        RetrofitModule.
+        chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

@@ -2,8 +2,8 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.myacademyhomework.tinkoffmessenger.StreamListener
-import ru.myacademyhomework.tinkoffmessenger.TopicListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.TopicListener
 import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.network.Topic

@@ -3,7 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.myacademyhomework.tinkoffmessenger.BottomSheetListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.BottomSheetListener
 import ru.myacademyhomework.tinkoffmessenger.R
 
 class BottomSheetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

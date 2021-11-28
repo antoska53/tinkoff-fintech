@@ -15,16 +15,20 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
+import ru.myacademyhomework.tinkoffmessenger.AppDelegate
+import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener,
-    ChatView {
+class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener, ChatView {
 
     private val nameStream by lazy {
         arguments?.getString(NAME_CHANNEL) ?: ""
@@ -40,9 +44,32 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private lateinit var dialog: BottomSheetDialog
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
-    private val chatPresenter: ChatPresenter by moxyPresenter {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        ChatPresenter(chatDao, nameStream, nameTopic)
+    private var isInitRecycler = false
+    private var foundOldest = false
+
+    @Inject
+    lateinit var presenterProvider: Provider<ChatPresenter>
+    private val chatPresenter by moxyPresenter {
+        presenterProvider.get()
+    }
+
+//    @InjectPresenter
+//    lateinit var chatPresenter: ChatPresenter
+//
+//    @Inject
+//    lateinit var presenterProvider : Provider<ChatPresenter>
+//
+//    @ProvidePresenter
+//    fun providePresenter(): ChatPresenter {
+//        return presenterProvider.get()
+//    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        AppDelegate.appComponent.inject(this)
+        chatPresenter.load(nameStream, nameTopic, foundOldest)
     }
 
 

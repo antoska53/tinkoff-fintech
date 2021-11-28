@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ru.myacademyhomework.tinkoffmessenger.PeopleListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.PeopleListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
