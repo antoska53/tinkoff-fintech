@@ -12,23 +12,30 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
+import ru.myacademyhomework.tinkoffmessenger.AppDelegate
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
+import javax.inject.Inject
+import javax.inject.Provider
 
 
 class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamView {
     private var showStreams = true
     private var editTextSearch: EditText? = null
     private var viewPager: ViewPager2? = null
+
+    @Inject
+    lateinit var providePresenter: Provider<StreamPresenter>
     private var onBackPressedCallback: OnBackPressedCallback? = null
     private val streamPresenter: StreamPresenter by moxyPresenter {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        StreamPresenter(chatDao)
+        providePresenter.get()
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppDelegate.appComponent.getStreamComponent(StreamModule()).inject(this)
         super.onCreate(savedInstanceState)
 
         onBackPressedCallback = object: OnBackPressedCallback(true) {

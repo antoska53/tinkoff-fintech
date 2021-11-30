@@ -11,9 +11,13 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
+import ru.myacademyhomework.tinkoffmessenger.AppDelegate
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.di.profile.ProfileModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
+import javax.inject.Inject
+import javax.inject.Provider
 
 
 class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), ProfileView {
@@ -23,16 +27,25 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
     private var status: TextView? = null
     private var shimmerProfile: ShimmerFrameLayout? = null
     private var errorView: View? = null
-    private val userId: Int? by lazy {
-        arguments?.getInt(USER_ID)
+    private val userId: Int by lazy {
+        arguments?.getInt(USER_ID) ?: -1
     }
+
+    @Inject
+    lateinit var providePresenter: Provider<ProfilePresenter>
     private val profilePresenter by moxyPresenter {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        ProfilePresenter(chatDao, userId!!)
+        providePresenter.get()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        AppDelegate.appComponent.getProfileComponent(ProfileModule()).inject(this)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        profilePresenter.loadUserId(userId)
 
         avatar = view.findViewById(R.id.imageview_avatar_profile)
         nameUser = view.findViewById(R.id.textview_name_profile)

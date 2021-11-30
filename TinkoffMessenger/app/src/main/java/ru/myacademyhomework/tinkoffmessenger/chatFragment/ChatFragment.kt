@@ -15,13 +15,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
 import ru.myacademyhomework.tinkoffmessenger.AppDelegate
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
+import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import javax.inject.Inject
@@ -66,9 +64,10 @@ class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLis
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        AppDelegate.appComponent.inject(this)
+        AppDelegate.appComponent.getChatComponent(ChatModule()).inject(this)
         super.onCreate(savedInstanceState)
 
-        AppDelegate.appComponent.inject(this)
         chatPresenter.load(nameStream, nameTopic, foundOldest)
     }
 

@@ -11,8 +11,13 @@ import ru.myacademyhomework.tinkoffmessenger.network.User
 
 class ProfilePresenter(
     private val chatDao: ChatDao,
-    private val userId: Int
 ) : BasePresenter<ProfileView>() {
+
+    private var userId: Int = -1
+
+    fun loadUserId(userId: Int){
+        this.userId = userId
+    }
 
     fun refreshData() {
         if (userId == ProfileFragment.USER_OWNER) {

@@ -7,11 +7,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
+import ru.myacademyhomework.tinkoffmessenger.AppDelegate
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatPresenter
+import ru.myacademyhomework.tinkoffmessenger.di.DaggerAppComponent
+import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
+import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.StreamDiffUtilCallback
+import javax.inject.Inject
+import javax.inject.Provider
 
 
 class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleView {
@@ -19,15 +26,22 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     private var adapter: PeopleAdapter? = null
     private var recycler: RecyclerView? = null
     private var navigation: FragmentNavigation? = null
+
+    @Inject
+    lateinit var presenterProvider: Provider<PeoplePresenter>
     private val peoplePresenter by moxyPresenter {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        PeoplePresenter(chatDao)
+        presenterProvider.get()
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         require(context is FragmentNavigation)
         navigation = context
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        AppDelegate.appComponent.getPeopleComponent(PeopleModule()).inject(this)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
