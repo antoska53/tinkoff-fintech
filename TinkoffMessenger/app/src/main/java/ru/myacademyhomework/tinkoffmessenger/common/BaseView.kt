@@ -1,16 +1,16 @@
 package ru.myacademyhomework.tinkoffmessenger.common
 
 import moxy.MvpView
-import moxy.viewstate.strategy.alias.AddToEndSingle
+import moxy.viewstate.strategy.alias.Skip
 
 interface BaseView: MvpView {
 
-    @AddToEndSingle
+    @Skip
     fun showRefresh()
 
-    @AddToEndSingle
+    @Skip
     fun hideRefresh()
 
-    @AddToEndSingle
+    @Skip
     fun showError()
 }

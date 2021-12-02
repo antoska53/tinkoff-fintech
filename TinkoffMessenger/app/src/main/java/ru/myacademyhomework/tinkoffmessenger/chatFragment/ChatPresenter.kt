@@ -1,10 +1,12 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
+import android.text.Editable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
@@ -17,15 +19,40 @@ class ChatPresenter(
     private val chatDao: ChatDao,
     private val nameStream: String,
     private val nameTopic: String,
-    private var foundOldest: Boolean
 ) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
     private var databaseIsNotEmpty = false
     private var isLoading = true
     private var firstMessageId = "-1"
+    private var isInitRecycler = false
+    private var foundOldest = false
 
-    fun initRecycler() {
+
+    fun buttonReloadClick(){
+        if (isInitRecycler) {
+            getMessages()
+        } else {
+            initChat()
+        }
+    }
+
+    fun loadFoundOldest(foundOldest: Boolean){
+        this.foundOldest = foundOldest
+    }
+
+    fun buttonSendMessageSetImage(str: String) {
+        if (str.isNotEmpty()) viewState.buttonSendMessageSetImage(R.drawable.ic_plane)
+        else viewState.buttonSendMessageSetImage(R.drawable.ic_cross)
+    }
+
+    fun onClickButtonSendMessage(text: Editable) {
+        if (text.isNotEmpty()) {
+            sendMessage(message = text.toString())
+        }
+    }
+
+    fun initChat() {
         chatDao
             .getOwnUser()
             .map {
@@ -46,6 +73,7 @@ class ChatPresenter(
                 } else {
                     viewState.hideError()
                     viewState.initRecycler(it)
+                    isInitRecycler = true
                     getAllMessagesFromDb()
                 }
             }, {

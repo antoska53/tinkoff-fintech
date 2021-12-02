@@ -8,4 +8,7 @@ interface PeopleView : BaseView {
 
     @AddToEndSingle
     fun updateRecycler(users: List<User>)
+
+    @AddToEndSingle
+    fun openProfileFragment(userId: Int)
 }

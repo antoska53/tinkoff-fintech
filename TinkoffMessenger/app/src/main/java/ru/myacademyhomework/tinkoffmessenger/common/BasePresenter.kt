@@ -6,7 +6,7 @@ import moxy.MvpPresenter
 abstract class BasePresenter<View: BaseView>: MvpPresenter<View>() {
     val compositeDisposable = CompositeDisposable()
 
-    fun disposeAll() {
+    private fun disposeAll() {
         compositeDisposable.clear()
     }
 

@@ -11,6 +11,10 @@ import ru.myacademyhomework.tinkoffmessenger.network.User
 
 class PeoplePresenter(private val chatDao: ChatDao) : BasePresenter<PeopleView>() {
 
+    fun openProfile(userId: Int){
+        viewState.openProfileFragment(userId)
+    }
+
     fun getAllUsersFromDb() {
         chatDao.getAllUsers()
             .map {

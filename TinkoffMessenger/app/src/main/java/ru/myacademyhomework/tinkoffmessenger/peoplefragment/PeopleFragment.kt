@@ -12,7 +12,6 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.StreamDiffUtilCallback
 
 
 class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleView {
@@ -36,7 +35,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
 
         recycler = view.findViewById(R.id.recycler_view_user)
         adapter = PeopleAdapter { userId ->
-            openProfileFragment(userId)
+            peoplePresenter.openProfile(userId)
         }
         recycler?.adapter = adapter
 
@@ -60,7 +59,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
 
     override fun showError() {}
 
-    private fun openProfileFragment(userId: Int) {
+    override fun openProfileFragment(userId: Int) {
         navigation?.openChatFragment(ProfileFragment.newInstance(userId))
     }
 

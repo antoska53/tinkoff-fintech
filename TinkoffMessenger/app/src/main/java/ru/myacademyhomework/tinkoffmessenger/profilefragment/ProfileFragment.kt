@@ -43,16 +43,7 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { profilePresenter.getOwnUser() }
 
-        refreshData()
-    }
-
-    private fun refreshData() {
-        if (userId == USER_OWNER) {
-            profilePresenter.getOwnUser()
-        } else {
-            profilePresenter.getUserFromDb()
-            profilePresenter.getStatus()
-        }
+        profilePresenter.refreshData()
     }
 
     override fun showUserProfile(user: User) {
@@ -63,21 +54,9 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
             .into(avatar!!)
     }
 
-    override fun showStatus(userStatus: String) {
-        when (userStatus) {
-            "active" -> {
-                status?.text = getString(R.string.status_online)
-                status?.setTextColor(requireContext().getColor(R.color.status_online_color))
-            }
-            "offline" -> {
-                status?.text = getString(R.string.status_offline)
-                status?.setTextColor(requireContext().getColor(R.color.status_offline_color))
-            }
-            "idle" -> {
-                status?.text = getString(R.string.status_idle)
-                status?.setTextColor(requireContext().getColor(R.color.status_idle_color))
-            }
-        }
+    override fun showStatus(idStatus: Int, idColor: Int) {
+        status?.text = getString(idStatus)
+        status?.setTextColor(requireContext().getColor(idColor))
     }
 
     override fun showErrorLoadStatus() {

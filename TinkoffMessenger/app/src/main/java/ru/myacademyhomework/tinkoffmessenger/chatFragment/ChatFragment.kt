@@ -40,11 +40,9 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private lateinit var dialog: BottomSheetDialog
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
-    private var isInitRecycler = false
-    private var foundOldest = false
     private val chatPresenter: ChatPresenter by moxyPresenter {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        ChatPresenter(chatDao, nameStream, nameTopic, foundOldest)
+        ChatPresenter(chatDao, nameStream, nameTopic)
     }
 
 
@@ -55,9 +53,10 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         shimmer = view.findViewById(R.id.shimmer_chat_layout)
         val sharedPref =
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
+        val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
+        chatPresenter.loadFoundOldest(foundOldest)
         recyclerView = view.findViewById(R.id.chat_recycler)
-        chatPresenter.initRecycler()
+        chatPresenter.initChat()
 
         val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
         tvNameTopic.text = getString(R.string.topic, nameTopic)
@@ -65,11 +64,8 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         tvNameChannel.text = nameStream
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener {
-            if (isInitRecycler) {
-                chatPresenter.getMessages()
-            } else {
-                chatPresenter.initRecycler()
-            }
+            chatPresenter.buttonReloadClick()
+
         }
 
         val buttonBack = view.findViewById<ImageView>(R.id.imageView_arrow_back)
@@ -78,7 +74,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         }
 
         buttonSendMessage = view.findViewById(R.id.button_send_message)
-        buttonSendMessage.setOnClickListener { onClickButtonSendMessage() }
+        buttonSendMessage.setOnClickListener { chatPresenter.onClickButtonSendMessage(editTextMessage.text) }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -87,9 +83,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
             override fun afterTextChanged(s: Editable) {
-                buttonSendMessage.setImageResource(
-                    if (s.toString().isNotEmpty()) R.drawable.ic_plane else R.drawable.ic_cross
-                )
+                chatPresenter.buttonSendMessageSetImage(s.toString())
             }
         })
     }
@@ -100,7 +94,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun initRecycler(listUser: List<User>) {
-        isInitRecycler = true
         adapter = ChatAdapter(this, listUser[0].userID)
         recyclerView?.adapter = adapter
         recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -111,11 +104,10 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         })
     }
 
-    private fun onClickButtonSendMessage() {
-        if (editTextMessage.text.isNotEmpty()) {
-            chatPresenter.sendMessage(message = editTextMessage.text.toString())
-        }
+    override fun buttonSendMessageSetImage(resId: Int){
+        buttonSendMessage.setImageResource(resId)
     }
+
 
     override fun itemLongClicked(idMessage: Long, position: Int): Boolean {
         showBottomSheetDialog(idMessage, position)

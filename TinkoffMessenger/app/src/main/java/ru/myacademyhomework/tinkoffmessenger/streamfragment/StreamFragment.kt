@@ -18,10 +18,10 @@ import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
 
 class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamView {
-    private var isSearch = false
     private var showStreams = true
     private var editTextSearch: EditText? = null
     private var viewPager: ViewPager2? = null
+    private var onBackPressedCallback: OnBackPressedCallback? = null
     private val streamPresenter: StreamPresenter by moxyPresenter {
         val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
         StreamPresenter(chatDao)
@@ -31,23 +31,11 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (isSearch) {
-                        isSearch = false
-                        editTextSearch?.text?.clear()
-                        childFragmentManager.setFragmentResult(
-                            SUBSCRIBE_RESULT_KEY,
-                            bundleOf(SHOW_STREAMS_KEY to showStreams)
-                        )
-                    } else {
-                        isEnabled = false
-                        requireActivity().onBackPressed()
-                    }
-                }
-            })
+        onBackPressedCallback = object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                streamPresenter.backPressed()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,7 +62,20 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
 
     override fun onDestroyView() {
         super.onDestroyView()
-        isSearch = false
+        streamPresenter.resetSearchFlag()
+    }
+
+    override fun showStreams(){
+        editTextSearch?.text?.clear()
+        childFragmentManager.setFragmentResult(
+            SUBSCRIBE_RESULT_KEY,
+            bundleOf(SHOW_STREAMS_KEY to showStreams)
+        )
+    }
+
+    override fun backPressed(){
+        onBackPressedCallback?.isEnabled = false
+        requireActivity().onBackPressed()
     }
 
     override fun showResultSearch(topic: Topic) {
@@ -88,7 +89,6 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
                 STREAM_KEY to topic.nameStream
             )
         )
-        isSearch = true
     }
 
     override fun showIsEmptyResultSearch() {

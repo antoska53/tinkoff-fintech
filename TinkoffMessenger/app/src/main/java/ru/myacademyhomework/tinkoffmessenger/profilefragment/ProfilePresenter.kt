@@ -3,6 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.profilefragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
@@ -12,6 +13,15 @@ class ProfilePresenter(
     private val chatDao: ChatDao,
     private val userId: Int
 ) : BasePresenter<ProfileView>() {
+
+    fun refreshData() {
+        if (userId == ProfileFragment.USER_OWNER) {
+            getOwnUser()
+        } else {
+            getUserFromDb()
+            getStatus()
+        }
+    }
 
     fun getUserFromDb() {
         chatDao.getUser(userId)
@@ -56,10 +66,24 @@ class ProfilePresenter(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                viewState.showStatus(it.presence.userStatus.status)
+                showStatus(it.presence.userStatus.status)
             }, {
                 viewState.showErrorLoadStatus()
             })
             .addTo(compositeDisposable)
+    }
+
+    private fun showStatus(userStatus: String){
+        when (userStatus) {
+            "active" -> {
+                viewState.showStatus(R.string.status_online, R.color.status_online_color)
+            }
+            "offline" -> {
+                viewState.showStatus(R.string.status_offline, R.color.status_offline_color)
+            }
+            "idle" -> {
+                viewState.showStatus(R.string.status_idle, R.color.status_idle_color)
+            }
+        }
     }
 }

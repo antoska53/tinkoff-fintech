@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 
 class StreamPresenter(private val chatDao: ChatDao) : BasePresenter<StreamView>() {
 
+    private var isSearch = false
     private val subject = PublishSubject.create<String>()
 
     fun search(str: String) {
@@ -42,6 +43,7 @@ class StreamPresenter(private val chatDao: ChatDao) : BasePresenter<StreamView>(
             .subscribe(
                 { topic ->
                     if (topic.name.isNotEmpty()) {
+                        isSearch = true
                         viewState.showResultSearch(topic)
                     } else {
                         viewState.showIsEmptyResultSearch()
@@ -52,5 +54,18 @@ class StreamPresenter(private val chatDao: ChatDao) : BasePresenter<StreamView>(
                 }
             )
             .addTo(compositeDisposable)
+    }
+
+    fun backPressed() {
+        if (isSearch) {
+        isSearch = false
+            viewState.showStreams()
+        } else {
+            viewState.backPressed()
+        }
+    }
+
+    fun resetSearchFlag(){
+        isSearch = false
     }
 }
