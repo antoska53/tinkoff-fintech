@@ -11,15 +11,11 @@ import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
 import ru.myacademyhomework.tinkoffmessenger.network.*
-import java.lang.Appendable
 import javax.inject.Inject
 
 class ChatPresenter @Inject constructor(
     private val chatDao: ChatDao,
     private val chatApi: ChatApi
-//    private val nameStream: String,
-//    private val nameTopic: String,
-//    private var foundOldest: Boolean
 ) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
@@ -28,21 +24,16 @@ class ChatPresenter @Inject constructor(
     private var firstMessageId = "-1"
     private var nameStream: String = ""
     private var nameTopic: String = ""
-    private var foundOldest: Boolean = false
-//    @Inject
-//    lateinit var chatApi: ChatApi
     private var isInitRecycler = false
     private var foundOldest = false
 
-    fun load(nameStream: String, nameTopic: String, foundOldest: Boolean){
+    fun load(nameStream: String, nameTopic: String, foundOldest: Boolean) {
         this.nameStream = nameStream
         this.nameTopic = nameTopic
         this.foundOldest = foundOldest
     }
 
-    fun initRecycler() {
-
-    fun buttonReloadClick(){
+    fun buttonReloadClick() {
         if (isInitRecycler) {
             getMessages()
         } else {
@@ -50,7 +41,7 @@ class ChatPresenter @Inject constructor(
         }
     }
 
-    fun loadFoundOldest(foundOldest: Boolean){
+    fun loadFoundOldest(foundOldest: Boolean) {
         this.foundOldest = foundOldest
     }
 
@@ -202,12 +193,11 @@ class ChatPresenter @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    fun getMessages() {
+    private fun getMessages() {
         getMessages(firstMessageId)
     }
 
-    fun getMessages(anchor: String) {
-//        val chatApi = RetrofitModule.chatApi
+    private fun getMessages(anchor: String) {
         chatApi.getMessages(
             anchor = anchor,
             num_after = 0,
@@ -275,7 +265,6 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessage(messageId: Long, position: Int) {
-//        val chatApi = RetrofitModule.chatApi
         chatApi.getMessages(
             "newest",
             1,
@@ -295,8 +284,7 @@ class ChatPresenter @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    fun sendMessage(message: String) {
-//        RetrofitModule.
+    private fun sendMessage(message: String) {
         chatApi.sendMessage("stream", nameStream, nameTopic, message)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -317,7 +305,6 @@ class ChatPresenter @Inject constructor(
             it.unicode == emoji
         }
 
-//        RetrofitModule.
         chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

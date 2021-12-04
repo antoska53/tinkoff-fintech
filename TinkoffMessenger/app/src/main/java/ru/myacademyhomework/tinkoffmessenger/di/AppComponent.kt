@@ -17,9 +17,6 @@ import javax.inject.Singleton
 @Component(modules = [NetworkModule::class, StorageModule::class])
 interface AppComponent {
 
-//    fun getChatApi(): ChatApi
-
-//    fun inject(chatFragment: ChatFragment)
     fun getChatComponent(chatModule: ChatModule): ChatComponent
     fun getPeopleComponent(peopleModule: PeopleModule): PeopleComponent
     fun getProfileComponent(profileModule: ProfileModule): ProfileComponent

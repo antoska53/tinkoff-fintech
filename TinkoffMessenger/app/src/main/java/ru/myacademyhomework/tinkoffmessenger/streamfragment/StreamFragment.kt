@@ -14,7 +14,6 @@ import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.AppDelegate
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject

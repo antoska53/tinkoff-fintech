@@ -8,15 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.AppDelegate
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatPresenter
-import ru.myacademyhomework.tinkoffmessenger.di.DaggerAppComponent
 import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.StreamDiffUtilCallback
 import javax.inject.Inject
 import javax.inject.Provider
 

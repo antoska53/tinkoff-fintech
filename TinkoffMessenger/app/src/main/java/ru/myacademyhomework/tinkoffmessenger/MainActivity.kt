@@ -2,9 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
-import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigation {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -26,7 +26,7 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 
-class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener, ChatView {
+class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener, ChatView {
 
     private val nameStream by lazy {
         arguments?.getString(NAME_CHANNEL) ?: ""
@@ -42,7 +42,6 @@ class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLis
     private lateinit var dialog: BottomSheetDialog
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
-    private var isInitRecycler = false
     private var foundOldest = false
 
     @Inject
@@ -51,26 +50,12 @@ class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLis
         presenterProvider.get()
     }
 
-//    @InjectPresenter
-//    lateinit var chatPresenter: ChatPresenter
-//
-//    @Inject
-//    lateinit var presenterProvider : Provider<ChatPresenter>
-//
-//    @ProvidePresenter
-//    fun providePresenter(): ChatPresenter {
-//        return presenterProvider.get()
-//    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-//        AppDelegate.appComponent.inject(this)
         AppDelegate.appComponent.getChatComponent(ChatModule()).inject(this)
         super.onCreate(savedInstanceState)
 
         chatPresenter.load(nameStream, nameTopic, foundOldest)
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -100,7 +85,11 @@ class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLis
         }
 
         buttonSendMessage = view.findViewById(R.id.button_send_message)
-        buttonSendMessage.setOnClickListener { chatPresenter.onClickButtonSendMessage(editTextMessage.text) }
+        buttonSendMessage.setOnClickListener {
+            chatPresenter.onClickButtonSendMessage(
+                editTextMessage.text
+            )
+        }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -130,10 +119,9 @@ class ChatFragment: MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLis
         })
     }
 
-    override fun buttonSendMessageSetImage(resId: Int){
+    override fun buttonSendMessageSetImage(resId: Int) {
         buttonSendMessage.setImageResource(resId)
     }
-
 
     override fun itemLongClicked(idMessage: Long, position: Int): Boolean {
         showBottomSheetDialog(idMessage, position)

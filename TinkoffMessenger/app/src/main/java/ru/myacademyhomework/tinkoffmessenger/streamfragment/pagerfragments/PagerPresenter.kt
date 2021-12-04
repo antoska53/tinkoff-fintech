@@ -10,10 +10,11 @@ import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.database.TopicDb
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.network.ChatApi
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 
-class PagerPresenter(private val chatDao: ChatDao) : BasePresenter<PagerView>() {
+class PagerPresenter(private val chatDao: ChatDao, private val chatApi: ChatApi) :
+    BasePresenter<PagerView>() {
 
     private var databaseIsNotEmpty = false
     private var databaseIsRefresh = false
@@ -49,7 +50,6 @@ class PagerPresenter(private val chatDao: ChatDao) : BasePresenter<PagerView>() 
     }
 
     fun getStreams() {
-        val chatApi = RetrofitModule.chatApi
         chatApi.getStreams()
             .subscribeOn(Schedulers.io())
             .flatMap {
