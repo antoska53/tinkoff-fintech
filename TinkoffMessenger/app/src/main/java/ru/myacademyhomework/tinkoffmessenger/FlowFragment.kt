@@ -2,18 +2,21 @@ package ru.myacademyhomework.tinkoffmessenger
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import moxy.MvpAppCompatFragment
+import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.peoplefragment.PeopleFragment
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
 import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
 import java.lang.IllegalArgumentException
 
 
-class FlowFragment : Fragment(R.layout.fragment_flow) {
+class FlowFragment : MvpAppCompatFragment(R.layout.fragment_flow), FlowFragmentView {
     private var navigation: FragmentNavigation? = null
-
+    private val flowFragmentPresenter by moxyPresenter {
+        FlowFragmentPresenter()
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -26,19 +29,19 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
 
         val bottomNavigation = view.findViewById<BottomNavigationView>(R.id.nav_view)
         val itemId = bottomNavigation.selectedItemId
-        loadFragment(itemId, false)
+        flowFragmentPresenter.loadFragment(itemId, false)
 
         bottomNavigation.setOnItemSelectedListener {
             if (it.itemId == bottomNavigation.selectedItemId) {
                 false
             } else {
-                loadFragment(it.itemId, false)
+                flowFragmentPresenter.loadFragment(it.itemId, false)
                 true
             }
         }
     }
 
-    private fun loadFragment(itemId: Int, toBackstack: Boolean) {
+    override fun loadFragment(itemId: Int, toBackstack: Boolean) {
         when (itemId) {
             R.id.navigation_channels -> {
                 navigation?.changeFragment(StreamFragment.newInstance(), toBackstack)
@@ -47,11 +50,20 @@ class FlowFragment : Fragment(R.layout.fragment_flow) {
                 navigation?.changeFragment(PeopleFragment.newInstance(), toBackstack)
             }
             R.id.navigation_profile -> {
-                navigation?.changeFragment(ProfileFragment.newInstance(ProfileFragment.USER_OWNER), toBackstack)
+                navigation?.changeFragment(
+                    ProfileFragment.newInstance(ProfileFragment.USER_OWNER),
+                    toBackstack
+                )
             }
             else -> throw IllegalArgumentException()
         }
     }
+
+    override fun showRefresh() {}
+
+    override fun hideRefresh() {}
+
+    override fun showError() {}
 
 
     companion object {

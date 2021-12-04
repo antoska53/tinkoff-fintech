@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.chatFragment
+package ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -1,7 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
@@ -11,45 +10,32 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import moxy.MvpAppCompatFragment
+import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
-import java.util.concurrent.TimeUnit
 
 
-class StreamFragment : Fragment(R.layout.fragment_stream) {
-    private val subject = PublishSubject.create<String>()
-    private var isSearch = false
+class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamView {
     private var showStreams = true
-    private val compositeDisposable = CompositeDisposable()
     private var editTextSearch: EditText? = null
+    private var viewPager: ViewPager2? = null
+    private var onBackPressedCallback: OnBackPressedCallback? = null
+    private val streamPresenter: StreamPresenter by moxyPresenter {
+        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
+        StreamPresenter(chatDao)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (isSearch) {
-                        isSearch = false
-                        editTextSearch?.text?.clear()
-                        childFragmentManager.setFragmentResult(
-                            SUBSCRIBE_RESULT_KEY,
-                            bundleOf(SHOW_STREAMS_KEY to showStreams)
-                        )
-                    } else {
-                        isEnabled = false
-                        requireActivity().onBackPressed()
-                    }
-                }
-            })
+        onBackPressedCallback = object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                streamPresenter.backPressed()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,75 +44,69 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         val pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
 
-        val viewPager = view.findViewById<ViewPager2>(R.id.viewpager_stream)
-        viewPager.adapter = pagerAdapter
+        viewPager = view.findViewById(R.id.viewpager_stream)
+        viewPager?.adapter = pagerAdapter
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+        TabLayoutMediator(tabLayout, viewPager!!) { tab, position ->
             tab.text = tabs[position]
         }.attach()
 
         editTextSearch = view.findViewById(R.id.search_edittext)
         editTextSearch?.addTextChangedListener { str ->
-            subject.onNext(str.toString())
+            streamPresenter.search(str.toString())
         }
 
-        initSearch(view, viewPager)
+        streamPresenter.initSearch()
     }
 
-    private fun initSearch(view: View, viewPager: ViewPager2) {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        subject
-                .filter { str -> str.isNotEmpty() }
-                .distinctUntilChanged()
-                .debounce(1000, TimeUnit.MILLISECONDS)
-                .switchMap { str ->
-                    val topicA = chatDao.getTopic(str)
-                    if(topicA != null){
-                        Observable.just(Topic(
-                            streamId = topicA.streamId,
-                            name = topicA.nameTopic,
-                            nameStream = topicA.nameStream
-                        ))
-                    } else {
-                        Observable.just(Topic(0, ""))
-                    }
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { topic ->
-                        if (topic.name.isNotEmpty()) {
-                            Snackbar.make(view, topic.name, Snackbar.LENGTH_SHORT).show()
-                            viewPager.currentItem = 0
-                            childFragmentManager.setFragmentResult(
-                                SUBSCRIBE_RESULT_KEY,
-                                bundleOf(TOPIC_KEY to topic.name,
-                                        STREAM_KKEY to topic.nameStream)
-                            )
-                            isSearch = true
-                        } else {
-                            Snackbar.make(view, "ничего не найдено", Snackbar.LENGTH_SHORT).show()
-                        }
-                    },
-                    {
-                        Snackbar.make(view, "ERROR", Snackbar.LENGTH_SHORT).show()
-                    }
-                )
-                .addTo(compositeDisposable)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        isSearch = false
-        compositeDisposable.clear()
+        streamPresenter.resetSearchFlag()
     }
 
+    override fun showStreams(){
+        editTextSearch?.text?.clear()
+        childFragmentManager.setFragmentResult(
+            SUBSCRIBE_RESULT_KEY,
+            bundleOf(SHOW_STREAMS_KEY to showStreams)
+        )
+    }
+
+    override fun backPressed(){
+        onBackPressedCallback?.isEnabled = false
+        requireActivity().onBackPressed()
+    }
+
+    override fun showResultSearch(topic: Topic) {
+        Snackbar.make(requireView(), topic.name, Snackbar.LENGTH_SHORT).show()
+
+        viewPager?.currentItem = 0
+        childFragmentManager.setFragmentResult(
+            SUBSCRIBE_RESULT_KEY,
+            bundleOf(
+                TOPIC_KEY to topic.name,
+                STREAM_KEY to topic.nameStream
+            )
+        )
+    }
+
+    override fun showIsEmptyResultSearch() {
+        Snackbar.make(requireView(), "ничего не найдено", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun showRefresh() {}
+
+    override fun hideRefresh() {}
+
+    override fun showError() {
+        Snackbar.make(requireView(), "ERROR", Snackbar.LENGTH_SHORT).show()
+    }
 
     companion object {
         const val SUBSCRIBE_RESULT_KEY = "SUBSCRIBE_RESULT_KEY"
-        const val ALL_STREAM_RESULT_KEY = "ALL_STREAM_RESULT_KEY"
         const val TOPIC_KEY = "TOPIC_KEY"
-        const val STREAM_KKEY = "STREAM_KKEY"
+        const val STREAM_KEY = "STREAM_KEY"
         const val SHOW_STREAMS_KEY = "SHOW_STREAMS_KEY"
 
         @JvmStatic

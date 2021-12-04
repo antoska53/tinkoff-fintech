@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import androidx.recyclerview.widget.DiffUtil
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage

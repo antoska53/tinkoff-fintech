@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.streamfragment
+package ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments
 
 import android.view.LayoutInflater
 import android.view.View

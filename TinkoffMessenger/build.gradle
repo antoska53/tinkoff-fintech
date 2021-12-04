@@ -43,5 +43,5 @@ ext{
     loggingInteceptorVersion = '4.8.1'
     roomVersion = '2.3.0'
     rxKotlinVersion = '2.4.0'
-
+    moxyVersion = '2.2.2'
 }

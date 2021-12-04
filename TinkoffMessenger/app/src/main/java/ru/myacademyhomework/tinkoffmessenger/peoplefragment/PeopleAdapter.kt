@@ -7,7 +7,7 @@ import ru.myacademyhomework.tinkoffmessenger.network.User
 
 class PeopleAdapter(private val listener: PeopleListener) : RecyclerView.Adapter<PeopleViewHolder>() {
 
-    private val people = mutableListOf<User>()
+    val people = mutableListOf<User>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleViewHolder {
         return PeopleViewHolder.createPeopleViewHolder(parent)
@@ -22,8 +22,8 @@ class PeopleAdapter(private val listener: PeopleListener) : RecyclerView.Adapter
     fun addData(users: List<User>) {
         val size = people.size
         people.clear()
-        notifyItemRangeRemoved(0, size)
+//        notifyItemRangeRemoved(0, size)
         people.addAll(users)
-        notifyItemRangeInserted(0, users.size)
+//        notifyItemRangeInserted(0, users.size)
     }
 }

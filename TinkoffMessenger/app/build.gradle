@@ -5,6 +5,8 @@ plugins {
     id 'kotlin-kapt'
 }
 
+//apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion rootProject.compileSdk
 
@@ -68,4 +70,10 @@ dependencies {
     // optional - RxJava2 support for Room
     implementation "androidx.room:room-rxjava2:$roomVersion"
 
+    // moxy
+    implementation "com.github.moxy-community:moxy:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-ktx:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-androidx:$moxyVersion"
+   // annotationProcessor "com.github.moxy-community:moxy-compiler:$moxyVersion"
+    kapt "com.github.moxy-community:moxy-compiler:$moxyVersion"
 }

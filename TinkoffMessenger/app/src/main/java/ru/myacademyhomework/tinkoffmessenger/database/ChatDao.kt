@@ -53,5 +53,5 @@ interface ChatDao {
     fun insertUsers(users: List<UserDb>)
 
     @Query("SELECT * FROM topic_table WHERE name_topic = :nameTopic")
-    fun getTopic(nameTopic: String): TopicDb
+    fun getTopic(nameTopic: String): TopicDb?
 }
