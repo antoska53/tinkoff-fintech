@@ -12,9 +12,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.AppDelegate
+import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject
 import javax.inject.Provider
@@ -34,7 +33,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppDelegate.appComponent.getStreamComponent(StreamModule()).inject(this)
+        (activity?.application as App).appComponent.getStreamComponent().inject(this)
         super.onCreate(savedInstanceState)
 
         onBackPressedCallback = object: OnBackPressedCallback(true) {

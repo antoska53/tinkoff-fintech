@@ -10,12 +10,15 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
+import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
 import ru.myacademyhomework.tinkoffmessenger.network.*
 import javax.inject.Inject
 
+@ChatScope
 class ChatPresenter @Inject constructor(
     private val chatDao: ChatDao,
-    private val chatApi: ChatApi
+    private val apiClient: ApiClient
 ) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
@@ -101,7 +104,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getOwnUser() {
-        chatApi.getOwnUser()
+        apiClient.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .map {
                 UserDb(
@@ -198,7 +201,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessages(anchor: String) {
-        chatApi.getMessages(
+        apiClient.chatApi.getMessages(
             anchor = anchor,
             num_after = 0,
             num_before = 20,
@@ -265,7 +268,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessage(messageId: Long, position: Int) {
-        chatApi.getMessages(
+        apiClient.chatApi.getMessages(
             "newest",
             1,
             1,
@@ -285,7 +288,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun sendMessage(message: String) {
-        chatApi.sendMessage("stream", nameStream, nameTopic, message)
+        apiClient.chatApi.sendMessage("stream", nameStream, nameTopic, message)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -305,7 +308,7 @@ class ChatPresenter @Inject constructor(
             it.unicode == emoji
         }
 
-        chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
+        apiClient.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

@@ -5,7 +5,7 @@ import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.AllSt
 import ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments.SubscribedFragment
 
 @PagerScope
-@Subcomponent(modules = [PagerModule::class])
+@Subcomponent()
 interface PagerComponent {
     fun inject(subscribedFragment: SubscribedFragment)
     fun inject(allStreamFragment: AllStreamFragment)

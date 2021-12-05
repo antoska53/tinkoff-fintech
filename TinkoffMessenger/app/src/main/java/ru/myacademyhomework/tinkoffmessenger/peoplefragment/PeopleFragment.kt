@@ -7,10 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.AppDelegate
+import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
 import javax.inject.Inject
@@ -36,7 +35,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppDelegate.appComponent.getPeopleComponent(PeopleModule()).inject(this)
+        (activity?.application as App).appComponent.getPeopleComponent().inject(this)
         super.onCreate(savedInstanceState)
     }
 

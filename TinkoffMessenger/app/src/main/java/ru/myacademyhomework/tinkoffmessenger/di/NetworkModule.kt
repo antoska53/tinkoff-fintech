@@ -6,7 +6,6 @@ import dagger.Provides
 import kotlinx.serialization.json.Json
 import okhttp3.Authenticator
 import okhttp3.Credentials
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,22 +14,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.create
 import ru.myacademyhomework.tinkoffmessenger.BuildConfig
 import ru.myacademyhomework.tinkoffmessenger.network.ChatApi
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
 class NetworkModule {
-
-    @Singleton
-    @Provides
-    fun provideJson(): Json {
-        return Json { ignoreUnknownKeys = true }
-    }
-
-    @Singleton
-    @Provides
-    fun provideContentType(): MediaType {
-        return "application/json".toMediaType()
-    }
 
     @Singleton
     @Provides
@@ -46,11 +34,11 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(client: OkHttpClient, json: Json, contentType: MediaType): Retrofit {
+    fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .client(client)
             .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(json.asConverterFactory(contentType))
+            .addConverterFactory(Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
@@ -60,4 +48,8 @@ class NetworkModule {
     fun provideChatApi(retrofit: Retrofit): ChatApi {
         return retrofit.create()
     }
+}
+
+class ApiClient @Inject constructor(private val retrofit: Retrofit) {
+    val chatApi: ChatApi = retrofit.create()
 }

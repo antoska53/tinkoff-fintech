@@ -11,12 +11,11 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.AppDelegate
+import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
-import ru.myacademyhomework.tinkoffmessenger.di.pager.PagerModule
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject
 import javax.inject.Provider
@@ -37,7 +36,7 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppDelegate.appComponent.getPagerComponent(PagerModule()).inject(this)
+        (activity?.application as App).appComponent.getPagerComponent().inject(this)
         super.onCreate(savedInstanceState)
     }
 

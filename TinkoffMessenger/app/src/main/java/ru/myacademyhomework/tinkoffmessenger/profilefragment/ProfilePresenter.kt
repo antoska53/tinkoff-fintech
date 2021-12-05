@@ -6,12 +6,15 @@ import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.network.ChatApi
+import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.di.profile.ProfileScope
 import ru.myacademyhomework.tinkoffmessenger.network.User
+import javax.inject.Inject
 
-class ProfilePresenter(
+@ProfileScope
+class ProfilePresenter @Inject constructor(
     private val chatDao: ChatDao,
-    private val chatApi: ChatApi
+    private val apiClient: ApiClient
 ) : BasePresenter<ProfileView>() {
 
     private var userId: Int = -1
@@ -52,7 +55,7 @@ class ProfilePresenter(
     }
 
     fun getOwnUser() {
-        chatApi.getOwnUser()
+        apiClient.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -68,7 +71,7 @@ class ProfilePresenter(
     }
 
     private fun getStatus() {
-        chatApi.getUserPresence(userId)
+        apiClient.chatApi.getUserPresence(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

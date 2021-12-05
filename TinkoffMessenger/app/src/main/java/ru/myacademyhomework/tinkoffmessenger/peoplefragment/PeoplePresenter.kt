@@ -6,10 +6,16 @@ import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.database.UserDb
-import ru.myacademyhomework.tinkoffmessenger.network.ChatApi
+import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleScope
 import ru.myacademyhomework.tinkoffmessenger.network.User
+import javax.inject.Inject
 
-class PeoplePresenter(private val chatDao: ChatDao, private val chatApi: ChatApi) :
+@PeopleScope
+class PeoplePresenter @Inject constructor(
+    private val chatDao: ChatDao,
+    private val apiClient: ApiClient
+) :
     BasePresenter<PeopleView>() {
 
     fun openProfile(userId: Int) {
@@ -38,7 +44,7 @@ class PeoplePresenter(private val chatDao: ChatDao, private val chatApi: ChatApi
     }
 
     fun getAllUsers() {
-        chatApi.getAllUsers()
+        apiClient.chatApi.getAllUsers()
             .subscribeOn(Schedulers.io())
             .doOnSuccess {
                 chatDao.insertUsers(it.users.map { user ->

@@ -4,7 +4,7 @@ import dagger.Subcomponent
 import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
 
 @StreamScope
-@Subcomponent(modules = [StreamModule::class])
+@Subcomponent()
 interface StreamComponent {
     fun inject(streamFragment: StreamFragment)
 }

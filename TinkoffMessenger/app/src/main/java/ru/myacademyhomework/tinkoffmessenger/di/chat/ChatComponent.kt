@@ -5,7 +5,7 @@ import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 
 
 @ChatScope
-@Subcomponent(modules = [ChatModule::class])
+@Subcomponent()
 interface ChatComponent {
     fun inject(chatFragment: ChatFragment)
 }

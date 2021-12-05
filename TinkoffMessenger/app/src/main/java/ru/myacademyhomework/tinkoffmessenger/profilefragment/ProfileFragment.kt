@@ -11,9 +11,8 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.AppDelegate
+import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.di.profile.ProfileModule
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import javax.inject.Inject
 import javax.inject.Provider
@@ -37,7 +36,7 @@ class ProfileFragment : MvpAppCompatFragment(R.layout.fragment_profile), Profile
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppDelegate.appComponent.getProfileComponent(ProfileModule()).inject(this)
+        (activity?.application as App).appComponent.getProfileComponent().inject(this)
         super.onCreate(savedInstanceState)
     }
 

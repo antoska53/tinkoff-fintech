@@ -4,7 +4,7 @@ import dagger.Subcomponent
 import ru.myacademyhomework.tinkoffmessenger.peoplefragment.PeopleFragment
 
 @PeopleScope
-@Subcomponent(modules = [PeopleModule::class])
+@Subcomponent()
 interface PeopleComponent {
     fun inject(peopleFragment: PeopleFragment)
 }
