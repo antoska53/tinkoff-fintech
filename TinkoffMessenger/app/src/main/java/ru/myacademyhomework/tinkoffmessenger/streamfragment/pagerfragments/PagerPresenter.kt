@@ -10,10 +10,14 @@ import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.database.TopicDb
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.di.pager.PagerScope
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
+import javax.inject.Inject
 
-class PagerPresenter(private val chatDao: ChatDao) : BasePresenter<PagerView>() {
+@PagerScope
+class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private val apiClient: ApiClient) :
+    BasePresenter<PagerView>() {
 
     private var databaseIsNotEmpty = false
     private var databaseIsRefresh = false
@@ -49,8 +53,7 @@ class PagerPresenter(private val chatDao: ChatDao) : BasePresenter<PagerView>() 
     }
 
     fun getStreams() {
-        val chatApi = RetrofitModule.chatApi
-        chatApi.getStreams()
+        apiClient.chatApi.getStreams()
             .subscribeOn(Schedulers.io())
             .flatMap {
                 Single.just(it.subscriptions)
@@ -59,7 +62,7 @@ class PagerPresenter(private val chatDao: ChatDao) : BasePresenter<PagerView>() 
                 Observable.fromIterable(it)
             }
             .flatMap { subscription ->
-                chatApi.getTopics(subscription.streamID)
+                apiClient.chatApi.getTopics(subscription.streamID)
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
                             TopicDb(topic.name, subscription.name, subscription.streamID)

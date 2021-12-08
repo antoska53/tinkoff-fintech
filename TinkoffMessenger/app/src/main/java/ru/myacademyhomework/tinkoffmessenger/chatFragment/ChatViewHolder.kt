@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
 import ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout

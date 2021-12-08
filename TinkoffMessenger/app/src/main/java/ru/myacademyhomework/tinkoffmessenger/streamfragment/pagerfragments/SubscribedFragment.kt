@@ -12,15 +12,15 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatDiffUtilCallback
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
-import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
+import javax.inject.Inject
+import javax.inject.Provider
 
 
 class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), PagerView {
@@ -30,9 +30,16 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
     private var navigation: FragmentNavigation? = null
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
+
+    @Inject
+    lateinit var providePresenter: Provider<PagerPresenter>
     private val pagerPresenter by moxyPresenter {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        PagerPresenter(chatDao)
+        providePresenter.get()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        (activity?.application as App).appComponent.getPagerComponent().inject(this)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onAttach(context: Context) {
@@ -54,8 +61,13 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
             val resultTopic = bundle.getString(StreamFragment.TOPIC_KEY)
             val resultStream = bundle.getString(StreamFragment.STREAM_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
-            if (resultTopic != null && resultStream != null)
-                adapter.setData(listOf(Topic(0, resultTopic, resultStream)))
+            if (resultTopic != null && resultStream != null) {
+                val listTopic = listOf(Topic(0, resultTopic, resultStream))
+                val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listTopic)
+                val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
+                adapter.setData(listTopic)
+                streamDiffResult.dispatchUpdatesTo(adapter)
+            }
             if (resultShowStreams) {
                 pagerPresenter.getStreams()
             }

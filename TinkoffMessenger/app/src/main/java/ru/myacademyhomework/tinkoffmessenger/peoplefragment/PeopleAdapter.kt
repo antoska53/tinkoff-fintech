@@ -2,7 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.myacademyhomework.tinkoffmessenger.PeopleListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.PeopleListener
 import ru.myacademyhomework.tinkoffmessenger.network.User
 
 class PeopleAdapter(private val listener: PeopleListener) : RecyclerView.Adapter<PeopleViewHolder>() {

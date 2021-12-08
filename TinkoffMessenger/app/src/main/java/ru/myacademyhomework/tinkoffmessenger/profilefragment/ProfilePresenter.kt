@@ -6,13 +6,22 @@ import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
+import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.di.profile.ProfileScope
 import ru.myacademyhomework.tinkoffmessenger.network.User
+import javax.inject.Inject
 
-class ProfilePresenter(
+@ProfileScope
+class ProfilePresenter @Inject constructor(
     private val chatDao: ChatDao,
-    private val userId: Int
+    private val apiClient: ApiClient
 ) : BasePresenter<ProfileView>() {
+
+    private var userId: Int = -1
+
+    fun loadUserId(userId: Int){
+        this.userId = userId
+    }
 
     fun refreshData() {
         if (userId == ProfileFragment.USER_OWNER) {
@@ -23,7 +32,7 @@ class ProfilePresenter(
         }
     }
 
-    fun getUserFromDb() {
+    private fun getUserFromDb() {
         chatDao.getUser(userId)
             .map {
                 User(
@@ -46,7 +55,7 @@ class ProfilePresenter(
     }
 
     fun getOwnUser() {
-        RetrofitModule.chatApi.getOwnUser()
+        apiClient.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -61,8 +70,8 @@ class ProfilePresenter(
             .addTo(compositeDisposable)
     }
 
-    fun getStatus() {
-        RetrofitModule.chatApi.getUserPresence(userId)
+    private fun getStatus() {
+        apiClient.chatApi.getUserPresence(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

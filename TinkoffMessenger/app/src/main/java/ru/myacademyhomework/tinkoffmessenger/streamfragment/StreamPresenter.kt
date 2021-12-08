@@ -7,10 +7,14 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
+import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamScope
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class StreamPresenter(private val chatDao: ChatDao) : BasePresenter<StreamView>() {
+@StreamScope
+class StreamPresenter @Inject constructor(private val chatDao: ChatDao) :
+    BasePresenter<StreamView>() {
 
     private var isSearch = false
     private val subject = PublishSubject.create<String>()
@@ -58,14 +62,14 @@ class StreamPresenter(private val chatDao: ChatDao) : BasePresenter<StreamView>(
 
     fun backPressed() {
         if (isSearch) {
-        isSearch = false
+            isSearch = false
             viewState.showStreams()
         } else {
             viewState.backPressed()
         }
     }
 
-    fun resetSearchFlag(){
+    fun resetSearchFlag() {
         isSearch = false
     }
 }

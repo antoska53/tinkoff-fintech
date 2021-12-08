@@ -15,16 +15,17 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.App
+import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
+import javax.inject.Inject
+import javax.inject.Provider
 
 
-class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener,
-    ChatView {
+class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageListener, ChatView {
 
     private val nameStream by lazy {
         arguments?.getString(NAME_CHANNEL) ?: ""
@@ -40,11 +41,20 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private lateinit var dialog: BottomSheetDialog
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
-    private val chatPresenter: ChatPresenter by moxyPresenter {
-        val chatDao = ChatDatabase.getDatabase(requireContext()).chatDao()
-        ChatPresenter(chatDao, nameStream, nameTopic)
+    private var foundOldest = false
+
+    @Inject
+    lateinit var presenterProvider: Provider<ChatPresenter>
+    private val chatPresenter by moxyPresenter {
+        presenterProvider.get()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        (activity?.application as App).appComponent.getChatComponent().inject(this)
+        super.onCreate(savedInstanceState)
+
+        chatPresenter.load(nameStream, nameTopic, foundOldest)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,7 +84,11 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         }
 
         buttonSendMessage = view.findViewById(R.id.button_send_message)
-        buttonSendMessage.setOnClickListener { chatPresenter.onClickButtonSendMessage(editTextMessage.text) }
+        buttonSendMessage.setOnClickListener {
+            chatPresenter.onClickButtonSendMessage(
+                editTextMessage.text
+            )
+        }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -104,10 +118,9 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         })
     }
 
-    override fun buttonSendMessageSetImage(resId: Int){
+    override fun buttonSendMessageSetImage(resId: Int) {
         buttonSendMessage.setImageResource(resId)
     }
-
 
     override fun itemLongClicked(idMessage: Long, position: Int): Boolean {
         showBottomSheetDialog(idMessage, position)

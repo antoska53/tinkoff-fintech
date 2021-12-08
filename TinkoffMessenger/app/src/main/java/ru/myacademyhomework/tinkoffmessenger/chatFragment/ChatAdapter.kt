@@ -2,7 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.myacademyhomework.tinkoffmessenger.ChatMessageListener
+import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage

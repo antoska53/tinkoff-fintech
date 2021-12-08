@@ -10,26 +10,33 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
-import ru.myacademyhomework.tinkoffmessenger.network.Reaction
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
-import ru.myacademyhomework.tinkoffmessenger.network.User
-import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
+import ru.myacademyhomework.tinkoffmessenger.network.*
+import javax.inject.Inject
 
-class ChatPresenter(
+@ChatScope
+class ChatPresenter @Inject constructor(
     private val chatDao: ChatDao,
-    private val nameStream: String,
-    private val nameTopic: String,
+    private val apiClient: ApiClient
 ) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
     private var databaseIsNotEmpty = false
     private var isLoading = true
     private var firstMessageId = "-1"
+    private var nameStream: String? = null
+    private var nameTopic: String? = null
     private var isInitRecycler = false
     private var foundOldest = false
 
+    fun load(nameStream: String, nameTopic: String, foundOldest: Boolean) {
+        this.nameStream = nameStream
+        this.nameTopic = nameTopic
+        this.foundOldest = foundOldest
+    }
 
-    fun buttonReloadClick(){
+    fun buttonReloadClick() {
         if (isInitRecycler) {
             getMessages()
         } else {
@@ -37,7 +44,7 @@ class ChatPresenter(
         }
     }
 
-    fun loadFoundOldest(foundOldest: Boolean){
+    fun loadFoundOldest(foundOldest: Boolean) {
         this.foundOldest = foundOldest
     }
 
@@ -97,7 +104,7 @@ class ChatPresenter(
     }
 
     private fun getOwnUser() {
-        RetrofitModule.chatApi.getOwnUser()
+        apiClient.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .map {
                 UserDb(
@@ -121,149 +128,152 @@ class ChatPresenter(
     }
 
     private fun getOldMessageFromDb() {
-        chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
-            .map {
-                it.map { messageDb ->
-                    UserMessage(
-                        avatarURL = messageDb.avatarURL,
-                        content = messageDb.content,
-                        id = messageDb.id,
-                        isMeMessage = messageDb.isMeMessage,
-                        senderFullName = messageDb.senderFullName,
-                        timestamp = messageDb.timestamp,
-                        streamID = messageDb.streamID,
-                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                            Reaction(
-                                reactionDb.emojiCode,
-                                reactionDb.emojiName,
-                                reactionDb.reactionType,
-                                reactionDb.userId
-                            )
-                        }
-                    )
+        nameTopic?.let {nameTopic ->
+            chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
+                .map {
+                    it.map { messageDb ->
+                        UserMessage(
+                            avatarURL = messageDb.avatarURL,
+                            content = messageDb.content,
+                            id = messageDb.id,
+                            isMeMessage = messageDb.isMeMessage,
+                            senderFullName = messageDb.senderFullName,
+                            timestamp = messageDb.timestamp,
+                            streamID = messageDb.streamID,
+                            reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+                                Reaction(
+                                    reactionDb.emojiCode,
+                                    reactionDb.emojiName,
+                                    reactionDb.reactionType,
+                                    reactionDb.userId
+                                )
+                            }
+                        )
+                    }
                 }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                viewState.addRecyclerData(it)
-                isLoading = false
-            }.addTo(compositeDisposable)
-
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    viewState.addRecyclerData(it)
+                    isLoading = false
+                }.addTo(compositeDisposable)
+        }
     }
 
     private fun getAllMessagesFromDb() {
-        chatDao.getAllMessages(nameTopic)
-            .map {
-                it.map { messageDb ->
-                    UserMessage(
-                        avatarURL = messageDb.avatarURL,
-                        content = messageDb.content,
-                        id = messageDb.id,
-                        isMeMessage = messageDb.isMeMessage,
-                        senderFullName = messageDb.senderFullName,
-                        timestamp = messageDb.timestamp,
-                        streamID = messageDb.streamID,
-                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                            Reaction(
-                                reactionDb.emojiCode,
-                                reactionDb.emojiName,
-                                reactionDb.reactionType,
-                                reactionDb.userId
-                            )
-                        }
-                    )
+        nameTopic?.let {nameTopic ->
+            chatDao.getAllMessages(nameTopic)
+                .map {
+                    it.map { messageDb ->
+                        UserMessage(
+                            avatarURL = messageDb.avatarURL,
+                            content = messageDb.content,
+                            id = messageDb.id,
+                            isMeMessage = messageDb.isMeMessage,
+                            senderFullName = messageDb.senderFullName,
+                            timestamp = messageDb.timestamp,
+                            streamID = messageDb.streamID,
+                            reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+                                Reaction(
+                                    reactionDb.emojiCode,
+                                    reactionDb.emojiName,
+                                    reactionDb.reactionType,
+                                    reactionDb.userId
+                                )
+                            }
+                        )
+                    }
                 }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it.isEmpty()) {
-                    viewState.showRefresh()
-                } else {
-                    databaseIsNotEmpty = true
-                    viewState.updateRecyclerData(it)
-                    isLoading = false
-                }
-                if (!databaseIsRefresh) getMessages("newest")
-            }, {
-            })
-            .addTo(compositeDisposable)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it.isEmpty()) {
+                        viewState.showRefresh()
+                    } else {
+                        databaseIsNotEmpty = true
+                        viewState.updateRecyclerData(it)
+                        isLoading = false
+                    }
+                    if (!databaseIsRefresh) getMessages("newest")
+                }, {
+                })
+                .addTo(compositeDisposable)
+        }
     }
 
-    fun getMessages() {
+    private fun getMessages() {
         getMessages(firstMessageId)
     }
 
-    fun getMessages(anchor: String) {
-        val chatApi = RetrofitModule.chatApi
-        chatApi.getMessages(
-            anchor = anchor,
-            num_after = 0,
-            num_before = 20,
-            narrow = "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
-        )
-            .subscribeOn(Schedulers.io())
-            .map {
-                if (it.foundOldest) {
-                    foundOldest = it.foundOldest
-                    viewState.addToSharedpref(foundOldest)
-                }
-                it.messages.map { userMessage ->
-                    chatDao.insertReaction(
-                        userMessage.reactions.map { reaction ->
-                            ReactionDb(
-                                reaction.emojiCode,
-                                reaction.emojiName,
-                                reaction.reactionType,
-                                reaction.userId,
-                                userMessage.id
-                            )
-                        })
+    private fun getMessages(anchor: String) {
+        nameTopic?.let {nameTopic ->
+            apiClient.chatApi.getMessages(
+                anchor = anchor,
+                num_after = 0,
+                num_before = 20,
+                narrow = "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
+            )
+                .subscribeOn(Schedulers.io())
+                .map {
+                    if (it.foundOldest) {
+                        foundOldest = it.foundOldest
+                        viewState.addToSharedpref(foundOldest)
+                    }
+                    it.messages.map { userMessage ->
+                        chatDao.insertReaction(
+                            userMessage.reactions.map { reaction ->
+                                ReactionDb(
+                                    reaction.emojiCode,
+                                    reaction.emojiName,
+                                    reaction.reactionType,
+                                    reaction.userId,
+                                    userMessage.id
+                                )
+                            })
 
-                    MessageDb(
-                        avatarURL = userMessage.avatarURL,
-                        content = userMessage.content,
-                        id = userMessage.id,
-                        isMeMessage = userMessage.isMeMessage,
-                        senderFullName = userMessage.senderFullName,
-                        timestamp = userMessage.timestamp,
-                        streamID = userMessage.streamID,
-                        nameTopic = nameTopic
-                    )
+                        MessageDb(
+                            avatarURL = userMessage.avatarURL,
+                            content = userMessage.content,
+                            id = userMessage.id,
+                            isMeMessage = userMessage.isMeMessage,
+                            senderFullName = userMessage.senderFullName,
+                            timestamp = userMessage.timestamp,
+                            streamID = userMessage.streamID,
+                            nameTopic = nameTopic
+                        )
+                    }
                 }
-            }
-            .doOnSuccess {
-                databaseIsRefresh = true
-                databaseIsNotEmpty = true
-                chatDao.insertMessages(it)
-                if (isLoading) getOldMessageFromDb()
-                firstMessageId = it.first().id.toString()
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                if (!databaseIsNotEmpty) {
-                    viewState.showRefresh()
+                .doOnSuccess {
+                    databaseIsRefresh = true
+                    databaseIsNotEmpty = true
+                    chatDao.insertMessages(it)
+                    if (isLoading) getOldMessageFromDb()
+                    firstMessageId = it.first().id.toString()
                 }
-                isLoading = true
-            }
-            .doOnTerminate {
-                viewState.hideRefresh()
-            }
-            .subscribe({
-                viewState.showRecycler()
-            }, {
-                if (databaseIsNotEmpty) {
-                    viewState.showErrorUpdateData()
-                } else {
-                    viewState.showError()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    if (!databaseIsNotEmpty) {
+                        viewState.showRefresh()
+                    }
+                    isLoading = true
                 }
-                isLoading = false
-            })
-            .addTo(compositeDisposable)
+                .doOnTerminate {
+                    viewState.hideRefresh()
+                }
+                .subscribe({
+                    viewState.showRecycler()
+                }, {
+                    if (databaseIsNotEmpty) {
+                        viewState.showErrorUpdateData()
+                    } else {
+                        viewState.showError()
+                    }
+                    isLoading = false
+                })
+                .addTo(compositeDisposable)
+        }
     }
 
     private fun getMessage(messageId: Long, position: Int) {
-        val chatApi = RetrofitModule.chatApi
-        chatApi.getMessages(
+        apiClient.chatApi.getMessages(
             "newest",
             1,
             1,
@@ -282,20 +292,24 @@ class ChatPresenter(
             .addTo(compositeDisposable)
     }
 
-    fun sendMessage(message: String) {
-        RetrofitModule.chatApi.sendMessage("stream", nameStream, nameTopic, message)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    viewState.clearEditText()
-                    getMessage(it.id, ChatFragment.SEND_MESSAGE_POSITION)
-                },
-                {
-                    viewState.showErrorSendMessage()
-                }
-            )
-            .addTo(compositeDisposable)
+    private fun sendMessage(message: String) {
+        nameStream?.let { nameStream ->
+            nameTopic?.let { nameTopic ->
+                apiClient.chatApi.sendMessage("stream", nameStream, nameTopic, message)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        {
+                            viewState.clearEditText()
+                            getMessage(it.id, ChatFragment.SEND_MESSAGE_POSITION)
+                        },
+                        {
+                            viewState.showErrorSendMessage()
+                        }
+                    )
+                    .addTo(compositeDisposable)
+            }
+        }
     }
 
     fun updateEmoji(emoji: String, idMessage: Long, position: Int) {
@@ -303,7 +317,7 @@ class ChatPresenter(
             it.unicode == emoji
         }
 
-        RetrofitModule.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
+        apiClient.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
