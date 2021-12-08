@@ -42,12 +42,6 @@ class NetworkModule {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
-
-    @Singleton
-    @Provides
-    fun provideChatApi(retrofit: Retrofit): ChatApi {
-        return retrofit.create()
-    }
 }
 
 class ApiClient @Inject constructor(private val retrofit: Retrofit) {
