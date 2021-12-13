@@ -24,12 +24,17 @@ class FlowFragment : MvpAppCompatFragment(R.layout.fragment_flow), FlowFragmentV
         navigation = context
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            flowFragmentPresenter.loadFragment(R.id.navigation_channels, false)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val bottomNavigation = view.findViewById<BottomNavigationView>(R.id.nav_view)
-        val itemId = bottomNavigation.selectedItemId
-        flowFragmentPresenter.loadFragment(itemId, false)
 
         bottomNavigation.setOnItemSelectedListener {
             if (it.itemId == bottomNavigation.selectedItemId) {
