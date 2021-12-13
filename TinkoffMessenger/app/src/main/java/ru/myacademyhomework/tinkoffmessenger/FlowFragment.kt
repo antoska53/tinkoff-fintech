@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import moxy.MvpAppCompatFragment
@@ -28,7 +27,6 @@ class FlowFragment : MvpAppCompatFragment(R.layout.fragment_flow), FlowFragmentV
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            Log.d("BLA", "onCreate: BLA")
             flowFragmentPresenter.loadFragment(R.id.navigation_channels, false)
         }
     }
