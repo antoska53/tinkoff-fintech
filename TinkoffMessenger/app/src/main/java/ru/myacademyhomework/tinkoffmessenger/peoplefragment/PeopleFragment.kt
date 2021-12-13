@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -75,6 +76,21 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     override fun onDestroyView() {
         super.onDestroyView()
         recycler?.adapter = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("BLA", "onStop:  bla bla bla")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("BLA", "onPause: bla bla bla")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("BLA", "onDestroy: bla bla bla")
     }
 
 

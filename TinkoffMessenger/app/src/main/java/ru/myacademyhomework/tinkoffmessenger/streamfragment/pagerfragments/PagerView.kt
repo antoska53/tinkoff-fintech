@@ -11,7 +11,7 @@ interface PagerView : BaseView {
     @Skip
     fun showErrorUpdateData()
 
-    @AddToEnd
+    @Skip
     fun openChatTopic(topic: Topic)
 
     @AddToEnd

@@ -3,6 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import moxy.viewstate.strategy.alias.Skip
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.database.UserDb
@@ -18,6 +19,7 @@ class PeoplePresenter @Inject constructor(
 ) :
     BasePresenter<PeopleView>() {
 
+    @Skip
     fun openProfile(userId: Int) {
         viewState.openProfileFragment(userId)
     }
