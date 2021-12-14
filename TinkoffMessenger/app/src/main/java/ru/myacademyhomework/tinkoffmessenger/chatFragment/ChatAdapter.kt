@@ -7,9 +7,7 @@ import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 
@@ -47,8 +45,6 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
 
 
     fun updateMessage(message: UserMessage) {
-//        messages.add(message)
-//        notifyItemInserted(messages.size)
         if(!DateUtil.isSameDay(Date((this.messages.last() as UserMessage).timestamp * 1000), Date(message.timestamp * 1000))){
             val localDate =
                 Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())

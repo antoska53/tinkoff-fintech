@@ -143,6 +143,21 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         return true
     }
 
+    override fun itemAddReactionClicked(messageId: Long, emojiName: String, position: Int) {
+        chatPresenter.addReaction(messageId, emojiName, position)
+    }
+
+    override fun itemRemoveReactionClicked(
+        messageId: Long,
+        emojiName: String,
+        emojiCode: String,
+        reactionType: String,
+        userId: Int,
+        position: Int
+    ) {
+        chatPresenter.removeReaction(messageId, emojiName, emojiCode, reactionType, userId, position)
+    }
+
     private fun showBottomSheetDialog(idMessage: Long, positionMessage: Int) {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
         dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -223,6 +238,22 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
     override fun showError() {
         errorView?.isVisible = true
+    }
+
+    override fun showErrorAddReaction() {
+        Snackbar.make(
+            requireView(),
+            "Неудалось добавить эмодзи \uD83D\uDE2D",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showErrorRemoveReaction(){
+        Snackbar.make(
+            requireView(),
+            "Неудалось удалить эмодзи",
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     override fun clearEditText() {

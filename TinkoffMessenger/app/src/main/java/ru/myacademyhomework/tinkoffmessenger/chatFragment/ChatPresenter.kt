@@ -134,7 +134,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getOldMessageFromDb() {
-        nameTopic?.let {nameTopic ->
+        nameTopic?.let { nameTopic ->
             chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
                 .map {
                     it.map { messageDb ->
@@ -166,7 +166,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getAllMessagesFromDb() {
-        nameTopic?.let {nameTopic ->
+        nameTopic?.let { nameTopic ->
             chatDao.getAllMessages(nameTopic)
                 .map {
                     it.map { messageDb ->
@@ -210,7 +210,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessages(anchor: String) {
-        nameTopic?.let {nameTopic ->
+        nameTopic?.let { nameTopic ->
             apiClient.chatApi.getMessages(
                 anchor = anchor,
                 num_after = 0,
@@ -339,7 +339,11 @@ class ChatPresenter @Inject constructor(
         val newListMessages = mutableListOf<ChatMessage>()
         var calendar: Calendar? = null
         for (message in messages) {
-            if (calendar == null || !DateUtil.isSameDay(calendar.time, Date(message.timestamp * 1000))) {
+            if (calendar == null || !DateUtil.isSameDay(
+                    calendar.time,
+                    Date(message.timestamp * 1000)
+                )
+            ) {
                 val localDate =
                     Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
                         .toLocalDate()
@@ -348,8 +352,50 @@ class ChatPresenter @Inject constructor(
                 calendar.time = Date(message.timestamp * 1000)
                 newListMessages.add(dateMessage)
             }
-                newListMessages.add(message)
+            newListMessages.add(message)
         }
         return newListMessages
     }
+
+    fun addReaction(messageId: Long, emojiName: String, position: Int) {
+        apiClient.chatApi.addReaction(messageId, emojiName)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                getMessage(messageId, position)
+            },
+                {
+                    viewState.showErrorAddReaction()
+                })
+            .addTo(compositeDisposable)
+    }
+
+    fun removeReaction(
+        messageId: Long,
+        emojiName: String,
+        emojiCode: String,
+        reactionType: String,
+        userId: Int,
+        position: Int
+    ) {
+        apiClient.chatApi.removeReaction(
+            messageId,
+            emojiName,
+            emojiCode,
+            reactionType
+        )
+            .doOnComplete {
+                chatDao.deleteReaction(userId, emojiCode)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                getMessage(messageId, position)
+            }, {
+               viewState.showErrorRemoveReaction()
+            })
+            .addTo(compositeDisposable)
+    }
+
 }
+

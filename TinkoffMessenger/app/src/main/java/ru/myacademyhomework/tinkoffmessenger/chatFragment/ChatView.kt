@@ -49,4 +49,9 @@ interface ChatView : BaseView {
     @AddToEndSingle
     fun buttonSendMessageSetImage(resId: Int)
 
+    @Skip
+    fun showErrorAddReaction()
+
+    @Skip
+    fun showErrorRemoveReaction()
 }
