@@ -11,23 +11,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#1E1E1e">
+        android:background="@color/color_background_search">
 
         <EditText
             android:id="@+id/search_edittext"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:paddingStart="55dp"
-            android:hint="Search..."
-            android:textSize="24dp"
+            android:backgroundTint="#323232"
+            android:hint="@string/hint_search_stream"
+            android:paddingStart="35dp"
+            android:layout_marginStart="20dp"
+            android:paddingBottom="15dp"
             android:textColorHint="#FFFFFF"
-           />
+            android:textSize="24sp" />
 
         <ImageView
             android:id="@+id/search_imageview"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="25dp"
             android:layout_gravity="center"
             android:background="@drawable/ic_search"
             />
@@ -38,9 +42,10 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="35dp"
         android:background="#1E1E1E"
         app:tabTextColor="#FAFAFA"
-        app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
+        app:tabTextAppearance="@style/StreamTabLayoutStyle"
         />
 
     <androidx.viewpager2.widget.ViewPager2

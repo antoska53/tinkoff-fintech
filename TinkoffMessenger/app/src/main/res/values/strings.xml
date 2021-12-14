@@ -10,4 +10,6 @@
     <string name="status_online">online</string>
     <string name="status_offline">offline</string>
     <string name="status_idle">idle</string>
+    <string name="hint_search_user">Users...</string>
+    <string name="hint_search_stream">Search...</string>
 </resources>

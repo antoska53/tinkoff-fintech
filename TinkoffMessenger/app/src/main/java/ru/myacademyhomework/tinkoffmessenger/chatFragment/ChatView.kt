@@ -1,5 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
+import moxy.viewstate.strategy.alias.AddToEnd
 import moxy.viewstate.strategy.alias.AddToEndSingle
 import moxy.viewstate.strategy.alias.Skip
 import ru.myacademyhomework.tinkoffmessenger.common.BaseView
@@ -26,7 +27,7 @@ interface ChatView : BaseView {
     @Skip
     fun clearEditText()
 
-    @AddToEndSingle
+    @AddToEnd
     fun initRecycler(listUser: List<User>)
 
     @AddToEndSingle

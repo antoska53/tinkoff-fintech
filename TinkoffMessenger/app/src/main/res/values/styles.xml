@@ -9,4 +9,8 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="StreamTabLayoutStyle" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textSize">22sp</item>
+    </style>
+
 </resources>

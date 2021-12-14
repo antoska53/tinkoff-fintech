@@ -73,6 +73,8 @@ class FlowFragment : MvpAppCompatFragment(R.layout.fragment_flow), FlowFragmentV
 
     companion object {
         const val FLOW_FRAGMENT = "FLOW_FRAGMENT"
+        const val LIGHT_COLOR = R.color.status_bar_light_color
+        const val DARK_COLOR = R.color.status_bar_dark_color
 
         @JvmStatic
         fun newInstance() = FlowFragment()

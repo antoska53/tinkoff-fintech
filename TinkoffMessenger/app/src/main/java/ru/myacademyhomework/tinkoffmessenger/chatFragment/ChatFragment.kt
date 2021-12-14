@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -16,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.App
+import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
@@ -52,6 +54,8 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     override fun onCreate(savedInstanceState: Bundle?) {
         (activity?.application as App).appComponent.getChatComponent().inject(this)
         super.onCreate(savedInstanceState)
+
+        setStatusBarColor(FlowFragment.LIGHT_COLOR)
 
         chatPresenter.load(nameStream, nameTopic, foundOldest)
     }
@@ -105,6 +109,17 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     override fun onDestroyView() {
         recyclerView?.adapter = null
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        setStatusBarColor(FlowFragment.DARK_COLOR)
+    }
+
+    private fun setStatusBarColor(color: Int) {
+        val window = activity?.window
+        window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window?.statusBarColor = resources.getColor(color, null)
     }
 
     override fun initRecycler(listUser: List<User>) {

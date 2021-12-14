@@ -17,7 +17,8 @@
     <color name="color_date">#070707</color>
     <color name="color_text_date">#999999</color>
     <color name="color_action_bar">#2A9D8F</color>
-    <color name="color_status_bar">#2A9D8F</color>
+    <color name="status_bar_dark_color">#1E1E1E</color>
+    <color name="status_bar_light_color">#2A9D8F</color>
     <color name="bg_bottom_nav_color">#1E1E1E</color>
     <color name="button_logout_color">#1B1B1B</color>
     <color name="button_logout_textcolor">#FFFFFF</color>
@@ -28,4 +29,6 @@
     <color name="status_online_color">#4AB54D</color>
     <color name="status_offline_color">#E53935</color>
     <color name="status_idle_color">#FB8C00</color>
+    <color name="color_text_search_user">#FFFFFF</color>
+    <color name="color_background_search">#1E1E1E</color>
 </resources>
