@@ -47,8 +47,18 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
 
 
     fun updateMessage(message: UserMessage) {
-        messages.add(message)
-        notifyItemInserted(messages.size)
+//        messages.add(message)
+//        notifyItemInserted(messages.size)
+        if(!DateUtil.isSameDay(Date((this.messages.last() as UserMessage).timestamp * 1000), Date(message.timestamp * 1000))){
+            val localDate =
+                Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+            val dateMessage = DateMessage(localDate)
+            this.messages.add(dateMessage)
+            notifyItemInserted(this.messages.size)
+        }
+            this.messages.add(message)
+            notifyItemInserted(this.messages.size)
     }
 
     fun updateListEmoji(message: UserMessage, position: Int) {
@@ -61,51 +71,10 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         this.messages.addAll(messages)
     }
 
-    fun addData(messages: List<UserMessage>){
-//        this.messages.addAll(0, messages)
-//        notifyItemRangeInserted(0, messages.size)
-//        messages.reversed()
-//        val calendar: Calendar = Calendar.getInstance()
-//        calendar.time = Date.from((this.messages[0] as DateMessage).date.atStartOfDay().atZone(
-//            ZoneId.systemDefault()).toInstant())
-        var calendar: Calendar? = null
-        var dateCount = 0
-        for((index, message) in messages.withIndex()){
-            if(calendar == null || !DateUtil.isSameDay(calendar.time, Date(message.timestamp * 1000))){
-                val localDate = Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
-                val dateMessage = DateMessage(localDate)
-                calendar = Calendar.getInstance()
-                calendar.time = Date(message.timestamp * 1000)
-                this.messages.add(index + dateCount, dateMessage)
-                notifyItemInserted(index + dateCount)
-                this.messages.add(index + dateCount + 1, message)
-                notifyItemInserted(index + dateCount + 1)
-                dateCount++
-            }else{
-                this.messages.add(index + dateCount, message)
-                notifyItemInserted(index + dateCount)
-            }
-        }
+    fun addData(messages: List<ChatMessage>) {
+        this.messages.addAll(0, messages)
+        notifyItemRangeInserted(0, messages.size)
     }
 
-    fun setupListMessage(messages: List<UserMessage>){
-        var calendar: Calendar? = null
-        for (message in messages){
-            if(calendar == null || !DateUtil.isSameDay(calendar.time, Date(message.timestamp * 1000))){
-                val localDate = Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
-                val dateMessage = DateMessage(localDate)
-                calendar = Calendar.getInstance()
-                calendar.time = Date(message.timestamp * 1000)
-                this.messages.add(dateMessage)
-                notifyItemInserted(this.messages.size - 1)
-                this.messages.add(message)
-                notifyItemInserted(this.messages.size - 1)
-            }else{
-                this.messages.add(message)
-                notifyItemInserted(this.messages.size - 1)
-            }
-
-        }
-    }
 
 }

@@ -4,10 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "reaction_table")
+@Entity(tableName = "reaction_table", primaryKeys = ["emoji_code", "user_id"])
 class ReactionDb (
 
-    @PrimaryKey
     @ColumnInfo(name = "emoji_code")
     val emojiCode: String,
 

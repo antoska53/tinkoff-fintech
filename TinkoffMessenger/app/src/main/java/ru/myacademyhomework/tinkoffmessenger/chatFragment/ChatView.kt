@@ -4,6 +4,7 @@ import moxy.viewstate.strategy.alias.AddToEnd
 import moxy.viewstate.strategy.alias.AddToEndSingle
 import moxy.viewstate.strategy.alias.Skip
 import ru.myacademyhomework.tinkoffmessenger.common.BaseView
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
@@ -31,10 +32,10 @@ interface ChatView : BaseView {
     fun initRecycler(listUser: List<User>)
 
     @AddToEndSingle
-    fun updateRecyclerData(listUserMessage: List<UserMessage>)
+    fun updateRecyclerData(listUserMessage: List<ChatMessage>)
 
     @AddToEndSingle
-    fun addRecyclerData(listUserMessage: List<UserMessage>)
+    fun addRecyclerData(listUserMessage: List<ChatMessage>)
 
     @AddToEndSingle
     fun updateMessage(message: UserMessage)

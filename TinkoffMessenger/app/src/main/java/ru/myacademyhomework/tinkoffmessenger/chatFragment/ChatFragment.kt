@@ -21,6 +21,7 @@ import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import javax.inject.Inject
@@ -175,17 +176,15 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         editor.apply()
     }
 
-    override fun updateRecyclerData(listUserMessage: List<UserMessage>) {
-//        adapter.updateData(listUserMessage)
-//        val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
-//        val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
-//        chatDiffResult.dispatchUpdatesTo(adapter)
-//        recyclerView?.scrollToPosition(listUserMessage.size - 1)
-        adapter.setupListMessage(listUserMessage)
-        recyclerView?.scrollToPosition(adapter.itemCount - 1)
+    override fun updateRecyclerData(listUserMessage: List<ChatMessage>) {
+        adapter.updateData(listUserMessage)
+        val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
+        val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
+        chatDiffResult.dispatchUpdatesTo(adapter)
+        recyclerView?.scrollToPosition(listUserMessage.size - 1)
     }
 
-    override fun addRecyclerData(listUserMessage: List<UserMessage>) {
+    override fun addRecyclerData(listUserMessage: List<ChatMessage>) {
         adapter.addData(listUserMessage)
     }
 

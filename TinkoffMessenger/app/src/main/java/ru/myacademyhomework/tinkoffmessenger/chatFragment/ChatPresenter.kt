@@ -8,11 +8,16 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.database.*
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
 import ru.myacademyhomework.tinkoffmessenger.network.*
+import java.time.Instant
+import java.time.ZoneId
+import java.util.*
 import javax.inject.Inject
 
 @ChatScope
@@ -81,6 +86,7 @@ class ChatPresenter @Inject constructor(
                     viewState.hideError()
                     viewState.initRecycler(it)
                     isInitRecycler = true
+                    databaseIsRefresh = false
                     getAllMessagesFromDb()
                 }
             }, {
@@ -153,7 +159,7 @@ class ChatPresenter @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    viewState.addRecyclerData(it)
+                    viewState.addRecyclerData(setupListMessage(it))
                     isLoading = false
                 }.addTo(compositeDisposable)
         }
@@ -189,7 +195,7 @@ class ChatPresenter @Inject constructor(
                         viewState.showRefresh()
                     } else {
                         databaseIsNotEmpty = true
-                        viewState.updateRecyclerData(it)
+                        viewState.updateRecyclerData(setupListMessage(it))
                         isLoading = false
                     }
                     if (!databaseIsRefresh) getMessages("newest")
@@ -327,5 +333,23 @@ class ChatPresenter @Inject constructor(
                     viewState.showErrorUpdateEmoji()
                 })
             .addTo(compositeDisposable)
+    }
+
+    fun setupListMessage(messages: List<UserMessage>): List<ChatMessage> {
+        val newListMessages = mutableListOf<ChatMessage>()
+        var calendar: Calendar? = null
+        for (message in messages) {
+            if (calendar == null || !DateUtil.isSameDay(calendar.time, Date(message.timestamp * 1000))) {
+                val localDate =
+                    Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                val dateMessage = DateMessage(localDate)
+                calendar = Calendar.getInstance()
+                calendar.time = Date(message.timestamp * 1000)
+                newListMessages.add(dateMessage)
+            }
+                newListMessages.add(message)
+        }
+        return newListMessages
     }
 }
