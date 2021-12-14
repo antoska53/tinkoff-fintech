@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
@@ -13,6 +14,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.App
+import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject
@@ -41,6 +43,8 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
                 streamPresenter.backPressed()
             }
         }
+
+       setStatusBarColor(FlowFragment.DARK_COLOR)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,6 +72,12 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     override fun onDestroyView() {
         super.onDestroyView()
         streamPresenter.resetSearchFlag()
+    }
+
+    private fun setStatusBarColor(color: Int){
+        val window = activity?.window
+        window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window?.statusBarColor = resources.getColor(color, null)
     }
 
     override fun showStreams(){
