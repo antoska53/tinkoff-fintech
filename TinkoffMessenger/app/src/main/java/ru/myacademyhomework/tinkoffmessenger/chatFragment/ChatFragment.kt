@@ -176,11 +176,13 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun updateRecyclerData(listUserMessage: List<UserMessage>) {
-        adapter.updateData(listUserMessage)
-        val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
-        val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
-        chatDiffResult.dispatchUpdatesTo(adapter)
-        recyclerView?.scrollToPosition(listUserMessage.size - 1)
+//        adapter.updateData(listUserMessage)
+//        val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
+//        val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
+//        chatDiffResult.dispatchUpdatesTo(adapter)
+//        recyclerView?.scrollToPosition(listUserMessage.size - 1)
+        adapter.setupListMessage(listUserMessage)
+        recyclerView?.scrollToPosition(adapter.itemCount - 1)
     }
 
     override fun addRecyclerData(listUserMessage: List<UserMessage>) {
