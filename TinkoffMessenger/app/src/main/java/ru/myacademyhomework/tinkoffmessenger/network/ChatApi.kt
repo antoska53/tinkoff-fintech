@@ -10,6 +10,15 @@ interface ChatApi {
     @GET("users/me/subscriptions")
     fun getStreams(): Single<StreamsSubscribeResponse>
 
+    @GET("streams")
+    fun getAllStreams(): Single<AllStreamsResponse>
+
+    @GET("users/{user_id}/subscriptions/{stream_id}")
+    fun getSubscriptionStatus(@Path("user_id") userId: Int, @Path("stream_id") streamId: Long): Boolean
+
+    @POST("users/me/subscriptions")
+    fun createStream(@Query("subscriptions") subscriptions: String): Completable
+
     @GET("messages")
     fun getMessages(
         @Query("anchor") anchor: String,
@@ -17,6 +26,14 @@ interface ChatApi {
         @Query("num_before") num_before: Int,
         @Query("narrow") narrow: String
     ): Single<MessageResponse>
+
+    @GET("messages")
+    fun getMessagesForStream(
+        @Query("anchor") anchor: String,
+        @Query("num_after") num_after: Int,
+        @Query("num_before") num_before: Int,
+        @Query("narrow") narrow: String
+    ): MessageResponse
 
     @GET("users/me/{stream_id}/topics")
     fun getTopics(@Path("stream_id") stream_id: Long): Observable<TopicResponse>

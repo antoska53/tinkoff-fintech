@@ -14,16 +14,25 @@ interface ChatDao {
     fun insertTopics(topics: List<TopicDb>)
 
     @Query("SELECT * FROM stream_table")
-    fun getStreams(): Flowable<List<StreamDb>>
+    fun getAllStreams(): Flowable<List<StreamDb>>
+
+    @Query("SELECT * FROM stream_table WHERE subscribed_status = 1")
+    fun getSubscribedStreams(): Flowable<List<StreamDb>>
 
     @Query("SELECT * FROM topic_table WHERE name_stream = :nameStream")
     fun getTopics(nameStream: String): List<TopicDb>
 
+    @Query("SELECT * FROM topic_table WHERE name_stream = :nameStream")
+    fun getTopicsForStream(nameStream: String): Flowable<List<TopicDb>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMessages(messages: List<MessageDb>)
 
-    @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic")
-    fun getAllMessages(nameTopic: String): Flowable<List<MessageDb>>
+    @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic AND name_stream = :nameStream")
+    fun getAllMessages(nameTopic: String, nameStream: String): Flowable<List<MessageDb>>
+
+    @Query("SELECT * FROM message_table WHERE name_stream = :nameStream")
+    fun getAllMessagesForStream( nameStream: String): Flowable<List<MessageDb>>
 
     @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic AND id < :idMessage LIMIT 20")
     fun getOldMessages(nameTopic: String, idMessage: Long): Flowable<List<MessageDb>>

@@ -16,9 +16,12 @@ class StreamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun onBind(stream: Stream, listener: StreamListener) {
         nameChannel.text = stream.nameChannel
+        nameChannel.setOnClickListener {
+            listener.itemStreamClicked(stream)
+        }
         imageArrow.setOnClickListener {
             it.isSelected = !it.isSelected
-            listener.itemChannelClicked(stream.topics, adapterPosition, it.isSelected)
+            listener.itemStreamArrowClicked(stream.topics, adapterPosition, it.isSelected)
         }
     }
 

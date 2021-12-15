@@ -16,12 +16,13 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject
 import javax.inject.Provider
 
 
-class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), PagerView {
+class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), PagerView, StreamListener {
 
     private lateinit var adapter: StreamAdapter
     private var recycler: RecyclerView? = null
@@ -55,16 +56,13 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
 
         initRecycler(view)
-        pagerPresenter.getStreamsFromDb()
+        pagerPresenter.getAllStreamsFromDb()
     }
 
     private fun initRecycler(view: View) {
         recycler = view.findViewById(R.id.recycler_stream)
         adapter = StreamAdapter(
-            streamListener = { streams, position, isSelected ->
-                if (isSelected) updateStream(streams, position)
-                else removeStream(streams, position)
-            },
+            streamListener = this,
             topicListener = { topic ->
                 openChatTopic(topic)
             }
@@ -94,6 +92,10 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
                 topic.name,
             )
         )
+    }
+
+    override fun openChatStream(stream: Stream) {
+        TODO("Not yet implemented")
     }
 
     override fun onDestroyView() {
@@ -133,6 +135,15 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
             "Неудалось обновить данные",
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    override fun itemStreamArrowClicked(streams: List<Topic>, position: Int, isSelected: Boolean) {
+        if (isSelected) updateStream(streams, position)
+        else removeStream(streams, position)
+    }
+
+    override fun itemStreamClicked(stream: Stream) {
+        TODO("Not yet implemented")
     }
 
     companion object {

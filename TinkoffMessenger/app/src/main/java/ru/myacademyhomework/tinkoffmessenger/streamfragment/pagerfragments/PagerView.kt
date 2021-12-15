@@ -14,6 +14,9 @@ interface PagerView : BaseView {
     @Skip
     fun openChatTopic(topic: Topic)
 
+    @Skip
+    fun openChatStream(stream: Stream)
+
     @AddToEnd
     fun setDataToRecycler(listStream: List<Stream>)
 }
