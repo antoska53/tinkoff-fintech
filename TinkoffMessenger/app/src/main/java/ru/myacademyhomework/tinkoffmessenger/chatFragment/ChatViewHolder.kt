@@ -8,15 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
 import ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout
 import ru.myacademyhomework.tinkoffmessenger.messageview.NameMessageView
-import ru.myacademyhomework.tinkoffmessenger.network.RetrofitModule
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
