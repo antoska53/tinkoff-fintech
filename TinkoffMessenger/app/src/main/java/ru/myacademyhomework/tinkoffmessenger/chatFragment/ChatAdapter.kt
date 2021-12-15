@@ -7,6 +7,9 @@ import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import java.lang.IllegalArgumentException
+import java.time.Instant
+import java.time.ZoneId
+import java.util.*
 
 class ChatAdapter(private val listener: ChatMessageListener, private val userId: Int) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -42,8 +45,16 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
 
 
     fun updateMessage(message: UserMessage) {
-        messages.add(message)
-        notifyItemInserted(messages.size)
+        if(!DateUtil.isSameDay(Date((this.messages.last() as UserMessage).timestamp * 1000), Date(message.timestamp * 1000))){
+            val localDate =
+                Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+            val dateMessage = DateMessage(localDate)
+            this.messages.add(dateMessage)
+            notifyItemInserted(this.messages.size)
+        }
+            this.messages.add(message)
+            notifyItemInserted(this.messages.size)
     }
 
     fun updateListEmoji(message: UserMessage, position: Int) {
@@ -56,8 +67,10 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         this.messages.addAll(messages)
     }
 
-    fun addData(messages: List<ChatMessage>){
+    fun addData(messages: List<ChatMessage>) {
         this.messages.addAll(0, messages)
         notifyItemRangeInserted(0, messages.size)
     }
+
+
 }

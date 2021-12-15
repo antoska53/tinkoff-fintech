@@ -1,9 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import io.reactivex.Flowable
 import io.reactivex.Single
 
@@ -36,6 +33,9 @@ interface ChatDao {
 
     @Query("SELECT * FROM reaction_table WHERE message_id = :messageId")
     fun getReaction(messageId: Long): List<ReactionDb>
+
+    @Query("DELETE FROM reaction_table where user_id = :userId AND emoji_code = :emojiCode")
+    fun deleteReaction(userId: Int, emojiCode: String)
 
     @Query("SELECT * FROM user_table WHERE is_own = 1")
     fun getOwnUser(): Flowable<List<UserDb>>

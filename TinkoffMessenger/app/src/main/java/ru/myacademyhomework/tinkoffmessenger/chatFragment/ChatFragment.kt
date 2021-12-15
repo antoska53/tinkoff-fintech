@@ -21,6 +21,7 @@ import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
+import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import javax.inject.Inject
@@ -142,6 +143,21 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         return true
     }
 
+    override fun itemAddReactionClicked(messageId: Long, emojiName: String, position: Int) {
+        chatPresenter.addReaction(messageId, emojiName, position)
+    }
+
+    override fun itemRemoveReactionClicked(
+        messageId: Long,
+        emojiName: String,
+        emojiCode: String,
+        reactionType: String,
+        userId: Int,
+        position: Int
+    ) {
+        chatPresenter.removeReaction(messageId, emojiName, emojiCode, reactionType, userId, position)
+    }
+
     private fun showBottomSheetDialog(idMessage: Long, positionMessage: Int) {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
         dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -175,7 +191,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         editor.apply()
     }
 
-    override fun updateRecyclerData(listUserMessage: List<UserMessage>) {
+    override fun updateRecyclerData(listUserMessage: List<ChatMessage>) {
         adapter.updateData(listUserMessage)
         val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
         val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
@@ -183,7 +199,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         recyclerView?.scrollToPosition(listUserMessage.size - 1)
     }
 
-    override fun addRecyclerData(listUserMessage: List<UserMessage>) {
+    override fun addRecyclerData(listUserMessage: List<ChatMessage>) {
         adapter.addData(listUserMessage)
     }
 
@@ -222,6 +238,22 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
     override fun showError() {
         errorView?.isVisible = true
+    }
+
+    override fun showErrorAddReaction() {
+        Snackbar.make(
+            requireView(),
+            "Неудалось добавить эмодзи \uD83D\uDE2D",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showErrorRemoveReaction(){
+        Snackbar.make(
+            requireView(),
+            "Неудалось удалить эмодзи",
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     override fun clearEditText() {
