@@ -23,7 +23,7 @@ interface ChatDao {
     fun getTopics(nameStream: String): List<TopicDb>
 
     @Query("SELECT * FROM topic_table WHERE name_stream = :nameStream")
-    fun getTopicsForStream(nameStream: String): Flowable<List<TopicDb>>
+    fun getTopicsForStream(nameStream: String): Single<List<TopicDb>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMessages(messages: List<MessageDb>)

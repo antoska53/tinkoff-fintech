@@ -1,4 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger.listeners
 
-interface TopicChatListener {
+fun interface TopicChatListener {
+    fun onClickTopic(nameTopic: String)
 }

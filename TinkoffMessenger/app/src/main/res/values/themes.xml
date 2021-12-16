@@ -14,5 +14,10 @@
         <!-- Customize your theme here. -->
         <item name="android:statusBarColor">@color/status_bar_dark_color</item>
         <item name="android:windowBackground">#121212</item>
+
+<!--        PopupMenu-->
+        <item name="android:popupMenuStyle">@style/MyPopupMenu</item>
+        <item name="android:textAppearanceLargePopupMenu">@style/MyPopupMenuLargeTextAppearance</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/MyPopupMenuSmallTextAppearance</item>
     </style>
 </resources>

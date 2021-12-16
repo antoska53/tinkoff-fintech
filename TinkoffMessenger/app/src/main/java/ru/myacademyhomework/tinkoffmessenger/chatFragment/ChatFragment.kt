@@ -18,10 +18,12 @@ import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FlowFragment
+import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.database.TopicDb
 import ru.myacademyhomework.tinkoffmessenger.network.User
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import javax.inject.Inject
@@ -37,11 +39,14 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         arguments?.getString(NAME_TOPIC) ?: ""
     }
 
+    private var navigation: FragmentNavigation? = null
     private lateinit var adapter: ChatAdapter
     private var recyclerView: RecyclerView? = null
+    private var popupMenu: PopupMenu? = null
     private lateinit var editTextMessage: EditText
     private lateinit var buttonSendMessage: ImageButton
     private lateinit var dialog: BottomSheetDialog
+    private lateinit var textviewTopicChat: TextView
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
     private var foundOldest = false
@@ -50,6 +55,13 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     lateinit var presenterProvider: Provider<ChatPresenter>
     private val chatPresenter by moxyPresenter {
         presenterProvider.get()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        require(context is FragmentNavigation)
+        navigation = context
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +78,11 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
         errorView = view.findViewById(R.id.error_view)
         shimmer = view.findViewById(R.id.shimmer_chat_layout)
+        textviewTopicChat = view.findViewById(R.id.textview_topic_for_message)
+        textviewTopicChat.text = CHOOSE_TOPIC
+        textviewTopicChat.setOnClickListener {
+            chatPresenter.showPopupMenu()
+        }
         val sharedPref =
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
@@ -91,7 +108,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         buttonSendMessage = view.findViewById(R.id.button_send_message)
         buttonSendMessage.setOnClickListener {
             chatPresenter.onClickButtonSendMessage(
-                editTextMessage.text
+                editTextMessage.text, textviewTopicChat.text.toString()
             )
         }
         editTextMessage = view.findViewById(R.id.edittext_message)
@@ -124,22 +141,27 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun initRecycler(listUser: List<User>) {
-        adapter = ChatAdapter(this, listUser[0].userID)
+        adapter = ChatAdapter(this, listUser[0].userID){nameTopic ->
+            chatPresenter.onClickTopic(nameTopic)
+        }
         recyclerView?.adapter = adapter
-        recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                chatPresenter.pagingChat(recyclerView)
-            }
-        })
+        if (nameTopic != STREAM_CHAT) {
+            recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    chatPresenter.pagingChat(recyclerView)
+                }
+            })
+        }
     }
+
 
     override fun buttonSendMessageSetImage(resId: Int) {
         buttonSendMessage.setImageResource(resId)
     }
 
-    override fun itemLongClicked(idMessage: Long, position: Int): Boolean {
-        showBottomSheetDialog(idMessage, position)
+    override fun itemLongClicked(idMessage: Long, nameTopic: String, position: Int): Boolean {
+        showBottomSheetDialog(idMessage, nameTopic, position)
         return true
     }
 
@@ -155,26 +177,53 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         userId: Int,
         position: Int
     ) {
-        chatPresenter.removeReaction(messageId, emojiName, emojiCode, reactionType, userId, position)
+        chatPresenter.removeReaction(
+            messageId,
+            emojiName,
+            emojiCode,
+            reactionType,
+            userId,
+            position
+        )
     }
 
-    private fun showBottomSheetDialog(idMessage: Long, positionMessage: Int) {
+    private fun showBottomSheetDialog(idMessage: Long, nameTopic: String, positionMessage: Int) {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
         dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         dialog.setContentView(bottomSheet)
 
         val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
         val adapterBottomSheet =
-            BottomSheetAdapter(idMessage, positionMessage) { emoji, id, position ->
-                chatPresenter.updateEmoji(emoji, id, position)
+            BottomSheetAdapter(idMessage, nameTopic, positionMessage) { emoji, id, nametopic, position ->
+                chatPresenter.updateEmoji(emoji, id, nametopic, position)
                 dialog.dismiss()
             }
         recyclerBottomSheet.adapter = adapterBottomSheet
         dialog.show()
     }
 
-    override fun updateMessage(message: UserMessage) {
-        adapter.updateMessage(message)
+    override fun showPopupMenu(listTopic: List<TopicDb>) {
+        val popupMenu = PopupMenu(requireContext(), textviewTopicChat)
+        listTopic.forEach {
+            popupMenu.menu.add(it.nameTopic)
+        }
+        popupMenu.setOnMenuItemClickListener{
+            textviewTopicChat.text = it.title
+            true
+        }
+        popupMenu.show()
+    }
+
+    override fun showErrorPopupMenu() {
+        Snackbar.make(
+            requireView(),
+            "Неудалось загрузить список топиков",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun updateMessage(message: UserMessage, isStreamChat: Boolean) {
+        adapter.updateMessage(message, isStreamChat)
         recyclerView?.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
@@ -192,15 +241,25 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun updateRecyclerData(listUserMessage: List<ChatMessage>) {
-        adapter.updateData(listUserMessage)
+
         val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
         val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
+        adapter.updateData(listUserMessage)
         chatDiffResult.dispatchUpdatesTo(adapter)
         recyclerView?.scrollToPosition(listUserMessage.size - 1)
     }
 
     override fun addRecyclerData(listUserMessage: List<ChatMessage>) {
         adapter.addData(listUserMessage)
+    }
+
+    override fun openChatTopic(nameStream: String, nameTopic: String) {
+        navigation?.openChatFragment(
+            ChatFragment.newInstance(
+                nameStream,
+                nameTopic
+            )
+        )
     }
 
     override fun showRefresh() {
@@ -236,6 +295,14 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         ).show()
     }
 
+    override fun showErrorChooseTopic() {
+        Snackbar.make(
+            requireView(),
+            "Выберите топик",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
     override fun showError() {
         errorView?.isVisible = true
     }
@@ -248,7 +315,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         ).show()
     }
 
-    override fun showErrorRemoveReaction(){
+    override fun showErrorRemoveReaction() {
         Snackbar.make(
             requireView(),
             "Неудалось удалить эмодзи",
@@ -275,6 +342,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     companion object {
         const val TYPE_DATE = 0
         const val TYPE_MESSAGE = 1
+        const val TYPE_TOPIC = 2
         const val NAME_CHANNEL = "NAME_CHANNEL"
         const val NAME_TOPIC = "NAME_STREAM"
         const val SEND_MESSAGE_POSITION = -1
@@ -282,6 +350,8 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         const val FOUND_OLDEST_KEY = "FOUND_OLDEST_KEY"
         const val FIRST_POSITION = 1
         const val POSITION_FOR_LOAD = 5
+        const val CHOOSE_TOPIC = "Choose topic..."
+        const val STREAM_CHAT = "STREAM_CHAT"
 
         @JvmStatic
         fun newInstance(nameChannel: String, nameTopic: String) =

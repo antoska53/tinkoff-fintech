@@ -16,6 +16,7 @@ import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
+import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
 import ru.myacademyhomework.tinkoffmessenger.database.*
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
@@ -54,6 +55,20 @@ class ChatPresenter @Inject constructor(
         }
     }
 
+    fun showPopupMenu() {
+        nameStream?.let { nameStream ->
+            chatDao.getTopicsForStream(nameStream)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    viewState.showPopupMenu(it)
+                }, {
+                    viewState.showErrorPopupMenu()
+                })
+                .addTo(compositeDisposable)
+        }
+    }
+
     fun loadFoundOldest(foundOldest: Boolean) {
         this.foundOldest = foundOldest
     }
@@ -63,9 +78,22 @@ class ChatPresenter @Inject constructor(
         else viewState.buttonSendMessageSetImage(R.drawable.ic_cross)
     }
 
-    fun onClickButtonSendMessage(text: Editable) {
-        if (text.isNotEmpty()) {
-            sendMessage(message = text.toString())
+    fun onClickButtonSendMessage(text: Editable, nameTopic: String) {
+        this.nameTopic?.let {
+            if (it != ChatFragment.STREAM_CHAT) {
+                sendMessage(text.toString(), it)
+            } else if (nameTopic == ChatFragment.CHOOSE_TOPIC) {
+                viewState.showErrorChooseTopic()
+            } else if (text.isNotEmpty()) {
+                sendMessage(message = text.toString(), nameTopic)
+            }
+        }
+
+    }
+
+    fun onClickTopic(nameTopic: String) {
+        nameStream?.let {
+            viewState.openChatTopic(it, nameTopic)
         }
     }
 
@@ -92,7 +120,7 @@ class ChatPresenter @Inject constructor(
                     viewState.initRecycler(it)
                     isInitRecycler = true
                     databaseIsRefresh = false
-                    if(nameTopic == "") getAllMessagesFromDbForStream()
+                    if (nameTopic == ChatFragment.STREAM_CHAT) getAllMessagesFromDbForStream()
                     else getAllMessagesFromDb()
                 }
             }, {
@@ -185,6 +213,7 @@ class ChatPresenter @Inject constructor(
                                 senderFullName = messageDb.senderFullName,
                                 timestamp = messageDb.timestamp,
                                 streamID = messageDb.streamID,
+                                nameTopic = nameTopic,
                                 reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
                                     Reaction(
                                         reactionDb.emojiCode,
@@ -198,14 +227,18 @@ class ChatPresenter @Inject constructor(
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
+                        Log.d("LOAD", "getAllMessagesFromDb: LOAD")
                         if (it.isEmpty()) {
                             viewState.showRefresh()
                         } else {
+                            Log.d("LOAD", "getAllMessagesFromDb: UPDATE RECYCLER")
                             databaseIsNotEmpty = true
                             viewState.updateRecyclerData(setupListMessage(it))
                             isLoading = false
                         }
-                        if (!databaseIsRefresh) getMessages("newest")
+                        if (!databaseIsRefresh){
+                            Log.d("LOAD", "getAllMessagesFromDb: REFRESH DB")
+                            getMessages("newest")}
                     }, {
                     })
                     .addTo(compositeDisposable)
@@ -214,43 +247,44 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getAllMessagesFromDbForStream() {
-            nameStream?.let { nameStream ->
-                chatDao.getAllMessagesForStream(nameStream)
-                    .map {
-                        it.map { messageDb ->
-                            UserMessage(
-                                avatarURL = messageDb.avatarURL,
-                                content = messageDb.content,
-                                id = messageDb.id,
-                                isMeMessage = messageDb.isMeMessage,
-                                senderFullName = messageDb.senderFullName,
-                                timestamp = messageDb.timestamp,
-                                streamID = messageDb.streamID,
-                                reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                                    Reaction(
-                                        reactionDb.emojiCode,
-                                        reactionDb.emojiName,
-                                        reactionDb.reactionType,
-                                        reactionDb.userId
-                                    )
-                                }
-                            )
-                        }
+        nameStream?.let { nameStream ->
+            chatDao.getAllMessagesForStream(nameStream)
+                .map {
+                    it.map { messageDb ->
+                        UserMessage(
+                            avatarURL = messageDb.avatarURL,
+                            content = messageDb.content,
+                            id = messageDb.id,
+                            isMeMessage = messageDb.isMeMessage,
+                            senderFullName = messageDb.senderFullName,
+                            timestamp = messageDb.timestamp,
+                            streamID = messageDb.streamID,
+                            nameTopic = messageDb.nameTopic,
+                            reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+                                Reaction(
+                                    reactionDb.emojiCode,
+                                    reactionDb.emojiName,
+                                    reactionDb.reactionType,
+                                    reactionDb.userId
+                                )
+                            }
+                        )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        if (it.isEmpty()) {
-                            viewState.showRefresh()
-                        } else {
-                            databaseIsNotEmpty = true
-                            viewState.updateRecyclerData(setupListMessage(it))
-                            isLoading = false
-                        }
-                        if (!databaseIsRefresh) getMessagesForStream("newest")
-                    }, {
-                    })
-                    .addTo(compositeDisposable)
-            }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it.isEmpty()) {
+                        viewState.showRefresh()
+                    } else {
+                        databaseIsNotEmpty = true
+                        viewState.updateRecyclerData(setupListMessageForStream(it))
+                        isLoading = false
+                    }
+                    if (!databaseIsRefresh) getMessagesForStream("newest")
+                }, {
+                })
+                .addTo(compositeDisposable)
+        }
     }
 
     private fun getMessages() {
@@ -332,18 +366,16 @@ class ChatPresenter @Inject constructor(
     private fun getMessagesForStream(anchor: String) {
         Log.d("LOAD", "getMessagesForStream: LOAD")
         nameStream?.let { nameStream ->
-
-             chatDao.getTopicsForStream(nameStream)
+            chatDao.getTopicsForStream(nameStream)
                 .subscribeOn(Schedulers.io())
-                .flatMap{
-                    Flowable.fromIterable(it)
+                .flatMapObservable {
+                    Observable.fromIterable(it)
                 }
-                .flatMapSingle{ topicDb ->
-                    Log.d("LOAD", "getMessagesForStream: FLAT")
+                .flatMapSingle { topicDb ->
                     apiClient.chatApi.getMessages(
                         anchor = anchor,
                         num_after = 0,
-                        num_before = 20,
+                        num_before = 5,
                         narrow = "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"${topicDb.nameTopic}\",\"operator\":\"topic\"}]"
                     )
                         .map { messageResponse ->
@@ -373,30 +405,27 @@ class ChatPresenter @Inject constructor(
                             }
                         }
                 }
-                .doOnNext() {
-                    Log.d("LOAD", "getMessagesForStream: NEXT")
-                    chatDao.insertMessages(it)
+                .toList()
+                .doOnSuccess {
+                    databaseIsRefresh = true
+                    databaseIsNotEmpty = true
+                    Log.d("LOAD", "getMessagesForStream: doOnSuc")
+                    chatDao.insertMessages(it.flatten())
+//                    if (isLoading) getOldMessageFromDb()
                 }
-                 .doOnComplete {
-                     databaseIsRefresh = true
-                     databaseIsNotEmpty = true
-                     if (isLoading) getOldMessageFromDb()
-                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
                     if (!databaseIsNotEmpty) {
                         viewState.showRefresh()
                     }
-                    isLoading = true
+//                    isLoading = true
                 }
                 .doOnTerminate {
                     viewState.hideRefresh()
                 }
                 .subscribe({
-                    Log.d("LOAD", "getMessagesForStream: UBSCRIBE")
                     viewState.showRecycler()
                 }, {
-                    Log.d("LOAD", "getMessagesForStream: ERROR")
                     if (databaseIsNotEmpty) {
                         viewState.showErrorUpdateData()
                     } else {
@@ -408,47 +437,51 @@ class ChatPresenter @Inject constructor(
         }
     }
 
-    private fun getMessage(messageId: Long, position: Int) {
-        apiClient.chatApi.getMessages(
-            "newest",
-            1,
-            1,
-            "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (position == ChatFragment.SEND_MESSAGE_POSITION) {
-                    viewState.updateMessage(it.messages[0])
-                } else {
-                    viewState.updateMessage(it.messages[0], position)
-                }
-            }, {
-            })
-            .addTo(compositeDisposable)
-    }
-
-    private fun sendMessage(message: String) {
-        nameStream?.let { nameStream ->
-            nameTopic?.let { nameTopic ->
-                apiClient.chatApi.sendMessage("stream", nameStream, nameTopic, message)
+    private fun getMessage(messageId: Long, position: Int, nameTopic: String?) {
+        nameTopic?.let {
+            if (it != ChatFragment.STREAM_CHAT) {
+                apiClient.chatApi.getMessages(
+                    "newest",
+                    1,
+                    1,
+                    "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
+                )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        {
-                            viewState.clearEditText()
-                            getMessage(it.id, ChatFragment.SEND_MESSAGE_POSITION)
-                        },
-                        {
-                            viewState.showErrorSendMessage()
+                    .subscribe({
+                        if (position == ChatFragment.SEND_MESSAGE_POSITION) {
+                            val message = it.messages[0]
+                            message.nameTopic = nameTopic
+                            viewState.updateMessage(message, this.nameTopic == ChatFragment.STREAM_CHAT)
+                        } else {
+                            viewState.updateMessage(it.messages[0], position)
                         }
-                    )
+                    }, {
+                    })
                     .addTo(compositeDisposable)
             }
         }
     }
 
-    fun updateEmoji(emoji: String, idMessage: Long, position: Int) {
+    private fun sendMessage(message: String, nameTopic: String) {
+        nameStream?.let { nameStream ->
+            apiClient.chatApi.sendMessage("stream", nameStream, nameTopic, message)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        viewState.clearEditText()
+                        getMessage(it.id, ChatFragment.SEND_MESSAGE_POSITION, nameTopic)
+                    },
+                    {
+                        viewState.showErrorSendMessage()
+                    }
+                )
+                .addTo(compositeDisposable)
+        }
+    }
+
+    fun updateEmoji(emoji: String, idMessage: Long, nameTopic: String, position: Int) {
         val emojiName = Emoji.values().find {
             it.unicode == emoji
         }
@@ -457,7 +490,7 @@ class ChatPresenter @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getMessage(idMessage, position)
+                getMessage(idMessage, position, nameTopic)
             },
                 {
                     viewState.showErrorUpdateEmoji()
@@ -465,10 +498,38 @@ class ChatPresenter @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    fun setupListMessage(messages: List<UserMessage>): List<ChatMessage> {
+    private fun setupListMessage(messages: List<UserMessage>): List<ChatMessage> {
         val newListMessages = mutableListOf<ChatMessage>()
         var calendar: Calendar? = null
         for (message in messages) {
+            if (calendar == null || !DateUtil.isSameDay(
+                    calendar.time,
+                    Date(message.timestamp * 1000)
+                )
+            ) {
+                val localDate =
+                    Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                val dateMessage = DateMessage(localDate)
+                calendar = Calendar.getInstance()
+                calendar.time = Date(message.timestamp * 1000)
+                newListMessages.add(dateMessage)
+            }
+            newListMessages.add(message)
+        }
+        return newListMessages
+    }
+
+    private fun setupListMessageForStream(messages: List<UserMessage>): List<ChatMessage> {
+        val newListMessages = mutableListOf<ChatMessage>()
+        var calendar: Calendar? = null
+        var topicMessage: TopicMessage? = null
+        for (message in messages) {
+            if (topicMessage == null || topicMessage.nameTopic != message.nameTopic) {
+                topicMessage = TopicMessage(message.nameTopic)
+                newListMessages.add(topicMessage)
+            }
+
             if (calendar == null || !DateUtil.isSameDay(
                     calendar.time,
                     Date(message.timestamp * 1000)
@@ -492,7 +553,7 @@ class ChatPresenter @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getMessage(messageId, position)
+                getMessage(messageId, position, nameTopic)
             },
                 {
                     viewState.showErrorAddReaction()
@@ -520,7 +581,7 @@ class ChatPresenter @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getMessage(messageId, position)
+                getMessage(messageId, position, nameTopic)
             }, {
                 viewState.showErrorRemoveReaction()
             })

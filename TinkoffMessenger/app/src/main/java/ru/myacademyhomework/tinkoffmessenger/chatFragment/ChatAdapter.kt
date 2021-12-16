@@ -1,17 +1,20 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
+import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
+import ru.myacademyhomework.tinkoffmessenger.listeners.TopicChatListener
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 
-class ChatAdapter(private val listener: ChatMessageListener, private val userId: Int) :
+class ChatAdapter(private val listener: ChatMessageListener, private val userId: Int, val topicChatListener: TopicChatListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val messages: MutableList<ChatMessage> = mutableListOf()
@@ -21,6 +24,7 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         return when (viewType) {
             ChatFragment.TYPE_DATE -> DateViewHolder.createViewHolder(parent)
             ChatFragment.TYPE_MESSAGE -> ChatViewHolder.createViewHolder(parent)
+            ChatFragment.TYPE_TOPIC -> TopicChatViewHolder.createViewHolder(parent)
             else -> throw IllegalArgumentException()
         }
 
@@ -30,6 +34,7 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         return when (messages[position]) {
             is UserMessage -> ChatFragment.TYPE_MESSAGE
             is DateMessage -> ChatFragment.TYPE_DATE
+            is TopicMessage -> ChatFragment.TYPE_TOPIC
             else -> throw IllegalArgumentException()
         }
     }
@@ -38,14 +43,21 @@ class ChatAdapter(private val listener: ChatMessageListener, private val userId:
         when (holder) {
             is ChatViewHolder -> holder.onBind(messages[position] as UserMessage, userId, listener)
             is DateViewHolder -> holder.onBind(messages[position] as DateMessage)
+            is TopicChatViewHolder -> holder.onBind(messages[position] as TopicMessage, topicChatListener)
         }
     }
 
     override fun getItemCount(): Int = messages.size
 
 
-    fun updateMessage(message: UserMessage) {
-        if(!DateUtil.isSameDay(Date((this.messages.last() as UserMessage).timestamp * 1000), Date(message.timestamp * 1000))){
+    fun updateMessage(message: UserMessage, isStreamChat: Boolean) {
+        val lastMessage = messages.last() as UserMessage
+        if (isStreamChat){
+            if (message.nameTopic != lastMessage.nameTopic) {
+                messages.add(TopicMessage(message.nameTopic))
+            }
+        }
+        if(!DateUtil.isSameDay(Date(lastMessage.timestamp * 1000), Date(message.timestamp * 1000))){
             val localDate =
                 Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
                     .toLocalDate()

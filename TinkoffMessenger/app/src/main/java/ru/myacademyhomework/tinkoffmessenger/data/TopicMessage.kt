@@ -1,4 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger.data
 
-class TopicMessage {
-}
+data class TopicMessage (
+    val nameTopic: String
+): ChatMessage

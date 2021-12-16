@@ -67,11 +67,11 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         if (flexBoxEmoji.childCount != 0) {
             val plusButton = LayoutInflater.from(itemView.context)
                 .inflate(R.layout.emoji_view_plus_layout, flexBoxEmoji, false)
-            plusButton.setOnClickListener { listener.itemLongClicked(message.id, adapterPosition) }
+            plusButton.setOnClickListener { listener.itemLongClicked(message.id, message.nameTopic, adapterPosition) }
             flexBoxEmoji.addView(plusButton)
         }
 
-        messageView.setOnLongClickListener { listener.itemLongClicked(message.id, adapterPosition) }
+        messageView.setOnLongClickListener { listener.itemLongClicked(message.id, message.nameTopic, adapterPosition) }
 
         Glide.with(itemView)
             .load(message.avatarURL)

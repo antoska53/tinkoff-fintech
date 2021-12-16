@@ -12,5 +12,17 @@
     <style name="StreamTabLayoutStyle" parent="@android:style/TextAppearance.Widget.TabWidget">
         <item name="android:textSize">22sp</item>
     </style>
+    
+    <style name="MyPopupMenu" parent="Widget.AppCompat.Light.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+    </style>
+
+    <style name="MyPopupMenuLargeTextAppearance" parent="TextAppearance.AppCompat.Widget.PopupMenu.Large">
+        <item name="android:textColor">@color/message_color</item>
+    </style>
+
+    <style name="MyPopupMenuSmallTextAppearance" parent="TextAppearance.AppCompat.Widget.PopupMenu.Small">
+        <item name="android:textColor">@color/message_color</item>
+    </style>
 
 </resources>

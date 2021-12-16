@@ -166,7 +166,7 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
         navigation?.openChatFragment(
             ChatFragment.newInstance(
                 stream.nameChannel,
-                ""
+                ChatFragment.STREAM_CHAT
             )
         )
     }

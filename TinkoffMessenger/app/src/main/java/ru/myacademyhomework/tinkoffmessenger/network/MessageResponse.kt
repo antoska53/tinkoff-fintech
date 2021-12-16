@@ -52,6 +52,9 @@ data class UserMessage (
     val timestamp: Long,
 
     @SerialName("stream_id")
-    val streamID: Long?
+    val streamID: Long?,
+
+    @Transient
+    var nameTopic: String = ""
 ): ChatMessage
 

@@ -1,8 +1,10 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
+import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
+import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
 import ru.myacademyhomework.tinkoffmessenger.network.UserMessage
 
 class ChatDiffUtilCallback(
@@ -25,6 +27,9 @@ class ChatDiffUtilCallback(
         if (oldChatMessage is DateMessage && newChatMessage is DateMessage) {
             return oldChatMessage.date == newChatMessage.date
         }
+        if(oldChatMessage is TopicMessage && newChatMessage is TopicMessage){
+            return oldChatMessage.nameTopic == newChatMessage.nameTopic
+        }
         return false
     }
 
@@ -32,9 +37,14 @@ class ChatDiffUtilCallback(
         val oldChatMessage = oldLIst[oldItemPosition]
         val newChatMessage = newLIst[newItemPosition]
         return if (oldChatMessage is UserMessage && newChatMessage is UserMessage) {
+            Log.d("LOAD", "areContentsTheSame: ${oldChatMessage.reactions == newChatMessage.reactions}")
+            Log.d("LOAD", "areContentsTheSame: old ${oldChatMessage.reactions}")
+            Log.d("LOAD", "areContentsTheSame: new ${newChatMessage.reactions}")
             oldChatMessage == newChatMessage
-        } else {
-            (oldChatMessage as DateMessage) == (newChatMessage as DateMessage)
+        } else if(oldChatMessage is DateMessage == newChatMessage is DateMessage){
+            oldChatMessage == newChatMessage
+        } else{
+            (oldChatMessage as TopicMessage) == (newChatMessage as TopicMessage)
         }
     }
 }
