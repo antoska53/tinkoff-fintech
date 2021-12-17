@@ -19,4 +19,7 @@ interface PagerView : BaseView {
 
     @AddToEnd
     fun setDataToRecycler(listStream: List<Stream>)
+
+    @Skip
+    fun openNewStreamFragment()
 }

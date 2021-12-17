@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import moxy.viewstate.strategy.alias.AddToEnd
 import moxy.viewstate.strategy.alias.AddToEndSingle
+import moxy.viewstate.strategy.alias.OneExecution
 import moxy.viewstate.strategy.alias.Skip
 import ru.myacademyhomework.tinkoffmessenger.common.BaseView
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
@@ -29,7 +30,7 @@ interface ChatView : BaseView {
     @Skip
     fun clearEditText()
 
-    @AddToEnd
+    @AddToEndSingle
     fun initRecycler(listUser: List<User>)
 
     @AddToEndSingle
@@ -67,4 +68,10 @@ interface ChatView : BaseView {
 
     @Skip
     fun showErrorChooseTopic()
+
+    @OneExecution
+    fun showNameTopic(isVisible: Int)
+
+    @OneExecution
+    fun showChooseTopic(isVisible: Int)
 }

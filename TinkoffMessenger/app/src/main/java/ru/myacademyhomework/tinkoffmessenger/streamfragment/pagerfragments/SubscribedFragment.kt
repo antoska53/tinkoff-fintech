@@ -105,6 +105,8 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
         streamDiffResult.dispatchUpdatesTo(adapter)
     }
 
+    override fun openNewStreamFragment() {}
+
     override fun openChatTopic(topic: Topic) {
         navigation?.openChatFragment(
             ChatFragment.newInstance(

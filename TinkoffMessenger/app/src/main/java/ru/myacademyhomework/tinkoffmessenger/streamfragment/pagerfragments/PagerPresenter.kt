@@ -30,6 +30,10 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
         viewState.openChatStream(stream)
     }
 
+    fun openNewStreamFragment(){
+        viewState.openNewStreamFragment()
+    }
+
     fun getSubscribedStreamsFromDb() {
         chatDao
             .getSubscribedStreams()

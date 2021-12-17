@@ -32,4 +32,6 @@
     <color name="color_text_search_user">#FFFFFF</color>
     <color name="color_background_search">#1E1E1E</color>
     <color name="color_background_popup_menu">#1C1C1C</color>
+    <color name="color_text_fragment_newstream">#FFFFFF</color>
+    <color name="color_text_hint">#999999</color>
 </resources>

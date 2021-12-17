@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
@@ -47,6 +48,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private lateinit var buttonSendMessage: ImageButton
     private lateinit var dialog: BottomSheetDialog
     private lateinit var textviewTopicChat: TextView
+    private lateinit var textviewNameTopic: TextView
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
     private var foundOldest = false
@@ -71,6 +73,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         setStatusBarColor(FlowFragment.LIGHT_COLOR)
 
         chatPresenter.load(nameStream, nameTopic, foundOldest)
+        chatPresenter.initChat()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,17 +86,18 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         textviewTopicChat.setOnClickListener {
             chatPresenter.showPopupMenu()
         }
+
         val sharedPref =
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
         chatPresenter.loadFoundOldest(foundOldest)
         recyclerView = view.findViewById(R.id.chat_recycler)
-        chatPresenter.initChat()
+//        chatPresenter.initChat()
 
-        val tvNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
-        tvNameTopic.text = getString(R.string.topic, nameTopic)
-        val tvNameChannel = view.findViewById<TextView>(R.id.textview_name_channel)
-        tvNameChannel.text = nameStream
+        textviewNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
+        textviewNameTopic.text = getString(R.string.topic, nameTopic)
+        val tvNameStream = view.findViewById<TextView>(R.id.textview_name_channel)
+        tvNameStream.text = nameStream
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener {
             chatPresenter.buttonReloadClick()
@@ -122,6 +126,9 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
                 chatPresenter.buttonSendMessageSetImage(s.toString())
             }
         })
+
+        chatPresenter.showNameTopic()
+        chatPresenter.showChooseTopic()
     }
 
     override fun onDestroyView() {
@@ -337,6 +344,17 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
     override fun hideError() {
         errorView?.isVisible = false
+    }
+
+    override fun showNameTopic(isVisible: Int){
+        textviewNameTopic.visibility = isVisible
+        Log.d("VISIBLE", "showNameTopic: $isVisible")
+    }
+
+    override fun showChooseTopic(isVisible: Int){
+        textviewTopicChat.visibility = isVisible
+        Log.d("VISIBLE", "showNameTopic: $isVisible")
+
     }
 
     companion object {

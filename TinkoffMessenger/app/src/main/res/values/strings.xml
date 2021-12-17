@@ -12,4 +12,9 @@
     <string name="status_idle">idle</string>
     <string name="hint_search_user">Users...</string>
     <string name="hint_search_stream">Search...</string>
+    <string name="new_stream">New stream</string>
+    <string name="description">Description</string>
+    <string name="name">Name</string>
+    <string name="create_stream">Create stream</string>
+    <string name="create_new_stream">Create new stream</string>
 </resources>

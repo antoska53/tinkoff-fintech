@@ -2,14 +2,12 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import android.text.Editable
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.toFlowable
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
@@ -66,6 +64,22 @@ class ChatPresenter @Inject constructor(
                     viewState.showErrorPopupMenu()
                 })
                 .addTo(compositeDisposable)
+        }
+    }
+
+    fun showChooseTopic(){
+        if(nameTopic == ChatFragment.STREAM_CHAT){
+            viewState.showChooseTopic(View.VISIBLE)
+        }else{
+            viewState.showChooseTopic(View.GONE)
+        }
+    }
+
+    fun showNameTopic(){
+        if(nameTopic == ChatFragment.STREAM_CHAT){
+            viewState.showNameTopic(View.GONE)
+        }else{
+            viewState.showNameTopic(View.VISIBLE)
         }
     }
 

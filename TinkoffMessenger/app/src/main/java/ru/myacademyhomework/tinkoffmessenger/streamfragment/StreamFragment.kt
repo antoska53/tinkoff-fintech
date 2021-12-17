@@ -25,6 +25,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     private var showStreams = true
     private var editTextSearch: EditText? = null
     private var viewPager: ViewPager2? = null
+    private var pagerAdapter: PagerAdapter? = null
 
     @Inject
     lateinit var providePresenter: Provider<StreamPresenter>
@@ -38,19 +39,21 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         (activity?.application as App).appComponent.getStreamComponent().inject(this)
         super.onCreate(savedInstanceState)
 
-        onBackPressedCallback = object: OnBackPressedCallback(true) {
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 streamPresenter.backPressed()
             }
         }
 
-       setStatusBarColor(FlowFragment.DARK_COLOR)
+        pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
+
+        setStatusBarColor(FlowFragment.DARK_COLOR)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val tabs: List<String> = listOf("Subscribed", "All streams")
-        val pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
+
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
 
         viewPager = view.findViewById(R.id.viewpager_stream)
@@ -74,13 +77,13 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         streamPresenter.resetSearchFlag()
     }
 
-    private fun setStatusBarColor(color: Int){
+    private fun setStatusBarColor(color: Int) {
         val window = activity?.window
         window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window?.statusBarColor = resources.getColor(color, null)
     }
 
-    override fun showStreams(){
+    override fun showStreams() {
         editTextSearch?.text?.clear()
         childFragmentManager.setFragmentResult(
             SUBSCRIBE_RESULT_KEY,
@@ -88,7 +91,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         )
     }
 
-    override fun backPressed(){
+    override fun backPressed() {
         onBackPressedCallback?.isEnabled = false
         requireActivity().onBackPressed()
     }
