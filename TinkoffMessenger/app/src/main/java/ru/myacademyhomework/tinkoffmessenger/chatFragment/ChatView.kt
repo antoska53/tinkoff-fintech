@@ -42,8 +42,11 @@ interface ChatView : BaseView {
     @AddToEndSingle
     fun updateMessage(message: UserMessage, isStreamChat: Boolean)
 
-    @AddToEndSingle
+    @Skip
     fun updateMessage(message: UserMessage, position: Int)
+
+    @Skip
+    fun copyMessage(message: String)
 
     @AddToEndSingle
     fun addToSharedpref(foundOldest: Boolean)
@@ -69,9 +72,24 @@ interface ChatView : BaseView {
     @Skip
     fun showErrorChooseTopic()
 
+    @Skip
+    fun showErrorDeleteMessage()
+
+    @Skip
+    fun showErrorEditMessage()
+
+    @Skip
+    fun setupEditMessage(messageId: Long, nameTopic: String, message: String)
+
+    @Skip
+    fun destroyEditMessage()
+
     @OneExecution
     fun showNameTopic(isVisible: Int)
 
     @OneExecution
     fun showChooseTopic(isVisible: Int)
+
+    @Skip
+    fun showEmojiBottomSheetDialog(idMessage: Long, nameTopic: String, positionMessage: Int)
 }

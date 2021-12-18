@@ -85,7 +85,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
-        app:layout_constraintBottom_toTopOf="@id/edittext_message"/>
+        app:layout_constraintBottom_toTopOf="@id/textview_topic_for_message"/>
 
     <include
         layout="@layout/error_view"
@@ -95,7 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
-        app:layout_constraintBottom_toTopOf="@id/edittext_message"/>
+        app:layout_constraintBottom_toTopOf="@id/textview_topic_for_message"/>
 
     <EditText
         android:id="@+id/edittext_message"
@@ -111,6 +111,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
+        app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button_send_message"
@@ -123,6 +124,20 @@
         android:background="@drawable/bg_button_send_message"
         android:src="@drawable/ic_cross"
         android:layout_margin="10dp"
+        app:layout_constraintStart_toEndOf="@id/edittext_message"
+        app:layout_constraintTop_toTopOf="@id/edittext_message"
+        app:layout_constraintBottom_toBottomOf="@id/edittext_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ImageButton
+        android:id="@+id/button_edit_message"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_button_send_message"
+        android:src="@drawable/ic_check_circle_39"
+        android:layout_margin="10dp"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/edittext_message"
         app:layout_constraintTop_toTopOf="@id/edittext_message"
         app:layout_constraintBottom_toBottomOf="@id/edittext_message"

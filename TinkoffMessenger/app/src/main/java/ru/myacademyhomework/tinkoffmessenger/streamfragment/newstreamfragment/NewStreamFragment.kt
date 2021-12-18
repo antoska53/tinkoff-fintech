@@ -74,6 +74,14 @@ class NewStreamFragment : MvpAppCompatFragment(R.layout.fragment_new_stream), Ne
         ).show()
     }
 
+    override fun showEmptyNameDescription() {
+        Snackbar.make(
+            requireView(),
+            "Введите название и описание стрима",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 

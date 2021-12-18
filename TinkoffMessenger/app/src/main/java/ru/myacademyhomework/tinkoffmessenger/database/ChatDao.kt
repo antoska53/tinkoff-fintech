@@ -28,6 +28,9 @@ interface ChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMessages(messages: List<MessageDb>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMessage(message: MessageDb)
+
     @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic AND name_stream = :nameStream")
     fun getAllMessages(nameTopic: String, nameStream: String): Flowable<List<MessageDb>>
 
@@ -36,6 +39,12 @@ interface ChatDao {
 
     @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic AND id < :idMessage LIMIT 20")
     fun getOldMessages(nameTopic: String, idMessage: Long): Flowable<List<MessageDb>>
+
+    @Query("DELETE FROM message_table WHERE id = :messageId")
+    fun deleteMessage(messageId: Long)
+
+    @Query("UPDATE message_table SET content = :message,  name_topic = :nameTopic WHERE id = :messageId")
+    fun updateMessage(messageId: Long, message: String, nameTopic: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReaction(messages: List<ReactionDb>)

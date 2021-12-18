@@ -45,9 +45,9 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             emojiView.setOnClickListener {
                 if (!it.isSelected) {
-                    listener.itemAddReactionClicked(message.id, emoji.emojiName, adapterPosition)
+                    listener.itemAddReactionClicked(message.id, message.nameTopic, emoji.emojiName, adapterPosition)
                 } else {
-                    listener.itemRemoveReactionClicked(message.id, emoji.emojiName, emoji.emojiCode, emoji.reactionType, emoji.userId, adapterPosition)
+                    listener.itemRemoveReactionClicked(message.id, message.nameTopic, emoji.emojiName, emoji.emojiCode, emoji.reactionType, emoji.userId, adapterPosition)
                 }
             }
             emojiView.smile = emoji.emojiCode.split("-").joinToString("") {
@@ -67,11 +67,11 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         if (flexBoxEmoji.childCount != 0) {
             val plusButton = LayoutInflater.from(itemView.context)
                 .inflate(R.layout.emoji_view_plus_layout, flexBoxEmoji, false)
-            plusButton.setOnClickListener { listener.itemLongClicked(message.id, message.nameTopic, adapterPosition) }
+            plusButton.setOnClickListener { listener.plusButtonClicked(message.id, message.nameTopic, adapterPosition) }
             flexBoxEmoji.addView(plusButton)
         }
 
-        messageView.setOnLongClickListener { listener.itemLongClicked(message.id, message.nameTopic, adapterPosition) }
+        messageView.setOnLongClickListener { listener.itemLongClicked(message.id, message.nameTopic, message.content, adapterPosition) }
 
         Glide.with(itemView)
             .load(message.avatarURL)

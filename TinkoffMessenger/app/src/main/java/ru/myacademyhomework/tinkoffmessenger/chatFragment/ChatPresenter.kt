@@ -1,6 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import android.text.Editable
+import android.text.Html
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,10 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
+import android.content.ClipData
+
+
+
 
 @ChatScope
 class ChatPresenter @Inject constructor(
@@ -105,6 +110,14 @@ class ChatPresenter @Inject constructor(
 
     }
 
+    fun onClickButtonEditMessage(messageId: Long, text: Editable, nameTopic: String){
+        if(text.toString().isNotEmpty() && nameTopic != ChatFragment.CHOOSE_TOPIC){
+            editMessage(messageId, nameTopic, text.toString())
+        }else{
+            viewState.showErrorEditMessage()
+        }
+    }
+
     fun onClickTopic(nameTopic: String) {
         nameStream?.let {
             viewState.openChatTopic(it, nameTopic)
@@ -130,6 +143,7 @@ class ChatPresenter @Inject constructor(
                 if (it.isEmpty()) {
                     getOwnUser()
                 } else {
+                    Log.d("INITT", "initChat: INIT CHAT")
                     viewState.hideError()
                     viewState.initRecycler(it)
                     isInitRecycler = true
@@ -148,7 +162,7 @@ class ChatPresenter @Inject constructor(
         if (!isLoading) {
             if (!foundOldest) {
                 if (firstVisibleItem - ChatFragment.POSITION_FOR_LOAD <= ChatFragment.FIRST_POSITION) {
-
+                    Log.d("LOAD", "pagingChat: PAGING")
                     isLoading = true
                     compositeDisposable.clear()
                     getMessages(firstMessageId)
@@ -287,6 +301,7 @@ class ChatPresenter @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    Log.d("LOAD", "getAllMessagesFromDbForStream: ")
                     if (it.isEmpty()) {
                         viewState.showRefresh()
                     } else {
@@ -452,6 +467,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessage(messageId: Long, position: Int, nameTopic: String?) {
+        Log.d("INITT", "getMessage: INITTT")
         nameTopic?.let {
             if (it != ChatFragment.STREAM_CHAT) {
                 apiClient.chatApi.getMessages(
@@ -460,17 +476,47 @@ class ChatPresenter @Inject constructor(
                     1,
                     "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
                 )
+                    .doOnSuccess {
+                        it.messages[0].nameTopic = nameTopic
+                        val message = it.messages[0]
+                        chatDao.insertReaction(
+                            message.reactions.map { reaction ->
+                                ReactionDb(
+                                    reaction.emojiCode,
+                                    reaction.emojiName,
+                                    reaction.reactionType,
+                                    reaction.userId,
+                                    message.id
+                                )
+                            })
+                        chatDao.insertMessage(
+                            MessageDb(
+                                avatarURL = message.avatarURL,
+                                content = message.content,
+                                id = message.id,
+                                isMeMessage = message.isMeMessage,
+                                senderFullName = message.senderFullName,
+                                timestamp = message.timestamp,
+                                streamID = message.streamID,
+                                nameTopic = message.nameTopic,
+                                nameStream = nameStream!!
+                        )
+                        )
+                    }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         if (position == ChatFragment.SEND_MESSAGE_POSITION) {
                             val message = it.messages[0]
                             message.nameTopic = nameTopic
-                            viewState.updateMessage(message, this.nameTopic == ChatFragment.STREAM_CHAT)
+//                            viewState.updateMessage(message, this.nameTopic == ChatFragment.STREAM_CHAT)
                         } else {
-                            viewState.updateMessage(it.messages[0], position)
+                            Log.d("INITT", "getMessage: pos $position  topic $nameTopic stream $nameStream id $messageId" )
+                            Log.d("INITT", "getMessage: pos $position  mes ${it.messages[0]}" )
+//                            viewState.updateMessage(it.messages[0], position)
                         }
                     }, {
+                        Log.d("INITT", "getMessage: $it")
                     })
                     .addTo(compositeDisposable)
             }
@@ -562,7 +608,7 @@ class ChatPresenter @Inject constructor(
         return newListMessages
     }
 
-    fun addReaction(messageId: Long, emojiName: String, position: Int) {
+    fun addReaction(messageId: Long, nameTopic: String, emojiName: String, position: Int) {
         apiClient.chatApi.addReaction(messageId, emojiName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -575,31 +621,75 @@ class ChatPresenter @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    fun removeReaction(
-        messageId: Long,
-        emojiName: String,
-        emojiCode: String,
-        reactionType: String,
-        userId: Int,
-        position: Int
+    fun removeReaction(messageId: Long, nameTopic: String, emojiName: String, emojiCode: String,
+        reactionType: String, userId: Int, position: Int
     ) {
-        apiClient.chatApi.removeReaction(
-            messageId,
-            emojiName,
-            emojiCode,
-            reactionType
-        )
+        apiClient.chatApi.removeReaction(messageId, emojiName, emojiCode, reactionType)
             .doOnComplete {
                 chatDao.deleteReaction(userId, emojiCode)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
+                Log.d("INITT", "removeReaction: REMOVE")
                 getMessage(messageId, position, nameTopic)
             }, {
                 viewState.showErrorRemoveReaction()
             })
             .addTo(compositeDisposable)
+    }
+
+   private fun deleteMessage(idMessage: Long){
+        apiClient.chatApi.deleteMessage(idMessage)
+            .subscribeOn(Schedulers.io())
+            .doOnComplete {
+                Log.d("DELETTE", "deleteMessage: DELETE dononSubscribe")
+                chatDao.deleteMessage(idMessage)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Log.d("DELETTE", "deleteMessage: subscribe")
+            },{
+                Log.d("DELETTE", "deleteMessage: ERROR")
+                viewState.showErrorDeleteMessage()
+            })
+            .addTo(compositeDisposable)
+   }
+
+    private fun editMessage(messageId: Long, nameTopic: String, message: String ){
+        apiClient.chatApi.editMessage(messageId, nameTopic, message)
+            .subscribeOn(Schedulers.io())
+            .doOnComplete {
+                chatDao.updateMessage(messageId, message, nameTopic)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.destroyEditMessage()
+            },{
+
+            })
+            .addTo(compositeDisposable)
+    }
+
+    fun actionBottomSheet(nameAction: String, idMessage: Long, nameTopic: String, messageForEdit: String, positionMessage: Int){
+        when(nameAction){
+            "Add reaction" -> {
+                Log.d("EMOJI", "actionBottomSheet: EMOJI")
+                viewState.showEmojiBottomSheetDialog(idMessage, nameTopic, positionMessage)
+            }
+            "Delete message" -> {
+                deleteMessage(idMessage)
+            }
+            "Edit message" -> {
+                val message = Html.fromHtml(messageForEdit.toString(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
+                viewState.setupEditMessage(idMessage, nameTopic, message)
+            }
+            "Copy message" -> {
+                val message = Html.fromHtml(messageForEdit.toString(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
+                viewState.copyMessage(message)
+
+            }
+        }
     }
 
 }

@@ -27,6 +27,16 @@ interface ChatApi {
         @Query("narrow") narrow: String
     ): Single<MessageResponse>
 
+    @DELETE("messages/{msg_id}")
+    fun deleteMessage(@Path("msg_id") messageId: Long) : Completable
+
+    @PATCH("messages/{message_id}")
+    fun editMessage(
+        @Path("message_id") messageId: Long,
+        @Query("topic") nameTopic: String,
+        @Query("content") content: String
+    ): Completable
+
     @GET("messages")
     fun getMessagesForStream(
         @Query("anchor") anchor: String,

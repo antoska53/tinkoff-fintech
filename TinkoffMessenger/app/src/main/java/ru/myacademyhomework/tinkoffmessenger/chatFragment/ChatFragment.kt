@@ -1,5 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -22,6 +24,7 @@ import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetActionAdapter
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.bottomsheet.BottomSheetAdapter
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.database.TopicDb
@@ -46,12 +49,14 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private var popupMenu: PopupMenu? = null
     private lateinit var editTextMessage: EditText
     private lateinit var buttonSendMessage: ImageButton
-    private lateinit var dialog: BottomSheetDialog
+    private lateinit var buttonEditMessage: ImageButton
+//    private lateinit var dialog: BottomSheetDialog
     private lateinit var textviewTopicChat: TextView
     private lateinit var textviewNameTopic: TextView
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
     private var foundOldest = false
+    private var firstLoadFlag = false
 
     @Inject
     lateinit var presenterProvider: Provider<ChatPresenter>
@@ -72,6 +77,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
         setStatusBarColor(FlowFragment.LIGHT_COLOR)
 
+        Log.d("INITT", "onCreate: INIT CREA")
         chatPresenter.load(nameStream, nameTopic, foundOldest)
         chatPresenter.initChat()
     }
@@ -101,7 +107,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener {
             chatPresenter.buttonReloadClick()
-
         }
 
         val buttonBack = view.findViewById<ImageView>(R.id.imageView_arrow_back)
@@ -115,6 +120,10 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
                 editTextMessage.text, textviewTopicChat.text.toString()
             )
         }
+        buttonEditMessage = view.findViewById(R.id.button_edit_message)
+//        buttonEditMessage.setOnClickListener {
+//            chatPresenter.onClickButtonEditMessage(editTextMessage.text, textviewTopicChat.text.toString())
+//        }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -148,6 +157,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun initRecycler(listUser: List<User>) {
+        Log.d("INITT", "initRecycler: INIT RES")
         adapter = ChatAdapter(this, listUser[0].userID){nameTopic ->
             chatPresenter.onClickTopic(nameTopic)
         }
@@ -167,42 +177,52 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         buttonSendMessage.setImageResource(resId)
     }
 
-    override fun itemLongClicked(idMessage: Long, nameTopic: String, position: Int): Boolean {
-        showBottomSheetDialog(idMessage, nameTopic, position)
+    override fun itemLongClicked(idMessage: Long, nameTopic: String, message: String, position: Int): Boolean {
+        showActionBottomSheetDialog(idMessage, nameTopic, message, position)
+//        showBottomSheetDialog(idMessage, nameTopic, position)
         return true
     }
 
-    override fun itemAddReactionClicked(messageId: Long, emojiName: String, position: Int) {
-        chatPresenter.addReaction(messageId, emojiName, position)
+    override fun plusButtonClicked(idMessage: Long, nameTopic: String, position: Int): Boolean {
+        showEmojiBottomSheetDialog(idMessage, nameTopic, position)
+        return true
     }
 
-    override fun itemRemoveReactionClicked(
-        messageId: Long,
-        emojiName: String,
-        emojiCode: String,
-        reactionType: String,
-        userId: Int,
-        position: Int
+    override fun itemAddReactionClicked(messageId: Long, nameTopic: String, emojiName: String, position: Int) {
+        chatPresenter.addReaction(messageId, nameTopic, emojiName, position)
+    }
+
+    override fun itemRemoveReactionClicked(messageId: Long, nameTopic: String, emojiName: String,
+        emojiCode: String, reactionType: String, userId: Int, position: Int
     ) {
-        chatPresenter.removeReaction(
-            messageId,
-            emojiName,
-            emojiCode,
-            reactionType,
-            userId,
-            position
-        )
+        chatPresenter.removeReaction(messageId, nameTopic, emojiName, emojiCode, reactionType,
+            userId, position )
     }
 
-    private fun showBottomSheetDialog(idMessage: Long, nameTopic: String, positionMessage: Int) {
+    override fun showEmojiBottomSheetDialog(idMessage: Long, nameTopic: String, positionMessage: Int) {
         val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
-        dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         dialog.setContentView(bottomSheet)
 
         val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_recycler)
         val adapterBottomSheet =
             BottomSheetAdapter(idMessage, nameTopic, positionMessage) { emoji, id, nametopic, position ->
                 chatPresenter.updateEmoji(emoji, id, nametopic, position)
+                dialog.dismiss()
+            }
+        recyclerBottomSheet.adapter = adapterBottomSheet
+        dialog.show()
+    }
+
+    private fun showActionBottomSheetDialog(idMessage: Long, nameTopic: String, message: String, positionMessage: Int) {
+        val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet_action, null)
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        dialog.setContentView(bottomSheet)
+
+        val recyclerBottomSheet = bottomSheet.findViewById<RecyclerView>(R.id.bottom_sheet_action_recycler)
+        val adapterBottomSheet =
+            BottomSheetActionAdapter(idMessage, nameTopic, message, positionMessage) {action, id, nametopic, message_for_edit, position ->
+                chatPresenter.actionBottomSheet(action, id, nametopic, message_for_edit, position)
                 dialog.dismiss()
             }
         recyclerBottomSheet.adapter = adapterBottomSheet
@@ -248,12 +268,15 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun updateRecyclerData(listUserMessage: List<ChatMessage>) {
-
+        Log.d("INITT", "updateRecyclerData: UP")
         val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
         val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
         adapter.updateData(listUserMessage)
         chatDiffResult.dispatchUpdatesTo(adapter)
-        recyclerView?.scrollToPosition(listUserMessage.size - 1)
+        if (!firstLoadFlag){
+            recyclerView?.scrollToPosition(listUserMessage.size - 1)
+            firstLoadFlag = true
+        }
     }
 
     override fun addRecyclerData(listUserMessage: List<ChatMessage>) {
@@ -267,6 +290,34 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
                 nameTopic
             )
         )
+    }
+
+    override fun setupEditMessage(messageId: Long, nameTopic: String, message: String) {
+        buttonEditMessage.isVisible = true
+        buttonSendMessage.isVisible = false
+        textviewTopicChat.isVisible = true
+        editTextMessage.text.clear()
+        editTextMessage.setText(message)
+
+        buttonEditMessage.setOnClickListener {
+            chatPresenter.onClickButtonEditMessage(
+                messageId, editTextMessage.text, textviewTopicChat.text.toString()
+            )
+        }
+    }
+
+    override fun copyMessage(message: String){
+        val clipboard: ClipboardManager =
+            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("text", message)
+        clipboard.setPrimaryClip(clip)
+    }
+
+    override fun destroyEditMessage() {
+        buttonSendMessage.isVisible = true
+        textviewTopicChat.isVisible = nameTopic == STREAM_CHAT
+        buttonEditMessage.isVisible = false
+        editTextMessage.text.clear()
     }
 
     override fun showRefresh() {
@@ -326,6 +377,22 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         Snackbar.make(
             requireView(),
             "Неудалось удалить эмодзи",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showErrorDeleteMessage() {
+        Snackbar.make(
+            requireView(),
+            "Неудалось удалить сообщение",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showErrorEditMessage() {
+        Snackbar.make(
+            requireView(),
+            "Выберите топик, введите сообщение",
             Snackbar.LENGTH_SHORT
         ).show()
     }

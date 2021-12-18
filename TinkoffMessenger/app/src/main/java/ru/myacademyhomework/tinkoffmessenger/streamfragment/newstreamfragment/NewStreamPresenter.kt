@@ -14,15 +14,20 @@ class NewStreamPresenter @Inject constructor(private val chatDao: ChatDao, priva
     : BasePresenter<NewStreamView>(){
 
         fun createNewStream(nameStream: String, description: String){
-            apiClient.chatApi.createStream(
-                "[{\"description\": \"$description\", \"name\": \"$nameStream\"}]")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    viewState.showSuccessCreate()
-                },{
-                    viewState.showError()
-                })
-                .addTo(compositeDisposable)
+            if(nameStream.isNotEmpty() && description.isNotEmpty()) {
+                apiClient.chatApi.createStream(
+                    "[{\"description\": \"$description\", \"name\": \"$nameStream\"}]"
+                )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        viewState.showSuccessCreate()
+                    }, {
+                        viewState.showError()
+                    })
+                    .addTo(compositeDisposable)
+            }else{
+                viewState.showEmptyNameDescription()
+            }
         }
 }

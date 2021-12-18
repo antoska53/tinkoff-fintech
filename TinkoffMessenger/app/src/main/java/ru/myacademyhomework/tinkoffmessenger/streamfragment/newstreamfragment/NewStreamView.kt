@@ -6,4 +6,7 @@ import ru.myacademyhomework.tinkoffmessenger.common.BaseView
 interface NewStreamView :BaseView {
     @Skip
     fun showSuccessCreate()
+
+    @Skip
+    fun showEmptyNameDescription()
 }
