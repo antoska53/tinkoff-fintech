@@ -87,6 +87,25 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .addTo(compositeDisposable)
     }
 
+    fun getStreamFromDb(streamName: String){
+        chatDao.getTopicsForStream(streamName)
+            .map { listTopicsDb ->
+                listTopicsDb.map { topicDb ->
+                    Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                }
+            }.map {
+                Stream(streamName, it)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.setDataToRecycler(listOf(it))
+            },{
+
+            })
+            .addTo(compositeDisposable)
+    }
+
     fun getStreams() {
         Log.d("LOAD", "getStreams: ")
         apiClient.chatApi.getStreams()
@@ -97,7 +116,7 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .flatMapObservable {
                 Observable.fromIterable(it)
             }
-            .flatMap { subscription ->
+            .flatMapSingle { subscription ->
                 apiClient.chatApi.getTopics(subscription.streamID)
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
@@ -139,7 +158,7 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .flatMapObservable {
                 Observable.fromIterable(it)
             }
-            .flatMap { stream ->
+            .flatMapSingle { stream ->
                 apiClient.chatApi.getTopics(stream.streamID)
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->

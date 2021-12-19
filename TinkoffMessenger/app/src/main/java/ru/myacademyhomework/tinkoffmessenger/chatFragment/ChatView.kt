@@ -36,7 +36,8 @@ interface ChatView : BaseView {
     @AddToEndSingle
     fun updateRecyclerData(listUserMessage: List<ChatMessage>)
 
-    @AddToEndSingle
+//    @AddToEndSingle
+    @Skip
     fun addRecyclerData(listUserMessage: List<ChatMessage>)
 
     @AddToEndSingle
@@ -48,7 +49,7 @@ interface ChatView : BaseView {
     @Skip
     fun copyMessage(message: String)
 
-    @AddToEndSingle
+    @Skip
     fun addToSharedpref(foundOldest: Boolean)
 
     @AddToEndSingle

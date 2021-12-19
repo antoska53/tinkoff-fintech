@@ -13,6 +13,9 @@ interface ChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTopics(topics: List<TopicDb>)
 
+//    @Query("SELECT * FROM stream_table WHERE nameStream = :nameStream")
+//    fun getStream(nameStream: String): Single<StreamDb>
+
     @Query("SELECT * FROM stream_table")
     fun getAllStreams(): Flowable<List<StreamDb>>
 
@@ -21,6 +24,9 @@ interface ChatDao {
 
     @Query("SELECT * FROM topic_table WHERE name_stream = :nameStream")
     fun getTopics(nameStream: String): List<TopicDb>
+
+    @Query("SELECT * FROM topic_table WHERE name_stream = :nameStream")
+    fun getTopicsForSearchStream(nameStream: String): Single<List<TopicDb>>
 
     @Query("SELECT * FROM topic_table WHERE name_stream = :nameStream")
     fun getTopicsForStream(nameStream: String): Single<List<TopicDb>>
@@ -67,9 +73,15 @@ interface ChatDao {
     @Query("SELECT * FROM user_table WHERE user_id = :userId")
     fun getUser(userId: Int): Single<UserDb>
 
+    @Query("SELECT * FROM user_table WHERE full_name = :name")
+    fun getUserForSearch(name: String): UserDb
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUsers(users: List<UserDb>)
 
     @Query("SELECT * FROM topic_table WHERE name_topic = :nameTopic")
     fun getTopic(nameTopic: String): TopicDb?
+
+    @Query("SELECT * FROM stream_table WHERE nameStream = :nameStream")
+    fun getStream(nameStream: String): StreamDb?
 }

@@ -78,6 +78,12 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         setStatusBarColor(FlowFragment.LIGHT_COLOR)
 
         Log.d("INITT", "onCreate: INIT CREA")
+        val sharedPref =
+            requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+//        val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
+        val foundOldest = sharedPref.getBoolean(nameStream + nameTopic, false)
+        chatPresenter.loadFoundOldest(foundOldest)
+
         chatPresenter.load(nameStream, nameTopic, foundOldest)
         chatPresenter.initChat()
     }
@@ -93,10 +99,11 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             chatPresenter.showPopupMenu()
         }
 
-        val sharedPref =
-            requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
-        chatPresenter.loadFoundOldest(foundOldest)
+//        val sharedPref =
+//            requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+////        val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
+//        val foundOldest = sharedPref.getBoolean(nameStream + nameTopic, false)
+//        chatPresenter.loadFoundOldest(foundOldest)
         recyclerView = view.findViewById(R.id.chat_recycler)
 //        chatPresenter.initChat()
 
@@ -263,7 +270,8 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = pref.edit()
 
-        editor.putBoolean(FOUND_OLDEST_KEY, foundOldest)
+//        editor.putBoolean(FOUND_OLDEST_KEY, foundOldest)
+        editor.putBoolean(nameStream + nameTopic, foundOldest)
         editor.apply()
     }
 

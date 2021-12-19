@@ -1,14 +1,19 @@
 package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
+import android.util.Log
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
+import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleScope
 import ru.myacademyhomework.tinkoffmessenger.network.User
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @PeopleScope
@@ -19,6 +24,59 @@ class PeoplePresenter @Inject constructor(
     BasePresenter<PeopleView>() {
 
     private var databaseIsEmpty = true
+    private var isSearch = false
+    private val subject = PublishSubject.create<String>()
+
+    fun search(str: String) {
+        if (str.isEmpty() && isSearch) {
+            viewState.showUsers()
+            isSearch = false
+        }
+        else subject.onNext(str)
+    }
+
+    fun initSearch() {
+        Log.d("SHOW", "initSearch: SEARCH")
+        subject
+            .filter { str -> str.isNotEmpty() }
+            .distinctUntilChanged()
+            .debounce(1000, TimeUnit.MILLISECONDS)
+            .switchMap { str ->
+                val userDb = chatDao.getUserForSearch(str)
+                Log.d("STREAM", "initSearch: STREAM $userDb")
+                if (userDb != null) {
+                    Observable.just(
+                        User(
+                            avatarURL = userDb.avatarURL,
+                            email = userDb.email,
+                            fullName = userDb.fullName,
+                            userID = userDb.userID
+                        )
+                    )
+                }
+                else {
+                    Observable.just(User("", "", "", 0))
+                }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { user ->
+                    if (user.fullName.isNotEmpty()) {
+                        isSearch = true
+//                        viewState.showResultSearch(user)
+                        viewState.updateRecycler(listOf(user))
+                    } else {
+                        viewState.showIsEmptyResultSearch()
+                    }
+                },
+                {
+                    viewState.showError()
+                }
+            )
+            .addTo(compositeDisposable)
+    }
+
 
     fun openProfile(userId: Int) {
         viewState.openProfileFragment(userId)

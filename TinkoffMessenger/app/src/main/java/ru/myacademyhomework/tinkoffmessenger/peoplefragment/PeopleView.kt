@@ -18,4 +18,13 @@ interface PeopleView : BaseView {
 
     @Skip
     fun showErrorUpdateData()
+
+    @Skip
+    fun showResultSearch(user: User)
+
+    @Skip
+    fun showIsEmptyResultSearch()
+
+    @Skip
+    fun showUsers()
 }

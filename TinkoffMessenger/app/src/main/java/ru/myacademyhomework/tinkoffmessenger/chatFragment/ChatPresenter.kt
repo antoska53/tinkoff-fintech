@@ -159,7 +159,7 @@ class ChatPresenter @Inject constructor(
         if (!isLoading) {
             if (!foundOldest) {
                 if (firstVisibleItem - ChatFragment.POSITION_FOR_LOAD <= ChatFragment.FIRST_POSITION) {
-                    Log.d("LOAD", "pagingChat: PAGING")
+                    Log.d("PAGING", "pagingChat: PAGING")
                     isLoading = true
                     compositeDisposable.clear()
                     getMessages(firstMessageId)
@@ -193,6 +193,8 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getOldMessageFromDb() {
+        Log.d("PAGING", "getOldMessageFromDb: OLD isloading $isLoading")
+        Log.d("PAGING", "getOldMessageFromDb: OLD isloading firstMesasgeId $firstMessageId")
         nameTopic?.let { nameTopic ->
             chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
                 .map {
@@ -218,6 +220,8 @@ class ChatPresenter @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    Log.d("PAGING", "getOldMessageFromDb: SUBSCRIBE $it")
+                    if(it.isNotEmpty()) firstMessageId = it.first().id.toString()
                     viewState.addRecyclerData(setupListMessage(it))
                     isLoading = false
                 }.addTo(compositeDisposable)
@@ -257,6 +261,7 @@ class ChatPresenter @Inject constructor(
                             viewState.showRefresh()
                         } else {
                             Log.d("LOAD", "getAllMessagesFromDb: UPDATE RECYCLER")
+                            if(it.isNotEmpty()) firstMessageId = it.first().id.toString()
                             databaseIsNotEmpty = true
                             viewState.updateRecyclerData(setupListMessage(it))
                             isLoading = false
@@ -318,6 +323,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessages(anchor: String) {
+        Log.d("PAGING", "getMessages: MESAGES")
         nameTopic?.let { nameTopic ->
             nameStream?.let { nameStream ->
                 apiClient.chatApi.getMessages(
@@ -362,7 +368,7 @@ class ChatPresenter @Inject constructor(
                         databaseIsNotEmpty = true
                         chatDao.insertMessages(it)
                         if (isLoading) getOldMessageFromDb()
-                        firstMessageId = it.first().id.toString()
+//                        firstMessageId = it.first().id.toString()
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {

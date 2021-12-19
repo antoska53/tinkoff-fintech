@@ -2,9 +2,12 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -27,6 +30,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     private var navigation: FragmentNavigation? = null
     private var shimmer: ShimmerFrameLayout? = null
     private var errorView: View? = null
+    private var editTextSearch: EditText? = null
 
     @Inject
     lateinit var presenterProvider: Provider<PeoplePresenter>
@@ -43,6 +47,8 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     override fun onCreate(savedInstanceState: Bundle?) {
         (activity?.application as App).appComponent.getPeopleComponent().inject(this)
         super.onCreate(savedInstanceState)
+        peoplePresenter.initSearch()
+        Log.d("PEOPLE", "onCreate: PEOPLE")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,6 +65,11 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
             peoplePresenter.openProfile(userId)
         }
         recycler?.adapter = adapter
+
+        editTextSearch = view.findViewById(R.id.search_user_edittext)
+        editTextSearch?.addTextChangedListener { str ->
+            peoplePresenter.search(str.toString())
+        }
 
         peoplePresenter.getAllUsersFromDb()
         peoplePresenter.getAllUsers()
@@ -98,6 +109,22 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
             "Неудалось обновить данные",
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    override fun showResultSearch(user: User) {
+
+    }
+
+    override fun showIsEmptyResultSearch() {
+        Snackbar.make(
+            requireView(),
+            "Ничего не найдено",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showUsers() {
+        peoplePresenter.getAllUsersFromDb()
     }
 
     override fun showRecycler() {

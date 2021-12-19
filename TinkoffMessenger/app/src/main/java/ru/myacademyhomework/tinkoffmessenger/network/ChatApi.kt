@@ -46,7 +46,7 @@ interface ChatApi {
     ): MessageResponse
 
     @GET("users/me/{stream_id}/topics")
-    fun getTopics(@Path("stream_id") stream_id: Long): Observable<TopicResponse>
+    fun getTopics(@Path("stream_id") stream_id: Long): Single<TopicResponse>
 
     @POST("messages")
     fun sendMessage(

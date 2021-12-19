@@ -63,11 +63,12 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
             val resultStream = bundle.getString(StreamFragment.STREAM_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
             if (resultTopic != null && resultStream != null) {
-                val listTopic = listOf(Topic(0, resultTopic, resultStream))
-                val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listTopic)
-                val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
-                adapter.setData(listTopic)
-                streamDiffResult.dispatchUpdatesTo(adapter)
+                pagerPresenter.getStreamFromDb(resultStream)
+//                val listTopic = listOf(Topic(0, resultTopic, resultStream))
+//                val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listTopic)
+//                val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
+//                adapter.setData(listTopic)
+//                streamDiffResult.dispatchUpdatesTo(adapter)
             }
             if (resultShowStreams) {
                 pagerPresenter.getStreams()
@@ -89,12 +90,12 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, false)
+    private fun updateStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
     }
 
-    private fun removeStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, true)
+    private fun removeStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
 
     }
 
@@ -155,9 +156,9 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
         ).show()
     }
 
-    override fun itemStreamArrowClicked(streams: List<Topic>, position: Int, isSelected: Boolean) {
-        if (isSelected) updateStream(streams, position)
-        else removeStream(streams, position)
+    override fun itemStreamArrowClicked(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        if (isSelected) updateStream(topics, position, isSelected)
+        else removeStream(topics, position, isSelected)
     }
 
     override fun itemStreamClicked(stream: Stream) {

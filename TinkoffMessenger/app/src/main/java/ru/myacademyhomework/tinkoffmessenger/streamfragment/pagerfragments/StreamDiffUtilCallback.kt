@@ -33,11 +33,10 @@ class StreamDiffUtilCallback(
         val oldItem = oldLIst[oldItemPosition]
         val newItem = newLIst[newItemPosition]
         return if (oldItem is Stream && newItem is Stream) {
-            oldItem.nameChannel == newItem.nameChannel
+            oldItem.nameChannel == newItem.nameChannel && oldItem.isSelected == newItem.isSelected
         } else {
             val oldTopic = oldItem as Topic
             val newTopic =  newItem as Topic
-            Log.d("COMPARE", "areContentsTheSame: ${oldTopic.name} , ${newTopic.name} , ${oldTopic == newTopic}")
             oldTopic == newTopic
         }
     }

@@ -74,12 +74,12 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, false)
+    private fun updateStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
     }
 
-    private fun removeStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, true)
+    private fun removeStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
     }
 
     override fun setDataToRecycler(listStream: List<Stream>) {
@@ -153,9 +153,9 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         ).show()
     }
 
-    override fun itemStreamArrowClicked(streams: List<Topic>, position: Int, isSelected: Boolean) {
-        if (isSelected) updateStream(streams, position)
-        else removeStream(streams, position)
+    override fun itemStreamArrowClicked(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        if (isSelected) updateStream(topics, position, isSelected)
+        else removeStream(topics, position, isSelected)
     }
 
     override fun itemStreamClicked(stream: Stream) {

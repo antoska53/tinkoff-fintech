@@ -1,6 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
@@ -16,6 +17,8 @@ import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
+import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject
 import javax.inject.Provider
@@ -84,6 +87,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     }
 
     override fun showStreams() {
+        Log.d("SHOW", "showStreams: SHOW")
         editTextSearch?.text?.clear()
         childFragmentManager.setFragmentResult(
             SUBSCRIBE_RESULT_KEY,
@@ -96,15 +100,15 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         requireActivity().onBackPressed()
     }
 
-    override fun showResultSearch(topic: Topic) {
-        Snackbar.make(requireView(), topic.name, Snackbar.LENGTH_SHORT).show()
+    override fun showResultSearch(stream: StreamDb) {
+        Snackbar.make(requireView(), stream.nameChannel, Snackbar.LENGTH_SHORT).show()
 
         viewPager?.currentItem = 0
         childFragmentManager.setFragmentResult(
             SUBSCRIBE_RESULT_KEY,
             bundleOf(
-                TOPIC_KEY to topic.name,
-                STREAM_KEY to topic.nameStream
+                TOPIC_KEY to "",
+                STREAM_KEY to stream.nameChannel
             )
         )
     }
