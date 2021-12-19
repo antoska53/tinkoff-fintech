@@ -1,6 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments
 
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -107,7 +106,6 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
     }
 
     fun getStreams() {
-        Log.d("LOAD", "getStreams: ")
         apiClient.chatApi.getStreams()
             .subscribeOn(Schedulers.io())
             .flatMap {
@@ -148,8 +146,7 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .addTo(compositeDisposable)
     }
 
-    fun getAllStreams(){
-        Log.d("LOAD", "getAllStreams: ")
+    private fun getAllStreams(){
         apiClient.chatApi.getAllStreams()
             .subscribeOn(Schedulers.io())
             .flatMap {

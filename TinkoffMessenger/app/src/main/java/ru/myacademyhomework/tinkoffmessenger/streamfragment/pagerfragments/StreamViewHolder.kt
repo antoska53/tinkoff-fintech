@@ -23,7 +23,6 @@ class StreamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         imageArrow.setOnClickListener {
             if (!it.isSelected != stream.isSelected) {
                 it.isSelected = !it.isSelected
-//            stream.isSelected = it.isSelected
                 listener.itemStreamArrowClicked(stream.topics, adapterPosition, it.isSelected)
             }
         }

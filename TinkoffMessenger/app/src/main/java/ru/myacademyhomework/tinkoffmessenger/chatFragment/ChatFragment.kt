@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
@@ -46,16 +45,13 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     private var navigation: FragmentNavigation? = null
     private lateinit var adapter: ChatAdapter
     private var recyclerView: RecyclerView? = null
-    private var popupMenu: PopupMenu? = null
     private lateinit var editTextMessage: EditText
     private lateinit var buttonSendMessage: ImageButton
     private lateinit var buttonEditMessage: ImageButton
-//    private lateinit var dialog: BottomSheetDialog
     private lateinit var textviewTopicChat: TextView
     private lateinit var textviewNameTopic: TextView
     private var errorView: View? = null
     private var shimmer: ShimmerFrameLayout? = null
-    private var foundOldest = false
     private var firstLoadFlag = false
 
     @Inject
@@ -77,10 +73,8 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
         setStatusBarColor(FlowFragment.LIGHT_COLOR)
 
-        Log.d("INITT", "onCreate: INIT CREA")
         val sharedPref =
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-//        val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
         val foundOldest = sharedPref.getBoolean(nameStream + nameTopic, false)
         chatPresenter.loadFoundOldest(foundOldest)
 
@@ -99,13 +93,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             chatPresenter.showPopupMenu()
         }
 
-//        val sharedPref =
-//            requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-////        val foundOldest = sharedPref.getBoolean(FOUND_OLDEST_KEY, false)
-//        val foundOldest = sharedPref.getBoolean(nameStream + nameTopic, false)
-//        chatPresenter.loadFoundOldest(foundOldest)
         recyclerView = view.findViewById(R.id.chat_recycler)
-//        chatPresenter.initChat()
 
         textviewNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
         textviewNameTopic.text = getString(R.string.topic, nameTopic)
@@ -128,9 +116,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             )
         }
         buttonEditMessage = view.findViewById(R.id.button_edit_message)
-//        buttonEditMessage.setOnClickListener {
-//            chatPresenter.onClickButtonEditMessage(editTextMessage.text, textviewTopicChat.text.toString())
-//        }
         editTextMessage = view.findViewById(R.id.edittext_message)
         editTextMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -164,7 +149,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun initRecycler(listUser: List<User>) {
-        Log.d("INITT", "initRecycler: INIT RES")
         adapter = ChatAdapter(this, listUser[0].userID){nameTopic ->
             chatPresenter.onClickTopic(nameTopic)
         }
@@ -186,7 +170,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
     override fun itemLongClicked(idMessage: Long, nameTopic: String, message: String, position: Int): Boolean {
         showActionBottomSheetDialog(idMessage, nameTopic, message, position)
-//        showBottomSheetDialog(idMessage, nameTopic, position)
         return true
     }
 
@@ -270,13 +253,11 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = pref.edit()
 
-//        editor.putBoolean(FOUND_OLDEST_KEY, foundOldest)
         editor.putBoolean(nameStream + nameTopic, foundOldest)
         editor.apply()
     }
 
     override fun updateRecyclerData(listUserMessage: List<ChatMessage>) {
-        Log.d("INITT", "updateRecyclerData: UP")
         val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
         val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
         adapter.updateData(listUserMessage)
@@ -389,6 +370,14 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         ).show()
     }
 
+    override fun showDeleteMessageSuccess() {
+        Snackbar.make(
+            requireView(),
+            "Сообщение удалено",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
     override fun showErrorDeleteMessage() {
         Snackbar.make(
             requireView(),
@@ -431,13 +420,10 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
     override fun showNameTopic(isVisible: Int){
         textviewNameTopic.visibility = isVisible
-        Log.d("VISIBLE", "showNameTopic: $isVisible")
     }
 
     override fun showChooseTopic(isVisible: Int){
         textviewTopicChat.visibility = isVisible
-        Log.d("VISIBLE", "showNameTopic: $isVisible")
-
     }
 
     companion object {
@@ -448,7 +434,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         const val NAME_TOPIC = "NAME_STREAM"
         const val SEND_MESSAGE_POSITION = -1
         const val SHARED_PREF_NAME = "CHAT_SHARED_PREF"
-        const val FOUND_OLDEST_KEY = "FOUND_OLDEST_KEY"
         const val FIRST_POSITION = 1
         const val POSITION_FOR_LOAD = 5
         const val CHOOSE_TOPIC = "Choose topic..."

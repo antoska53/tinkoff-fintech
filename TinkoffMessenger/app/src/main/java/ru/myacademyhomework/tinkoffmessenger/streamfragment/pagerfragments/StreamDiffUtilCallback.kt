@@ -1,6 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment.pagerfragments
 
-import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.Stream

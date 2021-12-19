@@ -64,11 +64,6 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
             if (resultTopic != null && resultStream != null) {
                 pagerPresenter.getStreamFromDb(resultStream)
-//                val listTopic = listOf(Topic(0, resultTopic, resultStream))
-//                val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listTopic)
-//                val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
-//                adapter.setData(listTopic)
-//                streamDiffResult.dispatchUpdatesTo(adapter)
             }
             if (resultShowStreams) {
                 pagerPresenter.getStreams()

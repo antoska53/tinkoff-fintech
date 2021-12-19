@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -48,7 +47,6 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
         (activity?.application as App).appComponent.getPeopleComponent().inject(this)
         super.onCreate(savedInstanceState)
         peoplePresenter.initSearch()
-        Log.d("PEOPLE", "onCreate: PEOPLE")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -109,10 +107,6 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
             "Неудалось обновить данные",
             Snackbar.LENGTH_SHORT
         ).show()
-    }
-
-    override fun showResultSearch(user: User) {
-
     }
 
     override fun showIsEmptyResultSearch() {

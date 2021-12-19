@@ -48,7 +48,6 @@ class ProfilePresenter @Inject constructor(
                 { user ->
                     viewState.showUserProfile(user)
                 }, {
-
                 }
             )
             .addTo(compositeDisposable)

@@ -1,7 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.streamfragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
@@ -17,9 +16,7 @@ import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
-import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -87,7 +84,6 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     }
 
     override fun showStreams() {
-        Log.d("SHOW", "showStreams: SHOW")
         editTextSearch?.text?.clear()
         childFragmentManager.setFragmentResult(
             SUBSCRIBE_RESULT_KEY,

@@ -140,7 +140,6 @@ class ChatPresenter @Inject constructor(
                 if (it.isEmpty()) {
                     getOwnUser()
                 } else {
-                    Log.d("INITT", "initChat: INIT CHAT")
                     viewState.hideError()
                     viewState.initRecycler(it)
                     isInitRecycler = true
@@ -159,7 +158,6 @@ class ChatPresenter @Inject constructor(
         if (!isLoading) {
             if (!foundOldest) {
                 if (firstVisibleItem - ChatFragment.POSITION_FOR_LOAD <= ChatFragment.FIRST_POSITION) {
-                    Log.d("PAGING", "pagingChat: PAGING")
                     isLoading = true
                     compositeDisposable.clear()
                     getMessages(firstMessageId)
@@ -193,8 +191,6 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getOldMessageFromDb() {
-        Log.d("PAGING", "getOldMessageFromDb: OLD isloading $isLoading")
-        Log.d("PAGING", "getOldMessageFromDb: OLD isloading firstMesasgeId $firstMessageId")
         nameTopic?.let { nameTopic ->
             chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
                 .map {
@@ -220,7 +216,6 @@ class ChatPresenter @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    Log.d("PAGING", "getOldMessageFromDb: SUBSCRIBE $it")
                     if(it.isNotEmpty()) firstMessageId = it.first().id.toString()
                     viewState.addRecyclerData(setupListMessage(it))
                     isLoading = false
@@ -256,18 +251,15 @@ class ChatPresenter @Inject constructor(
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        Log.d("LOAD", "getAllMessagesFromDb: LOAD")
                         if (it.isEmpty()) {
                             viewState.showRefresh()
                         } else {
-                            Log.d("LOAD", "getAllMessagesFromDb: UPDATE RECYCLER")
                             if(it.isNotEmpty()) firstMessageId = it.first().id.toString()
                             databaseIsNotEmpty = true
                             viewState.updateRecyclerData(setupListMessage(it))
                             isLoading = false
                         }
                         if (!databaseIsRefresh){
-                            Log.d("LOAD", "getAllMessagesFromDb: REFRESH DB")
                             getMessages("newest")}
                     }, {
                     })
@@ -303,7 +295,6 @@ class ChatPresenter @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.d("LOAD", "getAllMessagesFromDbForStream: ")
                     if (it.isEmpty()) {
                         viewState.showRefresh()
                     } else {
@@ -323,7 +314,6 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessages(anchor: String) {
-        Log.d("PAGING", "getMessages: MESAGES")
         nameTopic?.let { nameTopic ->
             nameStream?.let { nameStream ->
                 apiClient.chatApi.getMessages(
@@ -396,7 +386,6 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessagesForStream(anchor: String) {
-        Log.d("LOAD", "getMessagesForStream: LOAD")
         nameStream?.let { nameStream ->
             chatDao.getTopicsForStream(nameStream)
                 .subscribeOn(Schedulers.io())
@@ -441,16 +430,13 @@ class ChatPresenter @Inject constructor(
                 .doOnSuccess {
                     databaseIsRefresh = true
                     databaseIsNotEmpty = true
-                    Log.d("LOAD", "getMessagesForStream: doOnSuc")
                     chatDao.insertMessages(it.flatten())
-//                    if (isLoading) getOldMessageFromDb()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
                     if (!databaseIsNotEmpty) {
                         viewState.showRefresh()
                     }
-//                    isLoading = true
                 }
                 .doOnTerminate {
                     viewState.hideRefresh()
@@ -470,7 +456,6 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getMessage(messageId: Long, position: Int, nameTopic: String?) {
-        Log.d("INITT", "getMessage: INITTT")
         nameTopic?.let {
             if (it != ChatFragment.STREAM_CHAT) {
                 apiClient.chatApi.getMessages(
@@ -514,12 +499,9 @@ class ChatPresenter @Inject constructor(
                             message.nameTopic = nameTopic
 //                            viewState.updateMessage(message, this.nameTopic == ChatFragment.STREAM_CHAT)
                         } else {
-                            Log.d("INITT", "getMessage: pos $position  topic $nameTopic stream $nameStream id $messageId" )
-                            Log.d("INITT", "getMessage: pos $position  mes ${it.messages[0]}" )
 //                            viewState.updateMessage(it.messages[0], position)
                         }
                     }, {
-                        Log.d("INITT", "getMessage: $it")
                     })
                     .addTo(compositeDisposable)
             }
@@ -634,7 +616,6 @@ class ChatPresenter @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Log.d("INITT", "removeReaction: REMOVE")
                 getMessage(messageId, position, nameTopic)
             }, {
                 viewState.showErrorRemoveReaction()
@@ -646,14 +627,12 @@ class ChatPresenter @Inject constructor(
         apiClient.chatApi.deleteMessage(idMessage)
             .subscribeOn(Schedulers.io())
             .doOnComplete {
-                Log.d("DELETTE", "deleteMessage: DELETE dononSubscribe")
                 chatDao.deleteMessage(idMessage)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Log.d("DELETTE", "deleteMessage: subscribe")
+                viewState.showDeleteMessageSuccess()
             },{
-                Log.d("DELETTE", "deleteMessage: ERROR")
                 viewState.showErrorDeleteMessage()
             })
             .addTo(compositeDisposable)
@@ -677,7 +656,6 @@ class ChatPresenter @Inject constructor(
     fun actionBottomSheet(nameAction: String, idMessage: Long, nameTopic: String, messageForEdit: String, positionMessage: Int){
         when(nameAction){
             "Add reaction" -> {
-                Log.d("EMOJI", "actionBottomSheet: EMOJI")
                 viewState.showEmojiBottomSheetDialog(idMessage, nameTopic, positionMessage)
             }
             "Delete message" -> {

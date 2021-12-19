@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 @Entity(tableName = "reaction_table", primaryKeys = ["emoji_code", "user_id", "message_id"])
 class ReactionDb (

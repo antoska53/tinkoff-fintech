@@ -1,7 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.network
 
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.*
 
@@ -12,9 +11,6 @@ interface ChatApi {
 
     @GET("streams")
     fun getAllStreams(): Single<AllStreamsResponse>
-
-    @GET("users/{user_id}/subscriptions/{stream_id}")
-    fun getSubscriptionStatus(@Path("user_id") userId: Int, @Path("stream_id") streamId: Long): Boolean
 
     @POST("users/me/subscriptions")
     fun createStream(@Query("subscriptions") subscriptions: String): Completable
@@ -36,14 +32,6 @@ interface ChatApi {
         @Query("topic") nameTopic: String,
         @Query("content") content: String
     ): Completable
-
-    @GET("messages")
-    fun getMessagesForStream(
-        @Query("anchor") anchor: String,
-        @Query("num_after") num_after: Int,
-        @Query("num_before") num_before: Int,
-        @Query("narrow") narrow: String
-    ): MessageResponse
 
     @GET("users/me/{stream_id}/topics")
     fun getTopics(@Path("stream_id") stream_id: Long): Single<TopicResponse>
@@ -69,9 +57,6 @@ interface ChatApi {
         @Query("emoji_code") emojiCode: String,
         @Query("reaction_type") reactionType: String
     ): Completable
-
-    @GET("users/{user_id}")
-    fun getUser(@Path("user_id") userId: Int): Single<UserResponse>
 
     @GET("users/me")
     fun getOwnUser(): Single<User>

@@ -1,6 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
@@ -8,7 +7,6 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.database.UserDb
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleScope
@@ -36,14 +34,12 @@ class PeoplePresenter @Inject constructor(
     }
 
     fun initSearch() {
-        Log.d("SHOW", "initSearch: SEARCH")
         subject
             .filter { str -> str.isNotEmpty() }
             .distinctUntilChanged()
             .debounce(1000, TimeUnit.MILLISECONDS)
             .switchMap { str ->
                 val userDb = chatDao.getUserForSearch(str)
-                Log.d("STREAM", "initSearch: STREAM $userDb")
                 if (userDb != null) {
                     Observable.just(
                         User(
@@ -64,7 +60,6 @@ class PeoplePresenter @Inject constructor(
                 { user ->
                     if (user.fullName.isNotEmpty()) {
                         isSearch = true
-//                        viewState.showResultSearch(user)
                         viewState.updateRecycler(listOf(user))
                     } else {
                         viewState.showIsEmptyResultSearch()
@@ -99,7 +94,6 @@ class PeoplePresenter @Inject constructor(
                     )
                 }
             }
-
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if(it.isNotEmpty()){
@@ -110,7 +104,6 @@ class PeoplePresenter @Inject constructor(
                     viewState.showRefresh()
                 }
             }, {
-
             })
             .addTo(compositeDisposable)
     }
@@ -134,9 +127,7 @@ class PeoplePresenter @Inject constructor(
                 viewState.hideRefresh()
             }
             .subscribe({
-//                viewState.hideRefresh()
             },{
-//                viewState.hideRefresh()
                 if(databaseIsEmpty){
                     viewState.showError()
                 }else{

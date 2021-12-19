@@ -14,7 +14,7 @@ class BottomSheetActionAdapter(
     private val listener: BottomSheetActionListener
 ) : RecyclerView.Adapter<BottomSheetActionViewHolder>() {
 
-    private val actionList = listOf<String>(
+    private val actionList = listOf(
         "Add reaction",
         "Delete message",
         "Edit message",

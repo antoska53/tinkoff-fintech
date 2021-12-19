@@ -77,6 +77,9 @@ interface ChatView : BaseView {
     fun showErrorDeleteMessage()
 
     @Skip
+    fun showDeleteMessageSuccess()
+
+    @Skip
     fun showErrorEmptyEditMessage()
 
     @Skip
