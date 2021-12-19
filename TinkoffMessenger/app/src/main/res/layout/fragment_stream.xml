@@ -19,6 +19,7 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:backgroundTint="#323232"
+            android:imeOptions="actionSearch"
             android:hint="@string/hint_search_stream"
             android:paddingStart="35dp"
             android:layout_marginStart="20dp"

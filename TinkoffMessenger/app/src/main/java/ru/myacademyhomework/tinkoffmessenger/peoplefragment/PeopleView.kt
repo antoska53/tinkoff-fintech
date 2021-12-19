@@ -12,4 +12,10 @@ interface PeopleView : BaseView {
 
     @Skip
     fun openProfileFragment(userId: Int)
+
+    @Skip
+    fun showRecycler()
+
+    @Skip
+    fun showErrorUpdateData()
 }

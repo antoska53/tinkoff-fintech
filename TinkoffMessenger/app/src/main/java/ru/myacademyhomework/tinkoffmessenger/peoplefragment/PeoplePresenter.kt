@@ -18,8 +18,15 @@ class PeoplePresenter @Inject constructor(
 ) :
     BasePresenter<PeopleView>() {
 
+    private var databaseIsEmpty = true
+
     fun openProfile(userId: Int) {
         viewState.openProfileFragment(userId)
+    }
+
+    fun buttonReloadClick(){
+        getAllUsersFromDb()
+        getAllUsers()
     }
 
     fun getAllUsersFromDb() {
@@ -34,9 +41,16 @@ class PeoplePresenter @Inject constructor(
                     )
                 }
             }
+
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                viewState.updateRecycler(it)
+                if(it.isNotEmpty()){
+                    databaseIsEmpty = false
+                    viewState.hideRefresh()
+                    viewState.updateRecycler(it)
+                }else{
+                    viewState.showRefresh()
+                }
             }, {
 
             })
@@ -58,7 +72,19 @@ class PeoplePresenter @Inject constructor(
                 })
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
+            .doOnTerminate {
+                viewState.hideRefresh()
+            }
+            .subscribe({
+//                viewState.hideRefresh()
+            },{
+//                viewState.hideRefresh()
+                if(databaseIsEmpty){
+                    viewState.showError()
+                }else{
+                    viewState.showErrorUpdateData()
+                }
+            })
             .addTo(compositeDisposable)
     }
 }

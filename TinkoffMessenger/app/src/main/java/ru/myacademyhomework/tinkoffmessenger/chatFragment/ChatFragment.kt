@@ -389,10 +389,18 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         ).show()
     }
 
-    override fun showErrorEditMessage() {
+    override fun showErrorEmptyEditMessage() {
         Snackbar.make(
             requireView(),
             "Выберите топик, введите сообщение",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showErrorEditMessage() {
+        Snackbar.make(
+            requireView(),
+            "Неудалось отредактировать сообщение",
             Snackbar.LENGTH_SHORT
         ).show()
     }

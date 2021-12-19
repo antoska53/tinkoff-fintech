@@ -24,9 +24,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
-import android.content.ClipData
-
-
 
 
 @ChatScope
@@ -114,7 +111,7 @@ class ChatPresenter @Inject constructor(
         if(text.toString().isNotEmpty() && nameTopic != ChatFragment.CHOOSE_TOPIC){
             editMessage(messageId, nameTopic, text.toString())
         }else{
-            viewState.showErrorEditMessage()
+            viewState.showErrorEmptyEditMessage()
         }
     }
 
@@ -666,7 +663,7 @@ class ChatPresenter @Inject constructor(
             .subscribe({
                 viewState.destroyEditMessage()
             },{
-
+                viewState.showErrorEditMessage()
             })
             .addTo(compositeDisposable)
     }
@@ -681,11 +678,11 @@ class ChatPresenter @Inject constructor(
                 deleteMessage(idMessage)
             }
             "Edit message" -> {
-                val message = Html.fromHtml(messageForEdit.toString(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
+                val message = Html.fromHtml(messageForEdit, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
                 viewState.setupEditMessage(idMessage, nameTopic, message)
             }
             "Copy message" -> {
-                val message = Html.fromHtml(messageForEdit.toString(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
+                val message = Html.fromHtml(messageForEdit, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
                 viewState.copyMessage(message)
 
             }

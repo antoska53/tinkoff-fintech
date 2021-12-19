@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shimmer_people_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/shimmer_people_placeholder" />
+
+        <include layout="@layout/shimmer_people_placeholder" />
+
+        <include layout="@layout/shimmer_people_placeholder" />
+
+        <include layout="@layout/shimmer_people_placeholder" />
+
+        <include layout="@layout/shimmer_people_placeholder" />
+
+        <include layout="@layout/shimmer_people_placeholder" />
+    </LinearLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

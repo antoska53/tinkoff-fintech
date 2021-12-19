@@ -13,7 +13,7 @@
         android:id="@+id/avatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@color/bg_shimmer"
+        android:background="@drawable/bg_shimmer_avatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/textview_name_stream_1"
-        android:layout_width="150dp"
+        android:layout_width="250dp"
         android:layout_height="14dp"
         android:layout_marginTop="5dp"
         android:layout_marginStart="20dp"
@@ -44,7 +44,7 @@
 
     <TextView
         android:id="@+id/textview_name_stream_2"
-        android:layout_width="150dp"
+        android:layout_width="250dp"
         android:layout_height="14dp"
         android:layout_marginTop="5dp"
         android:layout_marginStart="20dp"
