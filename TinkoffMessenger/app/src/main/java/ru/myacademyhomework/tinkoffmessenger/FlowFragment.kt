@@ -3,6 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -34,6 +35,8 @@ class FlowFragment : MvpAppCompatFragment(R.layout.fragment_flow), FlowFragmentV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setStatusBarColor(DARK_COLOR)
+
         val bottomNavigation = view.findViewById<BottomNavigationView>(R.id.nav_view)
 
         bottomNavigation.setOnItemSelectedListener {
@@ -62,6 +65,12 @@ class FlowFragment : MvpAppCompatFragment(R.layout.fragment_flow), FlowFragmentV
             }
             else -> throw IllegalArgumentException()
         }
+    }
+
+    private fun setStatusBarColor(color: Int) {
+        val window = activity?.window
+        window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window?.statusBarColor = resources.getColor(color, null)
     }
 
     override fun showRefresh() {}

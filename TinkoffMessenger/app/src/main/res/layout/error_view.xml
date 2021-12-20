@@ -9,7 +9,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ошибка загрузки"
+        android:layout_margin="10dp"
+        android:text="@string/error_view_message"
+        android:textColor="@color/bg_shimmer"
         android:layout_gravity="center"/>
 
     <Button
@@ -19,7 +21,7 @@
         android:background="@drawable/bg_button_logout"
         android:textColor="@color/button_logout_textcolor"
         android:padding="15dp"
-        android:text="Повторить"
+        android:text="@string/errorview_button"
         android:layout_gravity="center"/>
 
 </LinearLayout>

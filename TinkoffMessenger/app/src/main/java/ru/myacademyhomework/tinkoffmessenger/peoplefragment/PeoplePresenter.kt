@@ -130,8 +130,6 @@ class PeoplePresenter @Inject constructor(
             },{
                 if(databaseIsEmpty){
                     viewState.showError()
-                }else{
-                    viewState.showErrorUpdateData()
                 }
             })
             .addTo(compositeDisposable)

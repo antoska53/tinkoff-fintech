@@ -95,7 +95,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
 
         recyclerView = view.findViewById(R.id.chat_recycler)
 
-        textviewNameTopic = view.findViewById<TextView>(R.id.textview_name_topic)
+        textviewNameTopic = view.findViewById(R.id.textview_name_topic)
         textviewNameTopic.text = getString(R.string.topic, nameTopic)
         val tvNameStream = view.findViewById<TextView>(R.id.textview_name_channel)
         tvNameStream.text = nameStream
@@ -137,10 +137,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         super.onDestroyView()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        setStatusBarColor(FlowFragment.DARK_COLOR)
-    }
 
     private fun setStatusBarColor(color: Int) {
         val window = activity?.window
@@ -232,11 +228,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun showErrorPopupMenu() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось загрузить список топиков",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_popup_menu))
     }
 
     override fun updateMessage(message: UserMessage, isStreamChat: Boolean) {
@@ -261,10 +253,13 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
         val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
         adapter.updateData(listUserMessage)
+        val recyclerViewState = recyclerView?.layoutManager?.onSaveInstanceState()
         chatDiffResult.dispatchUpdatesTo(adapter)
         if (!firstLoadFlag){
             recyclerView?.scrollToPosition(listUserMessage.size - 1)
             firstLoadFlag = true
+        }else{
+            recyclerView?.layoutManager?.onRestoreInstanceState(recyclerViewState)
         }
     }
 
@@ -326,28 +321,24 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         errorView?.isVisible = false
     }
 
-    override fun showErrorUpdateData() {
+    private fun showSnackbar(message: String){
         Snackbar.make(
             requireView(),
-            "Неудалось обновить данные",
+            message,
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    override fun showErrorUpdateData() {
+        showSnackbar(getString(R.string.error_update_data))
     }
 
     override fun showErrorSendMessage() {
-        Snackbar.make(
-            requireView(),
-            "Сообщение не отправлено",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.message_not_sent))
     }
 
     override fun showErrorChooseTopic() {
-        Snackbar.make(
-            requireView(),
-            "Выберите топик",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.choose_topic))
     }
 
     override fun showError() {
@@ -355,51 +346,27 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun showErrorAddReaction() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось добавить эмодзи \uD83D\uDE2D",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_add_emoji))
     }
 
     override fun showErrorRemoveReaction() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось удалить эмодзи",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_delete_emoji))
     }
 
     override fun showDeleteMessageSuccess() {
-        Snackbar.make(
-            requireView(),
-            "Сообщение удалено",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.message_deleted))
     }
 
     override fun showErrorDeleteMessage() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось удалить сообщение",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_delete_message))
     }
 
     override fun showErrorEmptyEditMessage() {
-        Snackbar.make(
-            requireView(),
-            "Выберите топик, введите сообщение",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_empty_edit_message))
     }
 
     override fun showErrorEditMessage() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось отредактировать сообщение",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_edit_message))
     }
 
     override fun clearEditText() {
@@ -407,11 +374,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
     }
 
     override fun showErrorUpdateEmoji() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось добавить эмодзи \uD83D\uDE2D",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_add_emoji))
     }
 
     override fun hideError() {

@@ -110,7 +110,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     }
 
     override fun showIsEmptyResultSearch() {
-        Snackbar.make(requireView(), "ничего не найдено", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.empty_search), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun showRefresh() {}
@@ -118,7 +118,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     override fun hideRefresh() {}
 
     override fun showError() {
-        Snackbar.make(requireView(), "ERROR", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.error), Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

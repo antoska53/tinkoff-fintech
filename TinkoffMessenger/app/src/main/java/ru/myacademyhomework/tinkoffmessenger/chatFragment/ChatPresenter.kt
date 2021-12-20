@@ -12,10 +12,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
-import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
-import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
-import ru.myacademyhomework.tinkoffmessenger.data.Emoji
-import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
+import ru.myacademyhomework.tinkoffmessenger.data.*
 import ru.myacademyhomework.tinkoffmessenger.database.*
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
@@ -497,9 +494,6 @@ class ChatPresenter @Inject constructor(
                         if (position == ChatFragment.SEND_MESSAGE_POSITION) {
                             val message = it.messages[0]
                             message.nameTopic = nameTopic
-//                            viewState.updateMessage(message, this.nameTopic == ChatFragment.STREAM_CHAT)
-                        } else {
-//                            viewState.updateMessage(it.messages[0], position)
                         }
                     }, {
                     })
@@ -653,19 +647,19 @@ class ChatPresenter @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    fun actionBottomSheet(nameAction: String, idMessage: Long, nameTopic: String, messageForEdit: String, positionMessage: Int){
-        when(nameAction){
-            "Add reaction" -> {
+    fun actionBottomSheet(action: ActionBottomSheet, idMessage: Long, nameTopic: String, messageForEdit: String, positionMessage: Int){
+        when(action){
+            ActionBottomSheet.ADD_REACTION -> {
                 viewState.showEmojiBottomSheetDialog(idMessage, nameTopic, positionMessage)
             }
-            "Delete message" -> {
+            ActionBottomSheet.DELETE_MESSAGE -> {
                 deleteMessage(idMessage)
             }
-            "Edit message" -> {
+            ActionBottomSheet.EDIT_MESSAGE -> {
                 val message = Html.fromHtml(messageForEdit, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
                 viewState.setupEditMessage(idMessage, nameTopic, message)
             }
-            "Copy message" -> {
+            ActionBottomSheet.COPY_MESSAGE -> {
                 val message = Html.fromHtml(messageForEdit, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString()
                 viewState.copyMessage(message)
 

@@ -58,28 +58,24 @@ class NewStreamFragment : MvpAppCompatFragment(R.layout.fragment_new_stream), Ne
 
     override fun hideRefresh() {}
 
-    override fun showSuccessCreate(){
+    private fun showSnackbar(message: String){
         Snackbar.make(
             requireView(),
-            "Стрим создан",
+            message,
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    override fun showSuccessCreate(){
+        showSnackbar(getString(R.string.stream_created))
     }
 
     override fun showError() {
-        Snackbar.make(
-            requireView(),
-            "Неудалось создать стрим",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.error_stream_created))
     }
 
     override fun showEmptyNameDescription() {
-        Snackbar.make(
-            requireView(),
-            "Введите название и описание стрима",
-            Snackbar.LENGTH_SHORT
-        ).show()
+        showSnackbar(getString(R.string.enter_name_and_description))
     }
 
     override fun onDestroy() {

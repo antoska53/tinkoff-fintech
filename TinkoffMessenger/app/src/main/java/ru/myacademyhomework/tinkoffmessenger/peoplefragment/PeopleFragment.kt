@@ -2,6 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -135,8 +136,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
         recycler?.adapter = null
     }
 
-
-    companion object {
+   companion object {
 
         @JvmStatic
         fun newInstance() = PeopleFragment()

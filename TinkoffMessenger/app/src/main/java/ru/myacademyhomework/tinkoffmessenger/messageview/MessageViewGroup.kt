@@ -58,8 +58,6 @@ class MessageViewGroup @JvmOverloads constructor(
             0
         )
 
-        val flexBoxMarginLeft = (flexBox.layoutParams as MarginLayoutParams).leftMargin
-        val flexBoxMarginRight = (flexBox.layoutParams as MarginLayoutParams).rightMargin
         if (flexBox.measuredWidth > textViewNameMessage.measuredWidth) {
             totalWidth += flexBox.measuredWidth - textViewNameMessage.measuredWidth
         }

@@ -13,7 +13,7 @@
         android:id="@+id/textview_create_new_stream"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="#2A9D8F"
+        android:background="@color/bg_green"
         android:text="@string/create_new_stream"
         android:textColor="@color/color_text_fragment_newstream"
         android:gravity="center_vertical"

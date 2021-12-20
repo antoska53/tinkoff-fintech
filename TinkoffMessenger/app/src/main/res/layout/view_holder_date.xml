@@ -16,7 +16,6 @@
         android:paddingTop="2dp"
         android:paddingEnd="20dp"
         android:paddingBottom="2dp"
-        android:text="2021"
         android:textColor="@color/color_text_date"/>
 
 </LinearLayout>

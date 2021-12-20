@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.data.ActionBottomSheet
 import ru.myacademyhomework.tinkoffmessenger.listeners.BottomSheetActionListener
 
 class BottomSheetActionAdapter(
@@ -15,10 +16,10 @@ class BottomSheetActionAdapter(
 ) : RecyclerView.Adapter<BottomSheetActionViewHolder>() {
 
     private val actionList = listOf(
-        "Add reaction",
-        "Delete message",
-        "Edit message",
-        "Copy message"
+        ActionBottomSheet.ADD_REACTION,
+        ActionBottomSheet.DELETE_MESSAGE,
+        ActionBottomSheet.EDIT_MESSAGE,
+        ActionBottomSheet.COPY_MESSAGE,
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BottomSheetActionViewHolder {
@@ -30,7 +31,7 @@ class BottomSheetActionAdapter(
 
     override fun onBindViewHolder(holder: BottomSheetActionViewHolder, position: Int) {
         holder.onBind(
-            nameAction = actionList[position],
+            action = actionList[position],
             idMessage = idMessage,
             nameTopic = nameTopic,
             message = message,

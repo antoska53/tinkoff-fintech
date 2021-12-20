@@ -66,7 +66,7 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
                 pagerPresenter.getStreamFromDb(resultStream)
             }
             if (resultShowStreams) {
-                pagerPresenter.getStreams()
+                pagerPresenter.getAllStreamsFromDb()
             }
         }
 
@@ -146,7 +146,7 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
     override fun showErrorUpdateData() {
         Snackbar.make(
             requireView(),
-            "Неудалось обновить данные",
+            getString(R.string.error_update_data),
             Snackbar.LENGTH_SHORT
         ).show()
     }

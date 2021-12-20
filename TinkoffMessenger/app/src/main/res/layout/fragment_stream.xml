@@ -22,9 +22,11 @@
             android:imeOptions="actionSearch"
             android:hint="@string/hint_search_stream"
             android:paddingStart="35dp"
+            android:paddingEnd="35dp"
             android:layout_marginStart="20dp"
             android:paddingBottom="15dp"
-            android:textColorHint="#FFFFFF"
+            android:textColor="@color/color_text_search_user"
+            android:textColorHint="@color/color_text_search_user"
             android:textSize="24sp" />
 
         <ImageView
@@ -44,8 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="35dp"
-        android:background="#1E1E1E"
-        app:tabTextColor="#FAFAFA"
+        android:background="@color/color_tab_lauout"
+        app:tabTextColor="@color/color_tablayout_text"
         app:tabTextAppearance="@style/StreamTabLayoutStyle"
         />
 

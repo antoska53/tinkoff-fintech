@@ -17,4 +17,21 @@
     <string name="name">Name</string>
     <string name="create_stream">Create stream</string>
     <string name="create_new_stream">Create new stream</string>
+    <string name="error_view_message">Ошибка загрузки</string>
+    <string name="errorview_button">Повторить</string>
+    <string name="stream_created">Стрим создан</string>
+    <string name="error_stream_created">Неудалось создать стрим</string>
+    <string name="enter_name_and_description">Введите название и описание стрима</string>
+    <string name="error_popup_menu">Неудалось загрузить список топиков</string>
+    <string name="error_update_data">Неудалось обновить данные</string>
+    <string name="message_not_sent">Сообщение не отправлено</string>
+    <string name="choose_topic">Выберите топик</string>
+    <string name="error_delete_emoji">Неудалось удалить эмодзи</string>
+    <string name="message_deleted">Сообщение удалено</string>
+    <string name="error_delete_message">Неудалось удалить сообщение</string>
+    <string name="error_empty_edit_message">Выберите топик, введите сообщение</string>
+    <string name="error_edit_message">Неудалось отредактировать сообщение</string>
+    <string name="error_add_emoji">Неудалось добавить эмодзи \uD83D\uDE2D</string>
+    <string name="empty_search">ничего не найдено</string>
+    <string name="error">ERROR</string>
 </resources>
