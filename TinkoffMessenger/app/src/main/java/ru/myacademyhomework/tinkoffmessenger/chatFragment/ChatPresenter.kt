@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.chatFragment
 
 import android.text.Editable
 import android.text.Html
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -212,11 +211,12 @@ class ChatPresenter @Inject constructor(
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
+                .subscribe({
                     if(it.isNotEmpty()) firstMessageId = it.first().id.toString()
                     viewState.addRecyclerData(setupListMessage(it))
                     isLoading = false
-                }.addTo(compositeDisposable)
+                },{})
+                .addTo(compositeDisposable)
         }
     }
 
@@ -294,6 +294,7 @@ class ChatPresenter @Inject constructor(
                 .subscribe({
                     if (it.isEmpty()) {
                         viewState.showRefresh()
+                        isLoading = false
                     } else {
                         databaseIsNotEmpty = true
                         viewState.updateRecyclerData(setupListMessageForStream(it))
@@ -355,14 +356,12 @@ class ChatPresenter @Inject constructor(
                         databaseIsNotEmpty = true
                         chatDao.insertMessages(it)
                         if (isLoading) getOldMessageFromDb()
-//                        firstMessageId = it.first().id.toString()
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
                         if (!databaseIsNotEmpty) {
                             viewState.showRefresh()
                         }
-                        isLoading = true
                     }
                     .doOnTerminate {
                         viewState.hideRefresh()

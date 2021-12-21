@@ -36,7 +36,6 @@ interface ChatView : BaseView {
     @AddToEndSingle
     fun updateRecyclerData(listUserMessage: List<ChatMessage>)
 
-//    @AddToEndSingle
     @Skip
     fun addRecyclerData(listUserMessage: List<ChatMessage>)
 

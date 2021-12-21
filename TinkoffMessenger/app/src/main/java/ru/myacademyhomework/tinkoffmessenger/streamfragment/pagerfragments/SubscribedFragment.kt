@@ -66,7 +66,7 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
                 pagerPresenter.getStreamFromDb(resultStream)
             }
             if (resultShowStreams) {
-                pagerPresenter.getAllStreamsFromDb()
+                pagerPresenter.getSubscribedStreamsFromDb()
             }
         }
 

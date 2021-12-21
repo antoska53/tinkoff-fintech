@@ -41,7 +41,7 @@ interface ChatDao {
     fun getAllMessagesForStream( nameStream: String): Flowable<List<MessageDb>>
 
     @Query("SELECT * FROM message_table WHERE name_topic = :nameTopic AND id < :idMessage LIMIT 20")
-    fun getOldMessages(nameTopic: String, idMessage: Long): Flowable<List<MessageDb>>
+    fun getOldMessages(nameTopic: String, idMessage: Long): Single<List<MessageDb>>
 
     @Query("DELETE FROM message_table WHERE id = :messageId")
     fun deleteMessage(messageId: Long)

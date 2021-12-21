@@ -59,15 +59,6 @@ class StreamPresenter @Inject constructor(private val chatDao: ChatDao) :
             .addTo(compositeDisposable)
     }
 
-    fun backPressed() {
-        if (isSearch) {
-            isSearch = false
-            viewState.showStreams()
-        } else {
-            viewState.backPressed()
-        }
-    }
-
     fun resetSearchFlag() {
         isSearch = false
     }

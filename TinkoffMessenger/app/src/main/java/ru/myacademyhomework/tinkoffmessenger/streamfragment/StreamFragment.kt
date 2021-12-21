@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
-import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.viewpager2.widget.ViewPager2
@@ -29,7 +28,6 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
 
     @Inject
     lateinit var providePresenter: Provider<StreamPresenter>
-    private var onBackPressedCallback: OnBackPressedCallback? = null
     private val streamPresenter: StreamPresenter by moxyPresenter {
         providePresenter.get()
     }
@@ -38,12 +36,6 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     override fun onCreate(savedInstanceState: Bundle?) {
         (activity?.application as App).appComponent.getStreamComponent().inject(this)
         super.onCreate(savedInstanceState)
-
-        onBackPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                streamPresenter.backPressed()
-            }
-        }
 
         pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
 
@@ -89,11 +81,6 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
             SUBSCRIBE_RESULT_KEY,
             bundleOf(SHOW_STREAMS_KEY to showStreams)
         )
-    }
-
-    override fun backPressed() {
-        onBackPressedCallback?.isEnabled = false
-        requireActivity().onBackPressed()
     }
 
     override fun showResultSearch(stream: StreamDb) {

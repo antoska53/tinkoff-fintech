@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.peoplefragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -105,7 +104,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     override fun showErrorUpdateData() {
         Snackbar.make(
             requireView(),
-            "Неудалось обновить данные",
+            getString(R.string.error_update_data),
             Snackbar.LENGTH_SHORT
         ).show()
     }
@@ -113,7 +112,7 @@ class PeopleFragment : MvpAppCompatFragment(R.layout.fragment_people), PeopleVie
     override fun showIsEmptyResultSearch() {
         Snackbar.make(
             requireView(),
-            "Ничего не найдено",
+            getString(R.string.empty_search),
             Snackbar.LENGTH_SHORT
         ).show()
     }

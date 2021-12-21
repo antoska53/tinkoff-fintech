@@ -148,7 +148,7 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
     override fun showErrorUpdateData() {
         Snackbar.make(
             requireView(),
-            "Неудалось обновить данные",
+            getString(R.string.error_update_data),
             Snackbar.LENGTH_SHORT
         ).show()
     }

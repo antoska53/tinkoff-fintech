@@ -5,12 +5,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -117,16 +116,9 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         }
         buttonEditMessage = view.findViewById(R.id.button_edit_message)
         editTextMessage = view.findViewById(R.id.edittext_message)
-        editTextMessage.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
-                Unit
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
-            override fun afterTextChanged(s: Editable) {
-                chatPresenter.buttonSendMessageSetImage(s.toString())
-            }
-        })
+        editTextMessage.addTextChangedListener{ str ->
+            chatPresenter.buttonSendMessageSetImage(str.toString())
+        }
 
         chatPresenter.showNameTopic()
         chatPresenter.showChooseTopic()
@@ -136,7 +128,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         recyclerView?.adapter = null
         super.onDestroyView()
     }
-
 
     private fun setStatusBarColor(color: Int) {
         val window = activity?.window
@@ -244,7 +235,6 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         val pref: SharedPreferences =
             requireContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = pref.edit()
-
         editor.putBoolean(nameStream + nameTopic, foundOldest)
         editor.apply()
     }
@@ -253,13 +243,10 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         val chatDiffUtilCallback = ChatDiffUtilCallback(adapter.messages, listUserMessage)
         val chatDiffResult = DiffUtil.calculateDiff(chatDiffUtilCallback)
         adapter.updateData(listUserMessage)
-        val recyclerViewState = recyclerView?.layoutManager?.onSaveInstanceState()
         chatDiffResult.dispatchUpdatesTo(adapter)
         if (!firstLoadFlag){
             recyclerView?.scrollToPosition(listUserMessage.size - 1)
             firstLoadFlag = true
-        }else{
-            recyclerView?.layoutManager?.onRestoreInstanceState(recyclerViewState)
         }
     }
 

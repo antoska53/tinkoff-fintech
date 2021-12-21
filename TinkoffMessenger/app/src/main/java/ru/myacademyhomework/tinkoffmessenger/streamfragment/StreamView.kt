@@ -16,6 +16,4 @@ interface StreamView : BaseView {
     @AddToEnd
     fun showStreams()
 
-    @Skip
-    fun backPressed()
 }
