@@ -17,13 +17,14 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
 import javax.inject.Inject
 import javax.inject.Provider
 
 
-class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), PagerView {
+class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), PagerView, StreamListener {
 
     private lateinit var adapter: StreamAdapter
     private var recycler: RecyclerView? = null
@@ -62,40 +63,34 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
             val resultStream = bundle.getString(StreamFragment.STREAM_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
             if (resultTopic != null && resultStream != null) {
-                val listTopic = listOf(Topic(0, resultTopic, resultStream))
-                val streamDiffUtilCallback = StreamDiffUtilCallback(adapter.streams, listTopic)
-                val streamDiffResult = DiffUtil.calculateDiff(streamDiffUtilCallback)
-                adapter.setData(listTopic)
-                streamDiffResult.dispatchUpdatesTo(adapter)
+                pagerPresenter.getStreamFromDb(resultStream)
             }
             if (resultShowStreams) {
-                pagerPresenter.getStreams()
+                pagerPresenter.getSubscribedStreamsFromDb()
             }
         }
 
         initRecycler(view)
-        pagerPresenter.getStreamsFromDb()
+        pagerPresenter.getSubscribedStreamsFromDb()
     }
 
     private fun initRecycler(view: View) {
         recycler = view.findViewById(R.id.recycler_subscribe_stream)
         adapter = StreamAdapter(
-            { streams, position, isSelected ->
-                if (isSelected) updateStream(streams, position)
-                else removeStream(streams, position)
-            }, { topic ->
+            streamListener =  this,
+            topicListener =  { topic ->
                 pagerPresenter.openChatTopic(topic)
             }
         )
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, false)
+    private fun updateStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
     }
 
-    private fun removeStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, true)
+    private fun removeStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
 
     }
 
@@ -105,6 +100,8 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
         adapter.setData(listStream)
         streamDiffResult.dispatchUpdatesTo(adapter)
     }
+
+    override fun openNewStreamFragment() {}
 
     override fun openChatTopic(topic: Topic) {
         navigation?.openChatFragment(
@@ -149,9 +146,27 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
     override fun showErrorUpdateData() {
         Snackbar.make(
             requireView(),
-            "Неудалось обновить данные",
+            getString(R.string.error_update_data),
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    override fun itemStreamArrowClicked(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        if (isSelected) updateStream(topics, position, isSelected)
+        else removeStream(topics, position, isSelected)
+    }
+
+    override fun itemStreamClicked(stream: Stream) {
+        pagerPresenter.openChatStream(stream)
+    }
+
+    override fun openChatStream(stream: Stream){
+        navigation?.openChatFragment(
+            ChatFragment.newInstance(
+                stream.nameChannel,
+                ChatFragment.STREAM_CHAT
+            )
+        )
     }
 
     companion object {

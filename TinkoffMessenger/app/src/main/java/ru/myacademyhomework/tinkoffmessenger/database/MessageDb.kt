@@ -30,5 +30,8 @@ class MessageDb(
     val streamID: Long?,
 
     @ColumnInfo(name = "name_topic")
-    val nameTopic: String
+    val nameTopic: String,
+
+    @ColumnInfo(name = "name_stream")
+    val nameStream: String
 )

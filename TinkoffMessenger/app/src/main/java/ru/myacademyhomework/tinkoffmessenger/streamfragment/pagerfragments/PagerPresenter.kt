@@ -26,9 +26,17 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
         viewState.openChatTopic(topic)
     }
 
-    fun getStreamsFromDb() {
+    fun openChatStream(stream: Stream){
+        viewState.openChatStream(stream)
+    }
+
+    fun openNewStreamFragment(){
+        viewState.openNewStreamFragment()
+    }
+
+    fun getSubscribedStreamsFromDb() {
         chatDao
-            .getStreams()
+            .getSubscribedStreams()
             .map {
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
@@ -52,6 +60,51 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .addTo(compositeDisposable)
     }
 
+    fun getAllStreamsFromDb() {
+        chatDao
+            .getAllStreams()
+            .map {
+                it.map { streamDb ->
+                    val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
+                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                    }
+                    Stream(streamDb.nameChannel, listTopics)
+                }
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.isEmpty()) {
+                    viewState.showRefresh()
+                    getStreams()
+                } else {
+                    databaseIsNotEmpty = true
+                    viewState.setDataToRecycler(it)
+                }
+                if (!databaseIsRefresh) getAllStreams()
+            }, {
+            })
+            .addTo(compositeDisposable)
+    }
+
+    fun getStreamFromDb(streamName: String){
+        chatDao.getTopicsForStream(streamName)
+            .map { listTopicsDb ->
+                listTopicsDb.map { topicDb ->
+                    Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                }
+            }.map {
+                Stream(streamName, it)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.setDataToRecycler(listOf(it))
+            },{
+
+            })
+            .addTo(compositeDisposable)
+    }
+
     fun getStreams() {
         apiClient.chatApi.getStreams()
             .subscribeOn(Schedulers.io())
@@ -61,13 +114,13 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .flatMapObservable {
                 Observable.fromIterable(it)
             }
-            .flatMap { subscription ->
+            .flatMapSingle { subscription ->
                 apiClient.chatApi.getTopics(subscription.streamID)
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
                             TopicDb(topic.name, subscription.name, subscription.streamID)
                         })
-                        StreamDb(subscription.streamID, subscription.name)
+                        StreamDb(subscription.streamID, subscription.name, true)
                     }
             }
             .toList()
@@ -92,4 +145,46 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             })
             .addTo(compositeDisposable)
     }
-}
+
+    private fun getAllStreams(){
+        apiClient.chatApi.getAllStreams()
+            .subscribeOn(Schedulers.io())
+            .flatMap {
+                Single.just(it.streams)
+            }
+            .flatMapObservable {
+                Observable.fromIterable(it)
+            }
+            .flatMapSingle { stream ->
+                apiClient.chatApi.getTopics(stream.streamID)
+                    .map { topicResponse ->
+                        chatDao.insertTopics(topicResponse.topics.map { topic ->
+                            TopicDb(topic.name, stream.name, stream.streamID)
+                        })
+                        StreamDb(stream.streamID, stream.name, false)
+                    }
+            }
+            .toList()
+            .doOnSuccess {
+                chatDao.insertStream(it)
+                databaseIsRefresh = true
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                if (!databaseIsNotEmpty) {
+                    viewState.showRefresh()
+                }
+            }
+            .subscribe({
+                viewState.hideRefresh()
+            }, {
+                if (databaseIsNotEmpty) {
+                    viewState.showErrorUpdateData()
+                } else {
+                    viewState.showError()
+                }
+            })
+            .addTo(compositeDisposable)
+    }
+
+ }

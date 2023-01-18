@@ -2,12 +2,10 @@ package ru.myacademyhomework.tinkoffmessenger.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "topic_table")
+@Entity(tableName = "topic_table",  primaryKeys = ["name_topic", "stream_id"])
 class TopicDb (
 
-    @PrimaryKey
     @ColumnInfo(name = "name_topic")
     val nameTopic: String,
 

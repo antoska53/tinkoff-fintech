@@ -18,7 +18,9 @@
         <include layout="@layout/shimmer_chat_placeholder" />
 
         <include layout="@layout/shimmer_chat_placeholder" />
+
         <include layout="@layout/shimmer_chat_placeholder" />
+
         <include layout="@layout/shimmer_chat_placeholder" />
     </LinearLayout>
 

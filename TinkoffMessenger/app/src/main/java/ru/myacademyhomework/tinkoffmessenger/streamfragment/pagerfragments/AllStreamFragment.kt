@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -16,12 +17,14 @@ import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.network.Topic
+import ru.myacademyhomework.tinkoffmessenger.streamfragment.newstreamfragment.NewStreamFragment
 import javax.inject.Inject
 import javax.inject.Provider
 
 
-class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), PagerView {
+class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), PagerView, StreamListener {
 
     private lateinit var adapter: StreamAdapter
     private var recycler: RecyclerView? = null
@@ -52,19 +55,18 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         errorView = view.findViewById(R.id.error_view)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
         buttonReload.setOnClickListener { pagerPresenter.getStreams() }
+        val buttonNewStream = view.findViewById<MaterialButton>(R.id.button_new_stream)
+        buttonNewStream.setOnClickListener { pagerPresenter.openNewStreamFragment() }
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
 
         initRecycler(view)
-        pagerPresenter.getStreamsFromDb()
+        pagerPresenter.getAllStreamsFromDb()
     }
 
     private fun initRecycler(view: View) {
         recycler = view.findViewById(R.id.recycler_stream)
         adapter = StreamAdapter(
-            streamListener = { streams, position, isSelected ->
-                if (isSelected) updateStream(streams, position)
-                else removeStream(streams, position)
-            },
+            streamListener = this,
             topicListener = { topic ->
                 openChatTopic(topic)
             }
@@ -72,12 +74,12 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, false)
+    private fun updateStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
     }
 
-    private fun removeStream(topics: List<Topic>, position: Int) {
-        adapter.updateData(topics, position, true)
+    private fun removeStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        adapter.updateData(topics, position, isSelected)
     }
 
     override fun setDataToRecycler(listStream: List<Stream>) {
@@ -93,6 +95,22 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
                 topic.nameStream,
                 topic.name,
             )
+        )
+    }
+
+    override fun openChatStream(stream: Stream) {
+        navigation?.openChatFragment(
+            ChatFragment.newInstance(
+                stream.nameChannel,
+                ChatFragment.STREAM_CHAT
+            )
+        )
+    }
+
+    override fun openNewStreamFragment(){
+        navigation?.changeFlowFragment(
+            NewStreamFragment.newInstance(),
+            true
         )
     }
 
@@ -130,9 +148,18 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
     override fun showErrorUpdateData() {
         Snackbar.make(
             requireView(),
-            "Неудалось обновить данные",
+            getString(R.string.error_update_data),
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    override fun itemStreamArrowClicked(topics: List<Topic>, position: Int, isSelected: Boolean) {
+        if (isSelected) updateStream(topics, position, isSelected)
+        else removeStream(topics, position, isSelected)
+    }
+
+    override fun itemStreamClicked(stream: Stream) {
+        pagerPresenter.openChatStream(stream)
     }
 
     companion object {

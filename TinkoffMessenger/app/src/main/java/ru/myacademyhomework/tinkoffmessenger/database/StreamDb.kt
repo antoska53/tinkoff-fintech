@@ -13,4 +13,7 @@ class StreamDb(
 
     @ColumnInfo(name = "nameStream")
     val nameChannel: String,
+
+    @ColumnInfo(name = "subscribed_status")
+    var subscribedStatus: Boolean
 )

@@ -16,7 +16,7 @@
             android:layout_width="185dp"
             android:layout_height="185dp"
             android:layout_marginTop="125dp"
-            android:background="@color/bg_shimmer"
+            android:background="@drawable/bg_shimmer_avatar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -31,14 +31,6 @@
             app:layout_constraintStart_toStartOf="@id/shimmer_imageview_avatar_profile"
             app:layout_constraintTop_toBottomOf="@id/shimmer_imageview_avatar_profile" />
 
-        <TextView
-            android:id="@+id/shimmer_textview_status_profile"
-            android:layout_width="50dp"
-            android:layout_height="16dp"
-            android:background="@color/bg_shimmer"
-            app:layout_constraintEnd_toEndOf="@id/shimmer_textview_name_profile"
-            app:layout_constraintStart_toStartOf="@id/shimmer_textview_name_profile"
-            app:layout_constraintTop_toBottomOf="@id/shimmer_textview_name_profile" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/bg_chat_color"
+    tools:context=".chatFragment.ChatFragment">
+
+
+    <TextView
+        android:id="@+id/textview_create_new_stream"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_green"
+        android:text="@string/create_new_stream"
+        android:textColor="@color/color_text_fragment_newstream"
+        android:gravity="center_vertical"
+        android:paddingStart="85dp"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/imageView_arrow_back"
+        android:layout_width="21dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_back_arrow"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toStartOf="@id/textview_create_new_stream"
+        app:layout_constraintTop_toTopOf="@id/textview_create_new_stream"
+        app:layout_constraintBottom_toBottomOf="@id/textview_create_new_stream"/>
+
+
+    <TextView
+        android:id="@+id/textview_name_new_stream"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/name"
+        android:textColor="@color/color_text_fragment_newstream"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview_create_new_stream"
+        />
+
+    <EditText
+        android:id="@+id/edittext_name_new_stream"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="@string/name"
+        android:textColorHint="@color/color_text_hint"
+        android:textColor="@color/color_text_fragment_newstream"
+        android:backgroundTint="#323232"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview_name_new_stream"
+        />
+
+    <TextView
+        android:id="@+id/textview_description_new_stream"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/description"
+        android:textColor="@color/color_text_fragment_newstream"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edittext_name_new_stream"
+        />
+
+    <EditText
+        android:id="@+id/edittext_description_new_stream"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="@string/description"
+        android:textColorHint="@color/color_text_hint"
+        android:textColor="@color/color_text_fragment_newstream"
+        android:backgroundTint="#323232"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview_description_new_stream"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_create_new_stream"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_new_stream"
+        android:layout_margin="10dp"
+        android:text="@string/create_stream"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edittext_description_new_stream"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

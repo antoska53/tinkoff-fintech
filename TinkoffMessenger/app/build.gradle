@@ -19,8 +19,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "BASE_URL",'"https://tinkoff-android-fall21.zulipchat.com/api/v1/"'
-        buildConfigField "String", "API_KEY",'"MPfDdAmz2mfOQLM3ynU5PNuBXUdTwYiw"'
+        buildConfigField "String", "BASE_URL",'"https://fibonachy.zulipchat.com/api/v1/"'
+        buildConfigField "String", "API_KEY",'"Tt3IgiBhRxha26F3JKLKUOLG9sdevkMw"'
         buildConfigField "String", "USER_EMAIL", '"tosha170@outlook.com"'
     }
 

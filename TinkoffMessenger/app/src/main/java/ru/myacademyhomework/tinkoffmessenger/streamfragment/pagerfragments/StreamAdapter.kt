@@ -47,10 +47,14 @@ class StreamAdapter(
     }
 
     fun updateData(streams: List<Item>, position: Int, remove: Boolean) {
-        if (remove) {
+        if (!remove) {
+            (this.streams[position] as Stream).isSelected = remove
+            notifyItemChanged(position)
             this.streams.removeAll(streams)
             notifyItemRangeRemoved(position + 1, streams.size)
         } else {
+            (this.streams[position] as Stream).isSelected = remove
+            notifyItemChanged(position)
             this.streams.addAll(position + 1, streams)
             notifyItemRangeInserted(position + 1, streams.size)
         }

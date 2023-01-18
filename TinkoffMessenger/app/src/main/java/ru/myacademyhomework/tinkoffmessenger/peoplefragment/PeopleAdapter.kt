@@ -20,10 +20,7 @@ class PeopleAdapter(private val listener: PeopleListener) : RecyclerView.Adapter
     override fun getItemCount(): Int = people.size
 
     fun addData(users: List<User>) {
-        val size = people.size
         people.clear()
-//        notifyItemRangeRemoved(0, size)
         people.addAll(users)
-//        notifyItemRangeInserted(0, users.size)
     }
 }

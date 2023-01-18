@@ -9,6 +9,7 @@ import ru.myacademyhomework.tinkoffmessenger.factory.SmileFactory
 
 class BottomSheetAdapter(
     private val idMessage: Long,
+    private val nameTopic: String,
     private val positionMessage: Int,
     private val listener: BottomSheetListener
 ) :
@@ -27,6 +28,7 @@ class BottomSheetAdapter(
         holder.onBind(
             emoji = emojiList[position],
             idMessage = idMessage,
+            nameTopic = nameTopic,
             positionMessage = positionMessage,
             listener = listener
         )

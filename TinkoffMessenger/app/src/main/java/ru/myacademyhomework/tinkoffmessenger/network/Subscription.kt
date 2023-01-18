@@ -62,9 +62,6 @@ data class Subscription (
     @SerialName("wildcard_mentions_notify")
     val wildcardMentionsNotify: Boolean?,
 
-    @SerialName("role")
-    val role: Int,
-
     @SerialName("in_home_view")
     val inHomeView: Boolean,
 

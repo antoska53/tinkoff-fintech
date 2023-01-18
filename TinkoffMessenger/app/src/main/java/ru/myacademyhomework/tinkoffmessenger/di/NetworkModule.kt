@@ -44,6 +44,6 @@ class NetworkModule {
     }
 }
 
-class ApiClient @Inject constructor(private val retrofit: Retrofit) {
+class ApiClient @Inject constructor(retrofit: Retrofit) {
     val chatApi: ChatApi = retrofit.create()
 }

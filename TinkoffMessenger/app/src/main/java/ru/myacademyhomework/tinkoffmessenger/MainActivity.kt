@@ -35,4 +35,12 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
             commitAllowingStateLoss()
         }
     }
+
+    override fun changeFlowFragment(fragment: Fragment, toBackstack: Boolean) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, fragment)
+            if (toBackstack) addToBackStack(null)
+            commitAllowingStateLoss()
+        }
+    }
 }

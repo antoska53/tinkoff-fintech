@@ -19,7 +19,9 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:paddingStart="60dp"
+            android:paddingEnd="60dp"
             android:textSize="24sp"
+            android:backgroundTint="#323232"
             android:textColor="@color/color_text_search_user"
             android:hint="@string/hint_search_user"
             android:textColorHint="@color/color_text_search_user"
@@ -41,5 +43,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <include
+        layout="@layout/shimmer_people_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+    <include
+        layout="@layout/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </LinearLayout>

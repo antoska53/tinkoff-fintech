@@ -13,10 +13,11 @@
         android:id="@+id/textview_name_channel"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="#2A9D8F"
-        android:textColor="#FFFFFF"
+        android:background="@color/bg_green"
+        android:textColor="@color/color_stream_name"
         android:gravity="center_vertical"
         android:paddingStart="85dp"
+        android:paddingEnd="85dp"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,8 +41,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="20sp"
-        android:textColor="#CCCCCC"
-        android:background="#1C1C1C"
+        android:textColor="@color/color_topic_name"
+        android:background="@color/color_bg_topic_name"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,11 +56,27 @@
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/edittext_message"
+        app:layout_constraintBottom_toTopOf="@id/textview_topic_for_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
         app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textview_topic_for_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/color_topic_name"
+        android:background="@drawable/bg_edit_text"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/edittext_message"
+        tools:text="Text" />
 
     <include
         layout="@layout/shimmer_chat_layout"
@@ -69,7 +86,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
-        app:layout_constraintBottom_toTopOf="@id/edittext_message"/>
+        app:layout_constraintBottom_toTopOf="@id/textview_topic_for_message"/>
 
     <include
         layout="@layout/error_view"
@@ -79,7 +96,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_name_topic"
-        app:layout_constraintBottom_toTopOf="@id/edittext_message"/>
+        app:layout_constraintBottom_toTopOf="@id/textview_topic_for_message"/>
 
     <EditText
         android:id="@+id/edittext_message"
@@ -95,6 +112,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
+        app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button_send_message"
@@ -107,6 +125,20 @@
         android:background="@drawable/bg_button_send_message"
         android:src="@drawable/ic_cross"
         android:layout_margin="10dp"
+        app:layout_constraintStart_toEndOf="@id/edittext_message"
+        app:layout_constraintTop_toTopOf="@id/edittext_message"
+        app:layout_constraintBottom_toBottomOf="@id/edittext_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ImageButton
+        android:id="@+id/button_edit_message"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_button_send_message"
+        android:src="@drawable/ic_check_circle_39"
+        android:layout_margin="10dp"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/edittext_message"
         app:layout_constraintTop_toTopOf="@id/edittext_message"
         app:layout_constraintBottom_toBottomOf="@id/edittext_message"

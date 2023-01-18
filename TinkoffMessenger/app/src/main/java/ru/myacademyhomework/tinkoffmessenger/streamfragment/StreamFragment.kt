@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
-import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.viewpager2.widget.ViewPager2
@@ -16,7 +15,7 @@ import moxy.ktx.moxyPresenter
 import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.network.Topic
+import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -25,10 +24,10 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     private var showStreams = true
     private var editTextSearch: EditText? = null
     private var viewPager: ViewPager2? = null
+    private var pagerAdapter: PagerAdapter? = null
 
     @Inject
     lateinit var providePresenter: Provider<StreamPresenter>
-    private var onBackPressedCallback: OnBackPressedCallback? = null
     private val streamPresenter: StreamPresenter by moxyPresenter {
         providePresenter.get()
     }
@@ -38,19 +37,15 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         (activity?.application as App).appComponent.getStreamComponent().inject(this)
         super.onCreate(savedInstanceState)
 
-        onBackPressedCallback = object: OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                streamPresenter.backPressed()
-            }
-        }
+        pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
 
-       setStatusBarColor(FlowFragment.DARK_COLOR)
+        setStatusBarColor(FlowFragment.DARK_COLOR)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val tabs: List<String> = listOf("Subscribed", "All streams")
-        val pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
+
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
 
         viewPager = view.findViewById(R.id.viewpager_stream)
@@ -74,13 +69,13 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         streamPresenter.resetSearchFlag()
     }
 
-    private fun setStatusBarColor(color: Int){
+    private fun setStatusBarColor(color: Int) {
         val window = activity?.window
         window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window?.statusBarColor = resources.getColor(color, null)
     }
 
-    override fun showStreams(){
+    override fun showStreams() {
         editTextSearch?.text?.clear()
         childFragmentManager.setFragmentResult(
             SUBSCRIBE_RESULT_KEY,
@@ -88,26 +83,21 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         )
     }
 
-    override fun backPressed(){
-        onBackPressedCallback?.isEnabled = false
-        requireActivity().onBackPressed()
-    }
-
-    override fun showResultSearch(topic: Topic) {
-        Snackbar.make(requireView(), topic.name, Snackbar.LENGTH_SHORT).show()
+    override fun showResultSearch(stream: StreamDb) {
+        Snackbar.make(requireView(), stream.nameChannel, Snackbar.LENGTH_SHORT).show()
 
         viewPager?.currentItem = 0
         childFragmentManager.setFragmentResult(
             SUBSCRIBE_RESULT_KEY,
             bundleOf(
-                TOPIC_KEY to topic.name,
-                STREAM_KEY to topic.nameStream
+                TOPIC_KEY to "",
+                STREAM_KEY to stream.nameChannel
             )
         )
     }
 
     override fun showIsEmptyResultSearch() {
-        Snackbar.make(requireView(), "ничего не найдено", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.empty_search), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun showRefresh() {}
@@ -115,7 +105,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
     override fun hideRefresh() {}
 
     override fun showError() {
-        Snackbar.make(requireView(), "ERROR", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.error), Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

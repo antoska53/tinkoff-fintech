@@ -7,8 +7,8 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
+import ru.myacademyhomework.tinkoffmessenger.database.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamScope
-import ru.myacademyhomework.tinkoffmessenger.network.Topic
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -20,7 +20,11 @@ class StreamPresenter @Inject constructor(private val chatDao: ChatDao) :
     private val subject = PublishSubject.create<String>()
 
     fun search(str: String) {
-        subject.onNext(str)
+        if (str.isEmpty() && isSearch) {
+            viewState.showStreams()
+            isSearch = false
+        }
+        else subject.onNext(str)
     }
 
     fun initSearch() {
@@ -29,26 +33,21 @@ class StreamPresenter @Inject constructor(private val chatDao: ChatDao) :
             .distinctUntilChanged()
             .debounce(1000, TimeUnit.MILLISECONDS)
             .switchMap { str ->
-                val topic = chatDao.getTopic(str)
-                if (topic != null) {
-                    Observable.just(
-                        Topic(
-                            streamId = topic.streamId,
-                            name = topic.nameTopic,
-                            nameStream = topic.nameStream
-                        )
-                    )
-                } else {
-                    Observable.just(Topic(0, ""))
+                val stream = chatDao.getStream(str)
+                if (stream != null) {
+                    Observable.just(stream)
+                }
+                else {
+                    Observable.just(StreamDb(0, "", false))
                 }
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { topic ->
-                    if (topic.name.isNotEmpty()) {
+                { stream ->
+                    if (stream.nameChannel.isNotEmpty()) {
                         isSearch = true
-                        viewState.showResultSearch(topic)
+                        viewState.showResultSearch(stream)
                     } else {
                         viewState.showIsEmptyResultSearch()
                     }
@@ -58,15 +57,6 @@ class StreamPresenter @Inject constructor(private val chatDao: ChatDao) :
                 }
             )
             .addTo(compositeDisposable)
-    }
-
-    fun backPressed() {
-        if (isSearch) {
-            isSearch = false
-            viewState.showStreams()
-        } else {
-            viewState.backPressed()
-        }
     }
 
     fun resetSearchFlag() {

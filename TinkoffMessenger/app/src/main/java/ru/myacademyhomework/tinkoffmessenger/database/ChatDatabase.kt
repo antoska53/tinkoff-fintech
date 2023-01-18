@@ -4,13 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = arrayOf(
-        StreamDb::class,
-        TopicDb::class,
-        MessageDb::class,
-        ReactionDb::class,
-        UserDb::class
-    ), version = 1
+    entities = [StreamDb::class, TopicDb::class, MessageDb::class, ReactionDb::class, UserDb::class], version = 1
 )
 abstract class ChatDatabase : RoomDatabase() {
 
