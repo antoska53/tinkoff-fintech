@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.di.chat
 
 import dagger.Subcomponent
-import ru.myacademyhomework.tinkoffmessenger.chatFragment.ChatFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.ChatFragment
 
 
 @ChatScope

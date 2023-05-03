@@ -1,6 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.data
 
-import ru.myacademyhomework.tinkoffmessenger.network.Topic
+import ru.myacademyhomework.tinkoffmessenger.data.network.model.Topic
 
 data class Stream(
     val nameChannel: String,

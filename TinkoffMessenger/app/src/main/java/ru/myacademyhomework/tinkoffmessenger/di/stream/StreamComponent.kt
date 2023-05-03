@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.di.stream
 
 import dagger.Subcomponent
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.StreamFragment
 
 @StreamScope
 @Subcomponent()

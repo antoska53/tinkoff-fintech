@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.database.ChatDatabase
+import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
+import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDatabase
 import javax.inject.Singleton
 
 @Module

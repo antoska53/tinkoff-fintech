@@ -7,9 +7,9 @@ import android.view.WindowManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.peoplefragment.PeopleFragment
-import ru.myacademyhomework.tinkoffmessenger.profilefragment.ProfileFragment
-import ru.myacademyhomework.tinkoffmessenger.streamfragment.StreamFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.peoplefragment.PeopleFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.profilefragment.ProfileFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.StreamFragment
 import java.lang.IllegalArgumentException
 
 

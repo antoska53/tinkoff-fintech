@@ -1,10 +1,10 @@
 package ru.myacademyhomework.tinkoffmessenger.di.people
 
 import dagger.Subcomponent
-import ru.myacademyhomework.tinkoffmessenger.peoplefragment.PeopleFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.peoplefragment.PeopleFragment
 
 @PeopleScope
-@Subcomponent()
+@Subcomponent(modules = [PeopleModule::class])
 interface PeopleComponent {
     fun inject(peopleFragment: PeopleFragment)
 }
