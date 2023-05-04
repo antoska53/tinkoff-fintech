@@ -81,7 +81,6 @@ class PagerRepositoryImpl @Inject constructor(
             .toList()
             .doOnSuccess {
                 chatDao.insertStream(it)
-//                databaseIsRefresh = true
             }
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -107,7 +106,6 @@ class PagerRepositoryImpl @Inject constructor(
             .toList()
             .doOnSuccess {
                 chatDao.insertStream(it)
-//                databaseIsRefresh = true
             }
             .observeOn(AndroidSchedulers.mainThread())
     }
