@@ -16,6 +16,7 @@ import ru.myacademyhomework.tinkoffmessenger.App
 import ru.myacademyhomework.tinkoffmessenger.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
+import ru.myacademyhomework.tinkoffmessenger.domain.stream.StreamInfo
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -83,7 +84,7 @@ class StreamFragment : MvpAppCompatFragment(R.layout.fragment_stream), StreamVie
         )
     }
 
-    override fun showResultSearch(stream: StreamDb) {
+    override fun showResultSearch(stream: StreamInfo) {
         Snackbar.make(requireView(), stream.nameChannel, Snackbar.LENGTH_SHORT).show()
 
         viewPager?.currentItem = 0

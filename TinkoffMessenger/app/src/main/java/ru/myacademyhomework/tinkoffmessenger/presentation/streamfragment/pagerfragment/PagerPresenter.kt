@@ -16,8 +16,10 @@ import ru.myacademyhomework.tinkoffmessenger.data.network.model.Topic
 import javax.inject.Inject
 
 @PagerScope
-class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private val apiClient: ApiClient) :
-    BasePresenter<PagerView>() {
+class PagerPresenter @Inject constructor(
+    private val chatDao: ChatDao,
+    private val apiClient: ApiClient
+) : BasePresenter<PagerView>() {
 
     private var databaseIsNotEmpty = false
     private var databaseIsRefresh = false
@@ -26,11 +28,11 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
         viewState.openChatTopic(topic)
     }
 
-    fun openChatStream(stream: Stream){
+    fun openChatStream(stream: Stream) {
         viewState.openChatStream(stream)
     }
 
-    fun openNewStreamFragment(){
+    fun openNewStreamFragment() {
         viewState.openNewStreamFragment()
     }
 
@@ -86,7 +88,7 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .addTo(compositeDisposable)
     }
 
-    fun getStreamFromDb(streamName: String){
+    fun getStreamFromDb(streamName: String) {
         chatDao.getTopicsForStream(streamName)
             .map { listTopicsDb ->
                 listTopicsDb.map { topicDb ->
@@ -99,7 +101,7 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewState.setDataToRecycler(listOf(it))
-            },{
+            }, {
 
             })
             .addTo(compositeDisposable)
@@ -146,7 +148,7 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .addTo(compositeDisposable)
     }
 
-    private fun getAllStreams(){
+    private fun getAllStreams() {
         apiClient.chatApi.getAllStreams()
             .subscribeOn(Schedulers.io())
             .flatMap {
@@ -187,4 +189,4 @@ class PagerPresenter @Inject constructor(private val chatDao: ChatDao, private v
             .addTo(compositeDisposable)
     }
 
- }
+}

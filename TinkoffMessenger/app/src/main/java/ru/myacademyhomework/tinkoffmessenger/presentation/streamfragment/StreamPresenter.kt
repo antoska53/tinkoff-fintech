@@ -1,61 +1,43 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment
 
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
-import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamScope
-import java.util.concurrent.TimeUnit
+import ru.myacademyhomework.tinkoffmessenger.domain.stream.InitSearchUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.stream.SearchUseCase
 import javax.inject.Inject
 
 @StreamScope
-class StreamPresenter @Inject constructor(private val chatDao: ChatDao) :
+class StreamPresenter @Inject constructor(
+    private val searchUseCase: SearchUseCase,
+    private val initSearchUseCase: InitSearchUseCase
+) :
     BasePresenter<StreamView>() {
 
     private var isSearch = false
-    private val subject = PublishSubject.create<String>()
 
     fun search(str: String) {
         if (str.isEmpty() && isSearch) {
             viewState.showStreams()
             isSearch = false
-        }
-        else subject.onNext(str)
+        } else searchUseCase.search(str)
     }
 
     fun initSearch() {
-        subject
-            .filter { str -> str.isNotEmpty() }
-            .distinctUntilChanged()
-            .debounce(1000, TimeUnit.MILLISECONDS)
-            .switchMap { str ->
-                val stream = chatDao.getStream(str)
-                if (stream != null) {
-                    Observable.just(stream)
+        initSearchUseCase.initSearch()
+        .subscribe(
+            { stream ->
+                if (stream.nameChannel.isNotEmpty()) {
+                    isSearch = true
+                    viewState.showResultSearch(stream)
+                } else {
+                    viewState.showIsEmptyResultSearch()
                 }
-                else {
-                    Observable.just(StreamDb(0, "", false))
-                }
+            },
+            {
+                viewState.showError()
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { stream ->
-                    if (stream.nameChannel.isNotEmpty()) {
-                        isSearch = true
-                        viewState.showResultSearch(stream)
-                    } else {
-                        viewState.showIsEmptyResultSearch()
-                    }
-                },
-                {
-                    viewState.showError()
-                }
-            )
+        )
             .addTo(compositeDisposable)
     }
 
