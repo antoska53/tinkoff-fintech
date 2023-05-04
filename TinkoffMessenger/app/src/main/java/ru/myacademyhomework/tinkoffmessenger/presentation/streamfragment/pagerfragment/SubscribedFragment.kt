@@ -54,7 +54,7 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
         super.onViewCreated(view, savedInstanceState)
         errorView = view.findViewById(R.id.error_view)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
-        buttonReload.setOnClickListener { pagerPresenter.getStreams() }
+        buttonReload.setOnClickListener { pagerPresenter.getSubscribeStreams() }
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
 
 
@@ -63,7 +63,7 @@ class SubscribedFragment : MvpAppCompatFragment(R.layout.fragment_subscribed), P
             val resultStream = bundle.getString(StreamFragment.STREAM_KEY)
             val resultShowStreams = bundle.getBoolean(StreamFragment.SHOW_STREAMS_KEY)
             if (resultTopic != null && resultStream != null) {
-                pagerPresenter.getStreamFromDb(resultStream)
+                pagerPresenter.getTopicsFromDb(resultStream)
             }
             if (resultShowStreams) {
                 pagerPresenter.getSubscribedStreamsFromDb()

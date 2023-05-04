@@ -54,7 +54,7 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         super.onViewCreated(view, savedInstanceState)
         errorView = view.findViewById(R.id.error_view)
         val buttonReload = view.findViewById<Button>(R.id.button_reload)
-        buttonReload.setOnClickListener { pagerPresenter.getStreams() }
+        buttonReload.setOnClickListener { pagerPresenter.getSubscribeStreams() }
         val buttonNewStream = view.findViewById<MaterialButton>(R.id.button_new_stream)
         buttonNewStream.setOnClickListener { pagerPresenter.openNewStreamFragment() }
         shimmer = view.findViewById(R.id.shimmer_stream_layout)
