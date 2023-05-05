@@ -21,6 +21,23 @@ import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.AddReactionUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.DeleteMessageUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.EditMessageUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetAllMessagesFromDbForStreamUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetAllMessagesFromDbUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetMessageUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetMessagesForStreamUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetMessagesUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetOldMessageFromDbUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.GetOwnUserUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.InitChatUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.RemoveReactionUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.SendMessageUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.SetupListMessageForStreamUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.SetupListMessageUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.ShowPopupMenuUseCase
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.UpdateEmojiUseCase
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
@@ -30,7 +47,24 @@ import javax.inject.Inject
 @ChatScope
 class ChatPresenter @Inject constructor(
     private val chatDao: ChatDao,
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    private val addReactionUseCase: AddReactionUseCase,
+    private val deleteMessageUseCase: DeleteMessageUseCase,
+    private val editMessageUseCase: EditMessageUseCase,
+    private val getAllMessagesFromDbForStreamUseCase: GetAllMessagesFromDbForStreamUseCase,
+    private val getAllMessagesFromDbUseCase: GetAllMessagesFromDbUseCase,
+    private val getMessagesForStreamUseCase: GetMessagesForStreamUseCase,
+    private val getMessagesUseCase: GetMessagesUseCase,
+    private val getMessageUseCase: GetMessageUseCase,
+    private val getOldMessageFromDbUseCase: GetOldMessageFromDbUseCase,
+    private val getOwnUserUseCase: GetOwnUserUseCase,
+    private val initChatUseCase: InitChatUseCase,
+    private val removeReactionUseCase: RemoveReactionUseCase,
+    private val sendMessageUseCase: SendMessageUseCase,
+    private val setupListMessageForStreamUseCase: SetupListMessageForStreamUseCase,
+    private val setupListMessageUseCase: SetupListMessageUseCase,
+    private val showPopupMenuUseCase: ShowPopupMenuUseCase,
+    private val updateEmojiUseCase: UpdateEmojiUseCase
 ) : BasePresenter<ChatView>() {
 
     private var databaseIsRefresh = false
@@ -58,9 +92,10 @@ class ChatPresenter @Inject constructor(
 
     fun showPopupMenu() {
         nameStream?.let { nameStream ->
-            chatDao.getTopicsForStream(nameStream)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+//            chatDao.getTopicsForStream(nameStream)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+        showPopupMenuUseCase.showPopupMenu(nameStream)
                 .subscribe({
                     viewState.showPopupMenu(it)
                 }, {
