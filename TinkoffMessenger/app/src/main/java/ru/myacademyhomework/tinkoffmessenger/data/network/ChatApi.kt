@@ -23,7 +23,7 @@ interface ChatApi {
     @POST("users/me/subscriptions")
     fun createStream(@Query("subscriptions") subscriptions: String): Completable
 
-    @GET("messages")
+    @GET("messages?client_gravatar=false")
     fun getMessages(
         @Query("anchor") anchor: String,
         @Query("num_after") num_after: Int,
@@ -69,7 +69,7 @@ interface ChatApi {
     @GET("users/me")
     fun getOwnUser(): Single<UserDto>
 
-    @GET("users")
+    @GET("users?client_gravatar=false")
     fun getAllUsers(): Single<UsersResponse>
 
     @GET("users/{user_id_or_email}/presence")
