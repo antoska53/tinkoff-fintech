@@ -46,8 +46,6 @@ import javax.inject.Inject
 
 @ChatScope
 class ChatPresenter @Inject constructor(
-    private val chatDao: ChatDao,
-    private val apiClient: ApiClient,
     private val addReactionUseCase: AddReactionUseCase,
     private val deleteMessageUseCase: DeleteMessageUseCase,
     private val editMessageUseCase: EditMessageUseCase,
@@ -92,9 +90,6 @@ class ChatPresenter @Inject constructor(
 
     fun showPopupMenu() {
         nameStream?.let { nameStream ->
-//            chatDao.getTopicsForStream(nameStream)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
         showPopupMenuUseCase.showPopupMenu(nameStream)
                 .subscribe({
                     viewState.showPopupMenu(it)
@@ -158,20 +153,7 @@ class ChatPresenter @Inject constructor(
     }
 
     fun initChat() {
-        chatDao
-            .getOwnUser()
-            .map {
-                it.map { userDb ->
-                    UserDto(
-                        avatarURL = userDb.avatarURL,
-                        email = userDb.email,
-                        fullName = userDb.fullName,
-                        userID = userDb.userID
-                    )
-                }
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        initChatUseCase.initChat()
             .subscribe({
                 if (it.isEmpty()) {
                     getOwnUser()
@@ -203,21 +185,7 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun getOwnUser() {
-        apiClient.chatApi.getOwnUser()
-            .subscribeOn(Schedulers.io())
-            .map {
-                UserDb(
-                    avatarURL = it.avatarURL,
-                    email = it.email,
-                    fullName = it.fullName,
-                    userID = it.userID,
-                    isOwn = true
-                )
-            }
-            .doOnSuccess {
-                chatDao.insertOwnUser(it)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
+        getOwnUserUseCase.getOwnUser()
             .subscribe({
                 viewState.hideError()
             }, {
@@ -228,29 +196,7 @@ class ChatPresenter @Inject constructor(
 
     private fun getOldMessageFromDb() {
         nameTopic?.let { nameTopic ->
-            chatDao.getOldMessages(nameTopic, firstMessageId.toLong())
-                .map {
-                    it.map { messageDb ->
-                        UserMessage(
-                            avatarURL = messageDb.avatarURL,
-                            content = messageDb.content,
-                            id = messageDb.id,
-                            isMeMessage = messageDb.isMeMessage,
-                            senderFullName = messageDb.senderFullName,
-                            timestamp = messageDb.timestamp,
-                            streamID = messageDb.streamID,
-                            reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                                Reaction(
-                                    reactionDb.emojiCode,
-                                    reactionDb.emojiName,
-                                    reactionDb.reactionType,
-                                    reactionDb.userId
-                                )
-                            }
-                        )
-                    }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
+            getOldMessageFromDbUseCase.getOldMessageFromDb(nameTopic, firstMessageId.toLong())
                 .subscribe({
                     if(it.isNotEmpty()) firstMessageId = it.first().id.toString()
                     viewState.addRecyclerData(setupListMessage(it))
@@ -263,30 +209,7 @@ class ChatPresenter @Inject constructor(
     private fun getAllMessagesFromDb() {
         nameTopic?.let { nameTopic ->
             nameStream?.let { nameStream ->
-                chatDao.getAllMessages(nameTopic, nameStream)
-                    .map {
-                        it.map { messageDb ->
-                            UserMessage(
-                                avatarURL = messageDb.avatarURL,
-                                content = messageDb.content,
-                                id = messageDb.id,
-                                isMeMessage = messageDb.isMeMessage,
-                                senderFullName = messageDb.senderFullName,
-                                timestamp = messageDb.timestamp,
-                                streamID = messageDb.streamID,
-                                nameTopic = nameTopic,
-                                reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                                    Reaction(
-                                        reactionDb.emojiCode,
-                                        reactionDb.emojiName,
-                                        reactionDb.reactionType,
-                                        reactionDb.userId
-                                    )
-                                }
-                            )
-                        }
-                    }
-                    .observeOn(AndroidSchedulers.mainThread())
+                getAllMessagesFromDbUseCase.getAllMessagesFromDb(nameTopic, nameStream)
                     .subscribe({
                         if (it.isEmpty()) {
                             viewState.showRefresh()
@@ -307,30 +230,7 @@ class ChatPresenter @Inject constructor(
 
     private fun getAllMessagesFromDbForStream() {
         nameStream?.let { nameStream ->
-            chatDao.getAllMessagesForStream(nameStream)
-                .map {
-                    it.map { messageDb ->
-                        UserMessage(
-                            avatarURL = messageDb.avatarURL,
-                            content = messageDb.content,
-                            id = messageDb.id,
-                            isMeMessage = messageDb.isMeMessage,
-                            senderFullName = messageDb.senderFullName,
-                            timestamp = messageDb.timestamp,
-                            streamID = messageDb.streamID,
-                            nameTopic = messageDb.nameTopic,
-                            reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                                Reaction(
-                                    reactionDb.emojiCode,
-                                    reactionDb.emojiName,
-                                    reactionDb.reactionType,
-                                    reactionDb.userId
-                                )
-                            }
-                        )
-                    }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
+            getAllMessagesFromDbForStreamUseCase.getAllMessagesFromDbForStream(nameStream)
                 .subscribe({
                     if (it.isEmpty()) {
                         viewState.showRefresh()
@@ -354,50 +254,16 @@ class ChatPresenter @Inject constructor(
     private fun getMessages(anchor: String) {
         nameTopic?.let { nameTopic ->
             nameStream?.let { nameStream ->
-                apiClient.chatApi.getMessages(
-                    anchor = anchor,
-                    num_after = 0,
-                    num_before = 20,
-                    narrow = "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"}]"
-                )
-                    .subscribeOn(Schedulers.io())
-                    .map {
+                getMessagesUseCase.getMessages(anchor, nameStream, nameTopic)
+                    .doOnSuccess {
                         if (it.foundOldest) {
                             foundOldest = it.foundOldest
                             viewState.addToSharedpref(foundOldest)
                         }
-                        it.messages.map { userMessage ->
-                            chatDao.insertReaction(
-                                userMessage.reactions.map { reaction ->
-                                    ReactionDb(
-                                        reaction.emojiCode,
-                                        reaction.emojiName,
-                                        reaction.reactionType,
-                                        reaction.userId,
-                                        userMessage.id
-                                    )
-                                })
-
-                            MessageDb(
-                                avatarURL = userMessage.avatarURL,
-                                content = userMessage.content,
-                                id = userMessage.id,
-                                isMeMessage = userMessage.isMeMessage,
-                                senderFullName = userMessage.senderFullName,
-                                timestamp = userMessage.timestamp,
-                                streamID = userMessage.streamID,
-                                nameTopic = nameTopic,
-                                nameStream = nameStream
-                            )
-                        }
-                    }
-                    .doOnSuccess {
                         databaseIsRefresh = true
                         databaseIsNotEmpty = true
-                        chatDao.insertMessages(it)
                         if (isLoading) getOldMessageFromDb()
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
                         if (!databaseIsNotEmpty) {
                             viewState.showRefresh()
@@ -423,52 +289,11 @@ class ChatPresenter @Inject constructor(
 
     private fun getMessagesForStream(anchor: String) {
         nameStream?.let { nameStream ->
-            chatDao.getTopicsForStream(nameStream)
-                .subscribeOn(Schedulers.io())
-                .flatMapObservable {
-                    Observable.fromIterable(it)
-                }
-                .flatMapSingle { topicDb ->
-                    apiClient.chatApi.getMessages(
-                        anchor = anchor,
-                        num_after = 0,
-                        num_before = 5,
-                        narrow = "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"${topicDb.nameTopic}\",\"operator\":\"topic\"}]"
-                    )
-                        .map { messageResponse ->
-                            messageResponse.messages.map { userMessage ->
-                                chatDao.insertReaction(
-                                    userMessage.reactions.map { reaction ->
-                                        ReactionDb(
-                                            reaction.emojiCode,
-                                            reaction.emojiName,
-                                            reaction.reactionType,
-                                            reaction.userId,
-                                            userMessage.id
-                                        )
-                                    })
-
-                                MessageDb(
-                                    avatarURL = userMessage.avatarURL,
-                                    content = userMessage.content,
-                                    id = userMessage.id,
-                                    isMeMessage = userMessage.isMeMessage,
-                                    senderFullName = userMessage.senderFullName,
-                                    timestamp = userMessage.timestamp,
-                                    streamID = userMessage.streamID,
-                                    nameTopic = topicDb.nameTopic,
-                                    nameStream = nameStream
-                                )
-                            }
-                        }
-                }
-                .toList()
+            getMessagesForStreamUseCase.getMessagesForStream(anchor, nameStream)
                 .doOnSuccess {
                     databaseIsRefresh = true
                     databaseIsNotEmpty = true
-                    chatDao.insertMessages(it.flatten())
                 }
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
                     if (!databaseIsNotEmpty) {
                         viewState.showRefresh()
@@ -494,41 +319,7 @@ class ChatPresenter @Inject constructor(
     private fun getMessage(messageId: Long, position: Int, nameTopic: String?) {
         nameTopic?.let {
             if (it != ChatFragment.STREAM_CHAT) {
-                apiClient.chatApi.getMessages(
-                    "newest",
-                    1,
-                    1,
-                    "[{\"operand\":\"$nameStream\", \"operator\":\"stream\"},{\"operand\":\"$nameTopic\",\"operator\":\"topic\"},{\"operand\":\"$messageId\",\"operator\":\"id\"}]"
-                )
-                    .doOnSuccess {
-                        it.messages[0].nameTopic = nameTopic
-                        val message = it.messages[0]
-                        chatDao.insertReaction(
-                            message.reactions.map { reaction ->
-                                ReactionDb(
-                                    reaction.emojiCode,
-                                    reaction.emojiName,
-                                    reaction.reactionType,
-                                    reaction.userId,
-                                    message.id
-                                )
-                            })
-                        chatDao.insertMessage(
-                            MessageDb(
-                                avatarURL = message.avatarURL,
-                                content = message.content,
-                                id = message.id,
-                                isMeMessage = message.isMeMessage,
-                                senderFullName = message.senderFullName,
-                                timestamp = message.timestamp,
-                                streamID = message.streamID,
-                                nameTopic = message.nameTopic,
-                                nameStream = nameStream!!
-                        )
-                        )
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                getMessageUseCase.getMessage(messageId, position, nameTopic, nameStream)
                     .subscribe({
                         if (position == ChatFragment.SEND_MESSAGE_POSITION) {
                             val message = it.messages[0]
@@ -543,9 +334,7 @@ class ChatPresenter @Inject constructor(
 
     private fun sendMessage(message: String, nameTopic: String) {
         nameStream?.let { nameStream ->
-            apiClient.chatApi.sendMessage("stream", nameStream, nameTopic, message)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+            sendMessageUseCase.sendMessage(message, nameTopic, nameStream)
                 .subscribe(
                     {
                         viewState.clearEditText()
@@ -560,13 +349,7 @@ class ChatPresenter @Inject constructor(
     }
 
     fun updateEmoji(emoji: String, idMessage: Long, nameTopic: String, position: Int) {
-        val emojiName = Emoji.values().find {
-            it.unicode == emoji
-        }
-
-        apiClient.chatApi.addReaction(idMessage, emojiName?.nameInZulip ?: "")
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        updateEmojiUseCase.updateEmoji(emoji, idMessage, nameTopic, position)
             .subscribe({
                 getMessage(idMessage, position, nameTopic)
             },
@@ -577,59 +360,15 @@ class ChatPresenter @Inject constructor(
     }
 
     private fun setupListMessage(messages: List<UserMessage>): List<ChatMessage> {
-        val newListMessages = mutableListOf<ChatMessage>()
-        var calendar: Calendar? = null
-        for (message in messages) {
-            if (calendar == null || !DateUtil.isSameDay(
-                    calendar.time,
-                    Date(message.timestamp * 1000)
-                )
-            ) {
-                val localDate =
-                    Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                val dateMessage = DateMessage(localDate)
-                calendar = Calendar.getInstance()
-                calendar.time = Date(message.timestamp * 1000)
-                newListMessages.add(dateMessage)
-            }
-            newListMessages.add(message)
-        }
-        return newListMessages
+        return setupListMessageUseCase.setupListMessage(messages)
     }
 
     private fun setupListMessageForStream(messages: List<UserMessage>): List<ChatMessage> {
-        val newListMessages = mutableListOf<ChatMessage>()
-        var calendar: Calendar? = null
-        var topicMessage: TopicMessage? = null
-        for (message in messages) {
-            if (topicMessage == null || topicMessage.nameTopic != message.nameTopic) {
-                topicMessage = TopicMessage(message.nameTopic)
-                newListMessages.add(topicMessage)
-            }
-
-            if (calendar == null || !DateUtil.isSameDay(
-                    calendar.time,
-                    Date(message.timestamp * 1000)
-                )
-            ) {
-                val localDate =
-                    Instant.ofEpochSecond(message.timestamp).atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                val dateMessage = DateMessage(localDate)
-                calendar = Calendar.getInstance()
-                calendar.time = Date(message.timestamp * 1000)
-                newListMessages.add(dateMessage)
-            }
-            newListMessages.add(message)
-        }
-        return newListMessages
+        return setupListMessageForStreamUseCase.setupListMessageForStream(messages)
     }
 
     fun addReaction(messageId: Long, nameTopic: String, emojiName: String, position: Int) {
-        apiClient.chatApi.addReaction(messageId, emojiName)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        addReactionUseCase.addReaction(messageId, nameTopic, emojiName, position)
             .subscribe({
                 getMessage(messageId, position, nameTopic)
             },
@@ -642,12 +381,7 @@ class ChatPresenter @Inject constructor(
     fun removeReaction(messageId: Long, nameTopic: String, emojiName: String, emojiCode: String,
         reactionType: String, userId: Int, position: Int
     ) {
-        apiClient.chatApi.removeReaction(messageId, emojiName, emojiCode, reactionType)
-            .doOnComplete {
-                chatDao.deleteReaction(userId, emojiCode)
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        removeReactionUseCase.removeReaction(messageId,  emojiName, emojiCode, reactionType, userId)
             .subscribe({
                 getMessage(messageId, position, nameTopic)
             }, {
@@ -657,12 +391,7 @@ class ChatPresenter @Inject constructor(
     }
 
    private fun deleteMessage(idMessage: Long){
-        apiClient.chatApi.deleteMessage(idMessage)
-            .subscribeOn(Schedulers.io())
-            .doOnComplete {
-                chatDao.deleteMessage(idMessage)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
+       deleteMessageUseCase.deleteMessage(idMessage)
             .subscribe({
                 viewState.showDeleteMessageSuccess()
             },{
@@ -672,12 +401,7 @@ class ChatPresenter @Inject constructor(
    }
 
     private fun editMessage(messageId: Long, nameTopic: String, message: String ){
-        apiClient.chatApi.editMessage(messageId, nameTopic, message)
-            .subscribeOn(Schedulers.io())
-            .doOnComplete {
-                chatDao.updateMessage(messageId, message, nameTopic)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
+        editMessageUseCase.editMessage(messageId, nameTopic, message)
             .subscribe({
                 viewState.destroyEditMessage()
             },{
@@ -705,6 +429,5 @@ class ChatPresenter @Inject constructor(
             }
         }
     }
-
 }
 

@@ -6,15 +6,13 @@ class RemoveReactionUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
     fun removeReaction(
-        messageId: Long, nameTopic: String, emojiName: String, emojiCode: String,
-        reactionType: String, userId: Int, position: Int
+        messageId: Long,  emojiName: String, emojiCode: String,
+        reactionType: String, userId: Int
     ) = repository.removeReaction(
         messageId,
-        nameTopic,
         emojiName,
         emojiCode,
         reactionType,
-        userId,
-        position
+        userId
     )
 }

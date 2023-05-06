@@ -5,5 +5,6 @@ import javax.inject.Inject
 class GetAllMessagesFromDbForStreamUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    fun getAllMessagesFromDbForStream() = repository.getAllMessagesFromDbForStream()
+    fun getAllMessagesFromDbForStream(nameStream: String) =
+        repository.getAllMessagesFromDbForStream(nameStream)
 }
