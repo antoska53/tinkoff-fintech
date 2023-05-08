@@ -4,7 +4,7 @@ import io.reactivex.rxkotlin.addTo
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.di.pager.PagerScope
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.Topic
+import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.GetAllStreamsFromDbUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.GetAllStreamsUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.GetSubscribeStreamsFromDbUseCase
@@ -24,7 +24,7 @@ class PagerPresenter @Inject constructor(
     private var databaseIsNotEmpty = false
     private var databaseIsRefresh = false
 
-    fun openChatTopic(topic: Topic) {
+    fun openChatTopic(topic: TopicDto) {
         viewState.openChatTopic(topic)
     }
 

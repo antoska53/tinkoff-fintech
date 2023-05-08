@@ -15,7 +15,10 @@ data class UserDto(
     val fullName: String,
 
     @SerialName("user_id")
-    val userID: Int
+    val userID: Int,
+
+    @SerialName("is_owner")
+    val isOwner: Boolean
 )
 
 

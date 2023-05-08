@@ -9,7 +9,7 @@ import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.Topic
+import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.PagerRepository
 import javax.inject.Inject
@@ -25,7 +25,7 @@ class PagerRepositoryImpl @Inject constructor(
             .map {
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
-                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                        TopicDto(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                     }
                     Stream(streamDb.nameChannel, listTopics)
                 }
@@ -39,7 +39,7 @@ class PagerRepositoryImpl @Inject constructor(
             .map {
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
-                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                        TopicDto(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                     }
                     Stream(streamDb.nameChannel, listTopics)
                 }
@@ -51,7 +51,7 @@ class PagerRepositoryImpl @Inject constructor(
         return chatDao.getTopicsForStream(streamName)
             .map { listTopicsDb ->
                 listTopicsDb.map { topicDb ->
-                    Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                    TopicDto(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                 }
             }.map {
                 Stream(streamName, it)

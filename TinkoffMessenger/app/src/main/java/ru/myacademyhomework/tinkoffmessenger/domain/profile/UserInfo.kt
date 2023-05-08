@@ -5,5 +5,6 @@ data class UserInfo(
     val avatarURL: String,
     val email: String,
     val fullName: String,
-    val userID: Int
+    val userID: Int,
+    val isOwner: Boolean
 )

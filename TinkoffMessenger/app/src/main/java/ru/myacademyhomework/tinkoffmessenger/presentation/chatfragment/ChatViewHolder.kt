@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.messageview.EmojiView
 import ru.myacademyhomework.tinkoffmessenger.messageview.FlexBoxLayout
 import ru.myacademyhomework.tinkoffmessenger.messageview.NameMessageView
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
 
 class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val textviewName = itemView.findViewById<TextView>(R.id.textview_name)

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Reaction(
+data class ReactionDto(
     @SerialName("emoji_code")
     val emojiCode: String,
 

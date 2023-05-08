@@ -5,9 +5,9 @@ import moxy.viewstate.strategy.alias.OneExecution
 import moxy.viewstate.strategy.alias.Skip
 import ru.myacademyhomework.tinkoffmessenger.common.BaseView
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
 
 interface ChatView : BaseView {
 
@@ -30,7 +30,7 @@ interface ChatView : BaseView {
     fun clearEditText()
 
     @AddToEndSingle
-    fun initRecycler(listUser: List<UserDto>)
+    fun initRecycler(listUser: List<UserInfo>)
 
     @AddToEndSingle
     fun updateRecyclerData(listUserMessage: List<ChatMessage>)

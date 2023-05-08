@@ -6,8 +6,8 @@ import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.listeners.TopicChatListener
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
 import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.time.ZoneId

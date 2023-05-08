@@ -13,7 +13,7 @@ class UserMapper @Inject constructor() {
             email = userDto.email,
             fullName = userDto.fullName,
             userID = userDto.userID,
-            isOwn = false
+            isOwn = userDto.isOwner
         )
     }
 
@@ -22,7 +22,8 @@ class UserMapper @Inject constructor() {
             avatarURL = dbModel.avatarURL,
             email = dbModel.email,
             fullName = dbModel.fullName,
-            userID = dbModel.userID
+            userID = dbModel.userID,
+            isOwner = dbModel.isOwn
         )
     }
 
@@ -32,6 +33,7 @@ class UserMapper @Inject constructor() {
             email = userDto.email,
             fullName = userDto.fullName,
             userID = userDto.userID,
+            isOwner = userDto.isOwner
         )
     }
 }

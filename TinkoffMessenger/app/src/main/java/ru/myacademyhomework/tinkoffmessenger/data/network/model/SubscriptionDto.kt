@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class Subscription (
+data class SubscriptionDto (
     @SerialName("name")
     val name: String,
 

@@ -18,7 +18,7 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.Topic
+import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.newstreamfragment.NewStreamFragment
 import javax.inject.Inject
 import javax.inject.Provider
@@ -74,11 +74,11 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         recycler?.adapter = adapter
     }
 
-    private fun updateStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+    private fun updateStream(topics: List<TopicDto>, position: Int, isSelected: Boolean) {
         adapter.updateData(topics, position, isSelected)
     }
 
-    private fun removeStream(topics: List<Topic>, position: Int, isSelected: Boolean) {
+    private fun removeStream(topics: List<TopicDto>, position: Int, isSelected: Boolean) {
         adapter.updateData(topics, position, isSelected)
     }
 
@@ -89,7 +89,7 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         streamDiffResult.dispatchUpdatesTo(adapter)
     }
 
-    override fun openChatTopic(topic: Topic) {
+    override fun openChatTopic(topic: TopicDto) {
         navigation?.openChatFragment(
             ChatFragment.newInstance(
                 topic.nameStream,
@@ -153,7 +153,7 @@ class AllStreamFragment : MvpAppCompatFragment(R.layout.fragment_all_stream), Pa
         ).show()
     }
 
-    override fun itemStreamArrowClicked(topics: List<Topic>, position: Int, isSelected: Boolean) {
+    override fun itemStreamArrowClicked(topics: List<TopicDto>, position: Int, isSelected: Boolean) {
         if (isSelected) updateStream(topics, position, isSelected)
         else removeStream(topics, position, isSelected)
     }

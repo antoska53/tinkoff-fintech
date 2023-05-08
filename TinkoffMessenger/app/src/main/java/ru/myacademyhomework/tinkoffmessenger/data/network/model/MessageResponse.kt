@@ -19,7 +19,7 @@ data class MessageResponse (
     val foundOldest: Boolean,
 
     @SerialName("messages")
-    val messages: List<UserMessage>,
+    val messages: List<UserMessageDto>,
 
     @SerialName("msg")
     val msg: String,
@@ -29,7 +29,7 @@ data class MessageResponse (
 )
 
 @Serializable
-data class UserMessage (
+data class UserMessageDto (
     @SerialName("avatar_url")
     val avatarURL: String,
 
@@ -43,7 +43,7 @@ data class UserMessage (
     val isMeMessage: Boolean,
 
     @SerialName("reactions")
-    val reactions: List<Reaction>,
+    val reactions: List<ReactionDto>,
 
     @SerialName("sender_full_name")
     val senderFullName: String,
@@ -56,5 +56,5 @@ data class UserMessage (
 
     @Transient
     var nameTopic: String = ""
-): ChatMessage
+)
 

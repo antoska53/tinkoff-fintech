@@ -2,24 +2,14 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment
 
 import android.text.Editable
 import android.text.Html
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.*
-import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.MessageDb
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.ReactionDb
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.UserDb
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.Reaction
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
-import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.AddReactionUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.DeleteMessageUseCase
@@ -38,9 +28,6 @@ import ru.myacademyhomework.tinkoffmessenger.domain.chat.SetupListMessageForStre
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.SetupListMessageUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.ShowPopupMenuUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.UpdateEmojiUseCase
-import java.time.Instant
-import java.time.ZoneId
-import java.util.*
 import javax.inject.Inject
 
 
@@ -156,6 +143,7 @@ class ChatPresenter @Inject constructor(
         initChatUseCase.initChat()
             .subscribe({
                 if (it.isEmpty()) {
+                    Log.d("OWN", "initChat: isEmpty $it")
                     getOwnUser()
                 } else {
                     viewState.hideError()

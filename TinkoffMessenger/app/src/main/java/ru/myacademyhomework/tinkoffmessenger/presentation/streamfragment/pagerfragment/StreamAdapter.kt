@@ -6,7 +6,7 @@ import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.listeners.TopicListener
 import ru.myacademyhomework.tinkoffmessenger.data.Item
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.Topic
+import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import java.lang.IllegalArgumentException
 
 
@@ -31,7 +31,7 @@ class StreamAdapter(
                 streams[position] as Stream,
                 streamListener
             )
-            is TopicViewHolder -> holder.onBind(streams[position] as Topic, topicListener)
+            is TopicViewHolder -> holder.onBind(streams[position] as TopicDto, topicListener)
             else -> throw IllegalArgumentException()
         }
     }
@@ -41,7 +41,7 @@ class StreamAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (streams[position]) {
             is Stream -> AllStreamFragment.TYPE_STREAM
-            is Topic -> AllStreamFragment.TYPE_TOPIC
+            is TopicDto -> AllStreamFragment.TYPE_TOPIC
             else -> throw IllegalArgumentException()
         }
     }

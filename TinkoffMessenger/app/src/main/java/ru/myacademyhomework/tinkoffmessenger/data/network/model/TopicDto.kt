@@ -6,7 +6,7 @@ import kotlinx.serialization.Transient
 import ru.myacademyhomework.tinkoffmessenger.data.Item
 
 @Serializable
-data class Topic(
+data class TopicDto(
     @Transient
     val streamId: Long = 0,
 

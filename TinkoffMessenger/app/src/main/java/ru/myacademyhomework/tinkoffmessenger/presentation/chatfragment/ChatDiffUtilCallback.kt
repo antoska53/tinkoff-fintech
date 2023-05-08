@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 
 class ChatDiffUtilCallback(
     private val oldLIst: List<ChatMessage>,

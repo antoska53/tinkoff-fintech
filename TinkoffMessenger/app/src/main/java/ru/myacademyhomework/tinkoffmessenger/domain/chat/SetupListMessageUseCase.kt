@@ -1,6 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.domain.chat
 
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import javax.inject.Inject
 
 class SetupListMessageUseCase @Inject constructor(

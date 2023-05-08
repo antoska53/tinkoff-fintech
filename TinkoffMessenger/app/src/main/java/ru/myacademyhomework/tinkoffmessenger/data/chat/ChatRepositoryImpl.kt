@@ -1,5 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.data.chat
 
+import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -10,19 +11,20 @@ import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
 import ru.myacademyhomework.tinkoffmessenger.data.Emoji
 import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.MessageDb
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.ReactionDb
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.UserDb
+import ru.myacademyhomework.tinkoffmessenger.data.mapper.ReactionMapper
+import ru.myacademyhomework.tinkoffmessenger.data.mapper.UserMapper
+import ru.myacademyhomework.tinkoffmessenger.data.mapper.UserMessageMapper
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.MessageResponse
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.Reaction
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.SendMessageResponse
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.ChatRepository
+import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.DateUtil
 import java.time.Instant
 import java.time.ZoneId
@@ -33,97 +35,124 @@ import javax.inject.Inject
 @ChatScope
 class ChatRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient,
-    private val chatDao: ChatDao
-): ChatRepository {
+    private val chatDao: ChatDao,
+    private val userMapper: UserMapper,
+    private val userMessageMapper: UserMessageMapper,
+    private val reactionMapper: ReactionMapper
+) : ChatRepository {
     override fun showPopupMenu(nameStream: String): Single<List<TopicDb>> {
         return chatDao.getTopicsForStream(nameStream)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun initChat(): Flowable<List<UserDto>> {
-        return chatDao
-            .getOwnUser()
+    override fun initChat(): Flowable<List<UserInfo>> {
+        return chatDao.getOwnUser()
             .map {
+                Log.d("OWN", "initChat: $it")
                 it.map { userDb ->
-                    UserDto(
-                        avatarURL = userDb.avatarURL,
-                        email = userDb.email,
-                        fullName = userDb.fullName,
-                        userID = userDb.userID
-                    )
+                    userMapper.mapDbModelToEntity(userDb)
+//                    UserDto(
+//                        avatarURL = userDb.avatarURL,
+//                        email = userDb.email,
+//                        fullName = userDb.fullName,
+//                        userID = userDb.userID
+//                    )
                 }
+
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getOwnUser(): Single<UserDb> {
+    override fun getOwnUser(): Single<UserInfo> {
+        Log.d("OWN", "getOwnUser: OWN")
         return apiClient.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
-            .map {
-                UserDb(
-                    avatarURL = it.avatarURL,
-                    email = it.email,
-                    fullName = it.fullName,
-                    userID = it.userID,
-                    isOwn = true
-                )
-            }
             .doOnSuccess {
-                chatDao.insertOwnUser(it)
+                Log.d("OWN", "getOwnUser: UserDto =  $it")
+                chatDao.insertOwnUser(userMapper.mapDtoToDbModel(it))
             }
+            .map {
+                userMapper.mapDtoToEntity(it)
+//                UserDb(
+//                    avatarURL = it.avatarURL,
+//                    email = it.email,
+//                    fullName = it.fullName,
+//                    userID = it.userID,
+//                    isOwn = true
+//                )
+            }
+//            .doOnSuccess {
+//                chatDao.insertOwnUser(it)
+//            }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getOldMessageFromDb(nameTopic: String, firstMessageId: Long): Single<List<UserMessage>> {
+    override fun getOldMessageFromDb(
+        nameTopic: String,
+        firstMessageId: Long
+    ): Single<List<UserMessage>> {
         return chatDao.getOldMessages(nameTopic, firstMessageId)
             .map {
                 it.map { messageDb ->
-                    UserMessage(
-                        avatarURL = messageDb.avatarURL,
-                        content = messageDb.content,
-                        id = messageDb.id,
-                        isMeMessage = messageDb.isMeMessage,
-                        senderFullName = messageDb.senderFullName,
-                        timestamp = messageDb.timestamp,
-                        streamID = messageDb.streamID,
-                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                            Reaction(
-                                reactionDb.emojiCode,
-                                reactionDb.emojiName,
-                                reactionDb.reactionType,
-                                reactionDb.userId
-                            )
-                        }
+                    userMessageMapper.mapDbModelToEntity(
+                        messageDb,
+                        chatDao.getReaction(messageDb.id)
+                            .map { reactionDb -> reactionMapper.mapDbModelToEntity(reactionDb) }
                     )
+//                    UserMessage(
+//                        avatarURL = messageDb.avatarURL,
+//                        content = messageDb.content,
+//                        id = messageDb.id,
+//                        isMeMessage = messageDb.isMeMessage,
+//                        senderFullName = messageDb.senderFullName,
+//                        timestamp = messageDb.timestamp,
+//                        streamID = messageDb.streamID,
+//                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+//                            ReactionDto(
+//                                reactionDb.emojiCode,
+//                                reactionDb.emojiName,
+//                                reactionDb.reactionType,
+//                                reactionDb.userId
+//                            )
+//                        }
+//                    )
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getAllMessagesFromDb(nameTopic: String, nameStream: String): Flowable<List<UserMessage>> {
+    override fun getAllMessagesFromDb(
+        nameTopic: String,
+        nameStream: String
+    ): Flowable<List<UserMessage>> {
         return chatDao.getAllMessages(nameTopic, nameStream)
             .map {
                 it.map { messageDb ->
-                    UserMessage(
-                        avatarURL = messageDb.avatarURL,
-                        content = messageDb.content,
-                        id = messageDb.id,
-                        isMeMessage = messageDb.isMeMessage,
-                        senderFullName = messageDb.senderFullName,
-                        timestamp = messageDb.timestamp,
-                        streamID = messageDb.streamID,
-                        nameTopic = nameTopic,
-                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                            Reaction(
-                                reactionDb.emojiCode,
-                                reactionDb.emojiName,
-                                reactionDb.reactionType,
-                                reactionDb.userId
-                            )
-                        }
+                    userMessageMapper.mapDbModelToEntity(
+                        messageDb,
+                        chatDao.getReaction(messageDb.id)
+                            .map { reactionDb -> reactionMapper.mapDbModelToEntity(reactionDb) }
                     )
+//                    UserMessageDto(
+//                        avatarURL = messageDb.avatarURL,
+//                        content = messageDb.content,
+//                        id = messageDb.id,
+//                        isMeMessage = messageDb.isMeMessage,
+//                        senderFullName = messageDb.senderFullName,
+//                        timestamp = messageDb.timestamp,
+//                        streamID = messageDb.streamID,
+//                        nameTopic = nameTopic,
+//                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+//                            ReactionDto(
+//                                reactionDb.emojiCode,
+//                                reactionDb.emojiName,
+//                                reactionDb.reactionType,
+//                                reactionDb.userId
+//                            )
+//                        }
+//                    )
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -133,30 +162,38 @@ class ChatRepositoryImpl @Inject constructor(
         return chatDao.getAllMessagesForStream(nameStream)
             .map {
                 it.map { messageDb ->
-                    UserMessage(
-                        avatarURL = messageDb.avatarURL,
-                        content = messageDb.content,
-                        id = messageDb.id,
-                        isMeMessage = messageDb.isMeMessage,
-                        senderFullName = messageDb.senderFullName,
-                        timestamp = messageDb.timestamp,
-                        streamID = messageDb.streamID,
-                        nameTopic = messageDb.nameTopic,
-                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-                            Reaction(
-                                reactionDb.emojiCode,
-                                reactionDb.emojiName,
-                                reactionDb.reactionType,
-                                reactionDb.userId
-                            )
-                        }
+                    userMessageMapper.mapDbModelToEntity(
+                        messageDb,
+                        chatDao.getReaction(messageDb.id).map { reactionMapper.mapDbModelToEntity(it) }
                     )
+//                    UserMessageDto(
+//                        avatarURL = messageDb.avatarURL,
+//                        content = messageDb.content,
+//                        id = messageDb.id,
+//                        isMeMessage = messageDb.isMeMessage,
+//                        senderFullName = messageDb.senderFullName,
+//                        timestamp = messageDb.timestamp,
+//                        streamID = messageDb.streamID,
+//                        nameTopic = messageDb.nameTopic,
+//                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
+//                            ReactionDto(
+//                                reactionDb.emojiCode,
+//                                reactionDb.emojiName,
+//                                reactionDb.reactionType,
+//                                reactionDb.userId
+//                            )
+//                        }
+//                    )
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getMessages(anchor: String, nameStream: String, nameTopic: String): Single<MessageResponse> {
+    override fun getMessages(
+        anchor: String,
+        nameStream: String,
+        nameTopic: String
+    ): Single<MessageResponse> {
         return apiClient.chatApi.getMessages(
             anchor = anchor,
             num_after = 0,
@@ -165,35 +202,40 @@ class ChatRepositoryImpl @Inject constructor(
         )
             .subscribeOn(Schedulers.io())
             .doOnSuccess {
-                val listMessages =  it.messages.map { userMessage ->
+                val listMessages = it.messages.map { userMessage ->
                     chatDao.insertReaction(
                         userMessage.reactions.map { reaction ->
-                            ReactionDb(
-                                reaction.emojiCode,
-                                reaction.emojiName,
-                                reaction.reactionType,
-                                reaction.userId,
-                                userMessage.id
-                            )
+                            reactionMapper.mapDtoToDbModel(reaction, userMessage.id)
+//                            ReactionDb(
+//                                reaction.emojiCode,
+//                                reaction.emojiName,
+//                                reaction.reactionType,
+//                                reaction.userId,
+//                                userMessage.id
+//                            )
                         })
-                    MessageDb(
-                        avatarURL = userMessage.avatarURL,
-                        content = userMessage.content,
-                        id = userMessage.id,
-                        isMeMessage = userMessage.isMeMessage,
-                        senderFullName = userMessage.senderFullName,
-                        timestamp = userMessage.timestamp,
-                        streamID = userMessage.streamID,
-                        nameTopic = nameTopic,
-                        nameStream = nameStream
-                    )
+                    userMessageMapper.mapDtoToDbModel(userMessage, nameTopic, nameStream)
+//                    MessageDb(
+//                        avatarURL = userMessage.avatarURL,
+//                        content = userMessage.content,
+//                        id = userMessage.id,
+//                        isMeMessage = userMessage.isMeMessage,
+//                        senderFullName = userMessage.senderFullName,
+//                        timestamp = userMessage.timestamp,
+//                        streamID = userMessage.streamID,
+//                        nameTopic = nameTopic,
+//                        nameStream = nameStream
+//                    )
                 }
                 chatDao.insertMessages(listMessages)
             }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getMessagesForStream(anchor: String, nameStream: String): Single<MutableList<List<MessageDb>>> {
+    override fun getMessagesForStream(
+        anchor: String,
+        nameStream: String
+    ): Single<MutableList<List<MessageDb>>> {
         return chatDao.getTopicsForStream(nameStream)
             .subscribeOn(Schedulers.io())
             .flatMapObservable {
@@ -210,26 +252,27 @@ class ChatRepositoryImpl @Inject constructor(
                         messageResponse.messages.map { userMessage ->
                             chatDao.insertReaction(
                                 userMessage.reactions.map { reaction ->
-                                    ReactionDb(
-                                        reaction.emojiCode,
-                                        reaction.emojiName,
-                                        reaction.reactionType,
-                                        reaction.userId,
-                                        userMessage.id
-                                    )
+                                    reactionMapper.mapDtoToDbModel(reaction, userMessage.id)
+//                                    ReactionDb(
+//                                        reaction.emojiCode,
+//                                        reaction.emojiName,
+//                                        reaction.reactionType,
+//                                        reaction.userId,
+//                                        userMessage.id
+//                                    )
                                 })
-
-                            MessageDb(
-                                avatarURL = userMessage.avatarURL,
-                                content = userMessage.content,
-                                id = userMessage.id,
-                                isMeMessage = userMessage.isMeMessage,
-                                senderFullName = userMessage.senderFullName,
-                                timestamp = userMessage.timestamp,
-                                streamID = userMessage.streamID,
-                                nameTopic = topicDb.nameTopic,
-                                nameStream = nameStream
-                            )
+                            userMessageMapper.mapDtoToDbModel(userMessage, topicDb.nameTopic, nameStream)
+//                            MessageDb(
+//                                avatarURL = userMessage.avatarURL,
+//                                content = userMessage.content,
+//                                id = userMessage.id,
+//                                isMeMessage = userMessage.isMeMessage,
+//                                senderFullName = userMessage.senderFullName,
+//                                timestamp = userMessage.timestamp,
+//                                streamID = userMessage.streamID,
+//                                nameTopic = topicDb.nameTopic,
+//                                nameStream = nameStream
+//                            )
                         }
                     }
             }
@@ -259,33 +302,39 @@ class ChatRepositoryImpl @Inject constructor(
                 val message = it.messages[0]
                 chatDao.insertReaction(
                     message.reactions.map { reaction ->
-                        ReactionDb(
-                            reaction.emojiCode,
-                            reaction.emojiName,
-                            reaction.reactionType,
-                            reaction.userId,
-                            message.id
-                        )
+                        reactionMapper.mapDtoToDbModel(reaction, message.id)
+//                        ReactionDb(
+//                            reaction.emojiCode,
+//                            reaction.emojiName,
+//                            reaction.reactionType,
+//                            reaction.userId,
+//                            message.id
+//                        )
                     })
                 chatDao.insertMessage(
-                    MessageDb(
-                        avatarURL = message.avatarURL,
-                        content = message.content,
-                        id = message.id,
-                        isMeMessage = message.isMeMessage,
-                        senderFullName = message.senderFullName,
-                        timestamp = message.timestamp,
-                        streamID = message.streamID,
-                        nameTopic = message.nameTopic,
-                        nameStream = nameStream!!
-                    )
+                    userMessageMapper.mapDtoToDbModel(message, message.nameTopic, nameStream!!)
+//                    MessageDb(
+//                        avatarURL = message.avatarURL,
+//                        content = message.content,
+//                        id = message.id,
+//                        isMeMessage = message.isMeMessage,
+//                        senderFullName = message.senderFullName,
+//                        timestamp = message.timestamp,
+//                        streamID = message.streamID,
+//                        nameTopic = message.nameTopic,
+//                        nameStream = nameStream!!
+//                    )
                 )
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun sendMessage(message: String, nameTopic: String, nameStream: String): Single<SendMessageResponse> {
+    override fun sendMessage(
+        message: String,
+        nameTopic: String,
+        nameStream: String
+    ): Single<SendMessageResponse> {
         return apiClient.chatApi.sendMessage("stream", nameStream, nameTopic, message)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

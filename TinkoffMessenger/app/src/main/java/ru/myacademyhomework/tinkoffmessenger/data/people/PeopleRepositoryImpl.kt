@@ -62,7 +62,7 @@ class PeopleRepositoryImpl @Inject constructor(
                     )
                 }
                 else {
-                    Observable.just(UserInfo("", "", "", 0))
+                    Observable.just(UserInfo("", "", "", 0, false))
                 }
             }
             .subscribeOn(Schedulers.io())

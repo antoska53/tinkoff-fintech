@@ -25,9 +25,9 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsheet.BottomSheetActionAdapter
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsheet.BottomSheetAdapter
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -135,7 +135,7 @@ class ChatFragment : MvpAppCompatFragment(R.layout.fragment_chat), ChatMessageLi
         window?.statusBarColor = resources.getColor(color, null)
     }
 
-    override fun initRecycler(listUser: List<UserDto>) {
+    override fun initRecycler(listUser: List<UserInfo>) {
         adapter = ChatAdapter(this, listUser[0].userID){nameTopic ->
             chatPresenter.onClickTopic(nameTopic)
         }

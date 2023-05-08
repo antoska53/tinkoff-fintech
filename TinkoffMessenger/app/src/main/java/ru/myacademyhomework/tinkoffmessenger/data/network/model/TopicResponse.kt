@@ -12,6 +12,6 @@ data class TopicResponse(
     val result: String,
 
     @SerialName("topics")
-    val topics: List<Topic>
+    val topics: List<TopicDto>
 )
 

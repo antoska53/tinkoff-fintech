@@ -13,5 +13,5 @@ data class StreamsSubscribeResponse(
     val result: String,
 
     @SerialName("subscriptions")
-    val subscriptions: List<Subscription>
+    val subscriptions: List<SubscriptionDto>
 )
