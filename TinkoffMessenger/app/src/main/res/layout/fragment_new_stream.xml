@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/bg_chat_color"
-    tools:context=".chatFragment.ChatFragment">
+    tools:context=".presentation.chatfragment.ChatFragment">
 
 
     <TextView

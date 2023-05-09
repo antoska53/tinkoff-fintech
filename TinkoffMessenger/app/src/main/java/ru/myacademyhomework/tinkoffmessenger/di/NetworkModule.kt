@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.create
 import ru.myacademyhomework.tinkoffmessenger.BuildConfig
-import ru.myacademyhomework.tinkoffmessenger.network.ChatApi
+import ru.myacademyhomework.tinkoffmessenger.data.network.ChatApi
 import javax.inject.Inject
 import javax.inject.Singleton
 

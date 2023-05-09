@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:context=".streamfragment.pagerfragments.AllStreamFragment" />
+        tools:context=".presentation.streamfragment.pagerfragment.AllStreamFragment" />
 
     <include
         layout="@layout/error_view"
