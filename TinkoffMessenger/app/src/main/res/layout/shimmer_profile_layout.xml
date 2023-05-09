@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".profilefragment.ProfileFragment">
+        tools:context=".presentation.profilefragment.ProfileFragment">
 
         <ImageView
             android:id="@+id/shimmer_imageview_avatar_profile"
