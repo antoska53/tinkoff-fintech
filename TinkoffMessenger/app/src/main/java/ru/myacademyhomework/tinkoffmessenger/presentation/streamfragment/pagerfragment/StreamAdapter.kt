@@ -6,7 +6,6 @@ import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.StreamListen
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.TopicListener
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Item
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 import java.lang.IllegalArgumentException
 

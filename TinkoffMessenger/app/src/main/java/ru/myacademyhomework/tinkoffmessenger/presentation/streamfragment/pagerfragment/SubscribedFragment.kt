@@ -18,7 +18,6 @@ import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.StreamListener
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 import ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.StreamFragment
 import javax.inject.Inject

@@ -5,10 +5,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.data.mapper.StreamMapper
-import ru.myacademyhomework.tinkoffmessenger.data.network.ChatApi
-import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamScope
 import ru.myacademyhomework.tinkoffmessenger.domain.stream.StreamInfo
 import ru.myacademyhomework.tinkoffmessenger.domain.stream.StreamRepository
@@ -17,7 +14,6 @@ import javax.inject.Inject
 
 @StreamScope
 class StreamRepositoryImpl @Inject constructor(
-    private val apiClient: ApiClient,
     private val chatDao: ChatDao,
     private val mapper: StreamMapper
 ): StreamRepository {

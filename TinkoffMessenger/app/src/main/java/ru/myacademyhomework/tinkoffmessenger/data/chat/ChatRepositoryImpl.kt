@@ -1,6 +1,5 @@
 package ru.myacademyhomework.tinkoffmessenger.data.chat
 
-import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -48,43 +47,23 @@ class ChatRepositoryImpl @Inject constructor(
     override fun initChat(): Flowable<List<UserInfo>> {
         return chatDao.getOwnUser()
             .map {
-                Log.d("OWN", "initChat: $it")
                 it.map { userDb ->
                     userMapper.mapDbModelToEntity(userDb)
-//                    UserDto(
-//                        avatarURL = userDb.avatarURL,
-//                        email = userDb.email,
-//                        fullName = userDb.fullName,
-//                        userID = userDb.userID
-//                    )
                 }
-
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun getOwnUser(): Single<UserInfo> {
-        Log.d("OWN", "getOwnUser: OWN")
         return apiClient.chatApi.getOwnUser()
             .subscribeOn(Schedulers.io())
             .doOnSuccess {
-                Log.d("OWN", "getOwnUser: UserDto =  $it")
                 chatDao.insertOwnUser(userMapper.mapDtoToDbModel(it))
             }
             .map {
                 userMapper.mapDtoToEntity(it)
-//                UserDb(
-//                    avatarURL = it.avatarURL,
-//                    email = it.email,
-//                    fullName = it.fullName,
-//                    userID = it.userID,
-//                    isOwn = true
-//                )
             }
-//            .doOnSuccess {
-//                chatDao.insertOwnUser(it)
-//            }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
@@ -100,23 +79,6 @@ class ChatRepositoryImpl @Inject constructor(
                         chatDao.getReaction(messageDb.id)
                             .map { reactionDb -> reactionMapper.mapDbModelToEntity(reactionDb) }
                     )
-//                    UserMessage(
-//                        avatarURL = messageDb.avatarURL,
-//                        content = messageDb.content,
-//                        id = messageDb.id,
-//                        isMeMessage = messageDb.isMeMessage,
-//                        senderFullName = messageDb.senderFullName,
-//                        timestamp = messageDb.timestamp,
-//                        streamID = messageDb.streamID,
-//                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-//                            ReactionDto(
-//                                reactionDb.emojiCode,
-//                                reactionDb.emojiName,
-//                                reactionDb.reactionType,
-//                                reactionDb.userId
-//                            )
-//                        }
-//                    )
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -134,24 +96,6 @@ class ChatRepositoryImpl @Inject constructor(
                         chatDao.getReaction(messageDb.id)
                             .map { reactionDb -> reactionMapper.mapDbModelToEntity(reactionDb) }
                     )
-//                    UserMessageDto(
-//                        avatarURL = messageDb.avatarURL,
-//                        content = messageDb.content,
-//                        id = messageDb.id,
-//                        isMeMessage = messageDb.isMeMessage,
-//                        senderFullName = messageDb.senderFullName,
-//                        timestamp = messageDb.timestamp,
-//                        streamID = messageDb.streamID,
-//                        nameTopic = nameTopic,
-//                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-//                            ReactionDto(
-//                                reactionDb.emojiCode,
-//                                reactionDb.emojiName,
-//                                reactionDb.reactionType,
-//                                reactionDb.userId
-//                            )
-//                        }
-//                    )
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -165,24 +109,6 @@ class ChatRepositoryImpl @Inject constructor(
                         messageDb,
                         chatDao.getReaction(messageDb.id).map { reactionMapper.mapDbModelToEntity(it) }
                     )
-//                    UserMessageDto(
-//                        avatarURL = messageDb.avatarURL,
-//                        content = messageDb.content,
-//                        id = messageDb.id,
-//                        isMeMessage = messageDb.isMeMessage,
-//                        senderFullName = messageDb.senderFullName,
-//                        timestamp = messageDb.timestamp,
-//                        streamID = messageDb.streamID,
-//                        nameTopic = messageDb.nameTopic,
-//                        reactions = chatDao.getReaction(messageDb.id).map { reactionDb ->
-//                            ReactionDto(
-//                                reactionDb.emojiCode,
-//                                reactionDb.emojiName,
-//                                reactionDb.reactionType,
-//                                reactionDb.userId
-//                            )
-//                        }
-//                    )
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -205,26 +131,8 @@ class ChatRepositoryImpl @Inject constructor(
                     chatDao.insertReaction(
                         userMessage.reactions.map { reaction ->
                             reactionMapper.mapDtoToDbModel(reaction, userMessage.id)
-//                            ReactionDb(
-//                                reaction.emojiCode,
-//                                reaction.emojiName,
-//                                reaction.reactionType,
-//                                reaction.userId,
-//                                userMessage.id
-//                            )
                         })
                     userMessageMapper.mapDtoToDbModel(userMessage, nameTopic, nameStream)
-//                    MessageDb(
-//                        avatarURL = userMessage.avatarURL,
-//                        content = userMessage.content,
-//                        id = userMessage.id,
-//                        isMeMessage = userMessage.isMeMessage,
-//                        senderFullName = userMessage.senderFullName,
-//                        timestamp = userMessage.timestamp,
-//                        streamID = userMessage.streamID,
-//                        nameTopic = nameTopic,
-//                        nameStream = nameStream
-//                    )
                 }
                 chatDao.insertMessages(listMessages)
             }
@@ -252,33 +160,13 @@ class ChatRepositoryImpl @Inject constructor(
                             chatDao.insertReaction(
                                 userMessage.reactions.map { reaction ->
                                     reactionMapper.mapDtoToDbModel(reaction, userMessage.id)
-//                                    ReactionDb(
-//                                        reaction.emojiCode,
-//                                        reaction.emojiName,
-//                                        reaction.reactionType,
-//                                        reaction.userId,
-//                                        userMessage.id
-//                                    )
                                 })
                             userMessageMapper.mapDtoToDbModel(userMessage, topicDb.nameTopic, nameStream)
-//                            MessageDb(
-//                                avatarURL = userMessage.avatarURL,
-//                                content = userMessage.content,
-//                                id = userMessage.id,
-//                                isMeMessage = userMessage.isMeMessage,
-//                                senderFullName = userMessage.senderFullName,
-//                                timestamp = userMessage.timestamp,
-//                                streamID = userMessage.streamID,
-//                                nameTopic = topicDb.nameTopic,
-//                                nameStream = nameStream
-//                            )
                         }
                     }
             }
             .toList()
             .doOnSuccess {
-//                    databaseIsRefresh = true
-//                    databaseIsNotEmpty = true
                 chatDao.insertMessages(it.flatten())
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -302,27 +190,9 @@ class ChatRepositoryImpl @Inject constructor(
                 chatDao.insertReaction(
                     message.reactions.map { reaction ->
                         reactionMapper.mapDtoToDbModel(reaction, message.id)
-//                        ReactionDb(
-//                            reaction.emojiCode,
-//                            reaction.emojiName,
-//                            reaction.reactionType,
-//                            reaction.userId,
-//                            message.id
-//                        )
                     })
                 chatDao.insertMessage(
                     userMessageMapper.mapDtoToDbModel(message, message.nameTopic, nameStream!!)
-//                    MessageDb(
-//                        avatarURL = message.avatarURL,
-//                        content = message.content,
-//                        id = message.id,
-//                        isMeMessage = message.isMeMessage,
-//                        senderFullName = message.senderFullName,
-//                        timestamp = message.timestamp,
-//                        streamID = message.streamID,
-//                        nameTopic = message.nameTopic,
-//                        nameStream = nameStream!!
-//                    )
                 )
             }
             .subscribeOn(Schedulers.io())
@@ -447,5 +317,4 @@ class ChatRepositoryImpl @Inject constructor(
             }
             .observeOn(AndroidSchedulers.mainThread())
     }
-
 }

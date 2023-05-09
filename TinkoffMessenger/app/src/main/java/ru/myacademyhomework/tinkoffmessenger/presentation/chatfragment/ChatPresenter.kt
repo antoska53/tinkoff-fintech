@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment
 
 import android.text.Editable
 import android.text.Html
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -145,7 +144,6 @@ class ChatPresenter @Inject constructor(
         initChatUseCase.initChat()
             .subscribe({
                 if (it.isEmpty()) {
-                    Log.d("OWN", "initChat: isEmpty $it")
                     getOwnUser()
                 } else {
                     viewState.hideError()

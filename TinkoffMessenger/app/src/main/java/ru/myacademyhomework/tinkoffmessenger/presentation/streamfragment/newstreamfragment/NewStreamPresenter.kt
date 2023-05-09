@@ -13,11 +13,6 @@ class NewStreamPresenter @Inject constructor(
 
     fun createNewStream(nameStream: String, description: String) {
         if (nameStream.isNotEmpty() && description.isNotEmpty()) {
-//            apiClient.chatApi.createStream(
-//                "[{\"description\": \"$description\", \"name\": \"$nameStream\"}]"
-//            )
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
             createNewStreamUseCase.createNewStream(nameStream, description)
                 .subscribe({
                     viewState.showSuccessCreate()

@@ -1,7 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.peoplefragment
 
 import androidx.recyclerview.widget.DiffUtil
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
 import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
 
 class PeopleDiffUtilCallback(

@@ -13,7 +13,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 
-class ChatAdapter(private val listener: ChatMessageListener, private val userId: Int, val topicChatListener: TopicChatListener) :
+class ChatAdapter(private val listener: ChatMessageListener, private val userId: Int, private val topicChatListener: TopicChatListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val messages: MutableList<ChatMessage> = mutableListOf()

@@ -12,8 +12,4 @@ class StreamMapper @Inject constructor() {
             subscribedStatus = stream.subscribedStatus
         )
     }
-
-    fun mapDtoToDbModel(){
-        TODO()
-    }
 }

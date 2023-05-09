@@ -3,7 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.pagerf
 import androidx.recyclerview.widget.DiffUtil
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Item
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 
 class StreamDiffUtilCallback(

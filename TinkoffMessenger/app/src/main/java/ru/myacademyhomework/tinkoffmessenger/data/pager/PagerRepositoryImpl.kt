@@ -8,12 +8,9 @@ import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
 import ru.myacademyhomework.tinkoffmessenger.data.mapper.TopicMapper
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.PagerRepository
-import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 import javax.inject.Inject
 
 class PagerRepositoryImpl @Inject constructor(
@@ -29,7 +26,6 @@ class PagerRepositoryImpl @Inject constructor(
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
                         topicMapper.mapDbModelToEntity(topicDb)
-//                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                     }
                     Stream(streamDb.nameChannel, listTopics)
                 }
@@ -44,7 +40,6 @@ class PagerRepositoryImpl @Inject constructor(
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
                         topicMapper.mapDbModelToEntity(topicDb)
-//                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                     }
                     Stream(streamDb.nameChannel, listTopics)
                 }
@@ -57,7 +52,6 @@ class PagerRepositoryImpl @Inject constructor(
             .map { listTopicsDb ->
                 listTopicsDb.map { topicDb ->
                     topicMapper.mapDbModelToEntity(topicDb)
-//                    Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                 }
             }.map {
                 Stream(streamName, it)
@@ -80,7 +74,6 @@ class PagerRepositoryImpl @Inject constructor(
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
                             topicMapper.mapDtoToDbModel(topic,subscription)
-//                            TopicDb(topic.name, subscription.name, subscription.streamID)
                         })
                         StreamDb(subscription.streamID, subscription.name, true)
                     }
@@ -106,7 +99,6 @@ class PagerRepositoryImpl @Inject constructor(
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
                             topicMapper.mapDtoToDbModel(topic, stream)
-//                            TopicDb(topic.name, stream.name, stream.streamID)
                         })
                         StreamDb(stream.streamID, stream.name, false)
                     }

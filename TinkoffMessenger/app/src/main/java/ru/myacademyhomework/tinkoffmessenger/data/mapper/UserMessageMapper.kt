@@ -21,10 +21,6 @@ class UserMessageMapper @Inject constructor() {
         )
     }
 
-    fun mapDtoModelToEntity(userMessageDto: UserMessageDto): UserMessage {
-        TODO()
-    }
-
     fun mapDtoToDbModel(userMessage: UserMessageDto, nameTopic: String, nameStream: String): MessageDb{
         return MessageDb(
             avatarURL = userMessage.avatarURL,

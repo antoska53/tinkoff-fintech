@@ -4,7 +4,6 @@ import io.reactivex.rxkotlin.addTo
 import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.di.pager.PagerScope
-import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.GetAllStreamsFromDbUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.GetAllStreamsUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.GetSubscribeStreamsFromDbUseCase

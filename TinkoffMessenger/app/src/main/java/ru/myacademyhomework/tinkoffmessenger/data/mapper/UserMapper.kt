@@ -3,7 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger.data.mapper
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.UserDb
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserDto
 import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
-import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserStatus
 import javax.inject.Inject
 
 class UserMapper @Inject constructor() {
