@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.presentation.messageview.EmojiView
 import ru.myacademyhomework.tinkoffmessenger.presentation.messageview.FlexBoxLayout
 import ru.myacademyhomework.tinkoffmessenger.presentation.messageview.NameMessageView

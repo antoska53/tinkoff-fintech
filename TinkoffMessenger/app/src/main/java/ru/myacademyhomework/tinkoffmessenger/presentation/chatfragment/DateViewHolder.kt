@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.DateMessage
 
 
 class DateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

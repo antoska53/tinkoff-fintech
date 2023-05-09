@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.domain.pager
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
 
 interface PagerRepository {

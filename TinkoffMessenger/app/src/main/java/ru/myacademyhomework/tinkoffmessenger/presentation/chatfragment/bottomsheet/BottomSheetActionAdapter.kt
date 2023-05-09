@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.ActionBottomSheet
+import ru.myacademyhomework.tinkoffmessenger.domain.util.ActionBottomSheet
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.BottomSheetActionListener
 
 class BottomSheetActionAdapter(

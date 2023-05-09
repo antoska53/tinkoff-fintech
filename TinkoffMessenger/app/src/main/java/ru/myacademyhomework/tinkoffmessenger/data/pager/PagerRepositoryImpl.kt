@@ -5,18 +5,21 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
+import ru.myacademyhomework.tinkoffmessenger.data.mapper.TopicMapper
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
 import ru.myacademyhomework.tinkoffmessenger.domain.pager.PagerRepository
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 import javax.inject.Inject
 
 class PagerRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient,
-    private val chatDao: ChatDao
+    private val chatDao: ChatDao,
+    private val topicMapper: TopicMapper
 ): PagerRepository {
 
     override fun getSubscribeStreamsFromDb(): Flowable<List<Stream>> {
@@ -25,7 +28,8 @@ class PagerRepositoryImpl @Inject constructor(
             .map {
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
-                        TopicDto(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                        topicMapper.mapDbModelToEntity(topicDb)
+//                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                     }
                     Stream(streamDb.nameChannel, listTopics)
                 }
@@ -39,7 +43,8 @@ class PagerRepositoryImpl @Inject constructor(
             .map {
                 it.map { streamDb ->
                     val listTopics = chatDao.getTopics(streamDb.nameChannel).map { topicDb ->
-                        TopicDto(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                        topicMapper.mapDbModelToEntity(topicDb)
+//                        Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                     }
                     Stream(streamDb.nameChannel, listTopics)
                 }
@@ -51,7 +56,8 @@ class PagerRepositoryImpl @Inject constructor(
         return chatDao.getTopicsForStream(streamName)
             .map { listTopicsDb ->
                 listTopicsDb.map { topicDb ->
-                    TopicDto(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
+                    topicMapper.mapDbModelToEntity(topicDb)
+//                    Topic(topicDb.streamId, topicDb.nameTopic, topicDb.nameStream)
                 }
             }.map {
                 Stream(streamName, it)
@@ -73,7 +79,8 @@ class PagerRepositoryImpl @Inject constructor(
                 apiClient.chatApi.getTopics(subscription.streamID)
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
-                            TopicDb(topic.name, subscription.name, subscription.streamID)
+                            topicMapper.mapDtoToDbModel(topic,subscription)
+//                            TopicDb(topic.name, subscription.name, subscription.streamID)
                         })
                         StreamDb(subscription.streamID, subscription.name, true)
                     }
@@ -98,7 +105,8 @@ class PagerRepositoryImpl @Inject constructor(
                 apiClient.chatApi.getTopics(stream.streamID)
                     .map { topicResponse ->
                         chatDao.insertTopics(topicResponse.topics.map { topic ->
-                            TopicDb(topic.name, stream.name, stream.streamID)
+                            topicMapper.mapDtoToDbModel(topic, stream)
+//                            TopicDb(topic.name, stream.name, stream.streamID)
                         })
                         StreamDb(stream.streamID, stream.name, false)
                     }

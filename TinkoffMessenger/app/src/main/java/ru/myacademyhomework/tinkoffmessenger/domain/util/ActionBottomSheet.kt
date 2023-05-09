@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.data
+package ru.myacademyhomework.tinkoffmessenger.domain.util
 
 enum class ActionBottomSheet(val action: String) {
     ADD_REACTION("Add reaction"),

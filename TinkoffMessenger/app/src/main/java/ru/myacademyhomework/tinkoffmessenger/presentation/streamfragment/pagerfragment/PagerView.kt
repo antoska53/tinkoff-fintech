@@ -3,8 +3,9 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.pagerf
 import moxy.viewstate.strategy.alias.AddToEnd
 import moxy.viewstate.strategy.alias.Skip
 import ru.myacademyhomework.tinkoffmessenger.presentation.common.BaseView
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 
 interface PagerView : BaseView {
 
@@ -12,7 +13,7 @@ interface PagerView : BaseView {
     fun showErrorUpdateData()
 
     @Skip
-    fun openChatTopic(topic: TopicDto)
+    fun openChatTopic(topic: Topic)
 
     @Skip
     fun openChatStream(stream: Stream)

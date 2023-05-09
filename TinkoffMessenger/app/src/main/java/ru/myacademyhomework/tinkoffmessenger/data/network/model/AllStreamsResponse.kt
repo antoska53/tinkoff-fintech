@@ -6,11 +6,11 @@ import kotlinx.serialization.*
 data class AllStreamsResponse (
     val msg: String,
     val result: String,
-    val streams: List<StreamResponse>
+    val streams: List<StreamDto>
 )
 
 @Serializable
-data class StreamResponse (
+data class StreamDto (
 
     @SerialName("description")
     val description: String,

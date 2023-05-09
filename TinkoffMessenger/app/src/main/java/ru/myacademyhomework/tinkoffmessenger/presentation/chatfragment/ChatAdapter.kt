@@ -3,10 +3,10 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.ChatMessageListener
-import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
-import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
-import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
-import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.DateMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.TopicMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.TopicChatListener
 import java.lang.IllegalArgumentException
 import java.time.Instant

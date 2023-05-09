@@ -24,8 +24,8 @@ import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.ChatMessageL
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsheet.BottomSheetActionAdapter
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsheet.BottomSheetAdapter
-import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
-import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
 import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
 import javax.inject.Inject

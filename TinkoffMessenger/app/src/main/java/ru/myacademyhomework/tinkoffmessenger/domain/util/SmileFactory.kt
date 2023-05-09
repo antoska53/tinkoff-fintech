@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.factory
+package ru.myacademyhomework.tinkoffmessenger.domain.util
 
 class SmileFactory {
     companion object{

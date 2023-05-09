@@ -2,7 +2,6 @@ package ru.myacademyhomework.tinkoffmessenger.data.network.model
 
 
 import kotlinx.serialization.*
-import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 
 @Serializable
 data class MessageResponse (

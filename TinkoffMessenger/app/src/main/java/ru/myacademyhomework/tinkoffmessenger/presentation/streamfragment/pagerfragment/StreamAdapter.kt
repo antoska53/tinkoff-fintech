@@ -4,9 +4,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.TopicListener
-import ru.myacademyhomework.tinkoffmessenger.data.Item
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Item
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 import java.lang.IllegalArgumentException
 
 
@@ -31,7 +32,7 @@ class StreamAdapter(
                 streams[position] as Stream,
                 streamListener
             )
-            is TopicViewHolder -> holder.onBind(streams[position] as TopicDto, topicListener)
+            is TopicViewHolder -> holder.onBind(streams[position] as Topic, topicListener)
             else -> throw IllegalArgumentException()
         }
     }
@@ -41,7 +42,7 @@ class StreamAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (streams[position]) {
             is Stream -> AllStreamFragment.TYPE_STREAM
-            is TopicDto -> AllStreamFragment.TYPE_TOPIC
+            is Topic -> AllStreamFragment.TYPE_TOPIC
             else -> throw IllegalArgumentException()
         }
     }

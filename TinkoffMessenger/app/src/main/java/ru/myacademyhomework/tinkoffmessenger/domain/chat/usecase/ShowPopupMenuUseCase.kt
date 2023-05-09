@@ -1,5 +1,6 @@
-package ru.myacademyhomework.tinkoffmessenger.domain.chat
+package ru.myacademyhomework.tinkoffmessenger.domain.chat.usecase
 
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.ChatRepository
 import javax.inject.Inject
 
 class ShowPopupMenuUseCase @Inject constructor(

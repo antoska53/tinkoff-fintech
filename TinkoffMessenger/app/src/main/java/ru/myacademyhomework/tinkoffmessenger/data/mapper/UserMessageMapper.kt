@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.data.mapper
 
-import ru.myacademyhomework.tinkoffmessenger.data.Reaction
-import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.Reaction
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.MessageDb
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.UserMessageDto
 import javax.inject.Inject

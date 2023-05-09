@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.data
+package ru.myacademyhomework.tinkoffmessenger.domain.util
 
 
 @Suppress("unused")

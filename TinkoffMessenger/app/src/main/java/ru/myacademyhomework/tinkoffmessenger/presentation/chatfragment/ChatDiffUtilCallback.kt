@@ -1,10 +1,10 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment
 
 import androidx.recyclerview.widget.DiffUtil
-import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
-import ru.myacademyhomework.tinkoffmessenger.data.DateMessage
-import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
-import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.ChatMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.DateMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.TopicMessage
+import ru.myacademyhomework.tinkoffmessenger.domain.chat.UserMessage
 
 class ChatDiffUtilCallback(
     private val oldLIst: List<ChatMessage>,

@@ -1,9 +1,10 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.pagerfragment
 
 import androidx.recyclerview.widget.DiffUtil
-import ru.myacademyhomework.tinkoffmessenger.data.Item
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Item
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Topic
 
 class StreamDiffUtilCallback(
     private val oldLIst: List<Item>,
@@ -17,12 +18,12 @@ class StreamDiffUtilCallback(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldItem = oldLIst[oldItemPosition]
         val newItem = newLIst[newItemPosition]
-        if (oldItem is Stream && newItem is TopicDto)
+        if (oldItem is Stream && newItem is Topic)
             return false
         if (oldItem is Stream && newItem is Stream) {
             return oldItem.nameChannel == newItem.nameChannel
         }
-        if (oldItem is TopicDto && newItem is TopicDto) {
+        if (oldItem is Topic && newItem is Topic) {
             return oldItem.name == newItem.name
         }
         return false
@@ -34,8 +35,8 @@ class StreamDiffUtilCallback(
         return if (oldItem is Stream && newItem is Stream) {
             oldItem.nameChannel == newItem.nameChannel && oldItem.isSelected == newItem.isSelected
         } else {
-            val oldTopic = oldItem as TopicDto
-            val newTopic =  newItem as TopicDto
+            val oldTopic = oldItem as Topic
+            val newTopic =  newItem as Topic
             oldTopic == newTopic
         }
     }

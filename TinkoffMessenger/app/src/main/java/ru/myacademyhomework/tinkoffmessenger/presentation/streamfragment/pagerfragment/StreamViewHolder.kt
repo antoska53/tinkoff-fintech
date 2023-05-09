@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.Stream
+import ru.myacademyhomework.tinkoffmessenger.domain.pager.Stream
 
 class StreamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val nameChannel: TextView = itemView.findViewById(R.id.textview_name_channel)

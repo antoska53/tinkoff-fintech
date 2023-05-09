@@ -3,8 +3,6 @@ package ru.myacademyhomework.tinkoffmessenger.domain.chat
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
-import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.MessageDb
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.MessageResponse

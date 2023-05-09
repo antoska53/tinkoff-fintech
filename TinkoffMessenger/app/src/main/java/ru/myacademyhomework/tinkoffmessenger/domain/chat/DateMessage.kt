@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.data
+package ru.myacademyhomework.tinkoffmessenger.domain.chat
 
 import java.time.LocalDate
 
