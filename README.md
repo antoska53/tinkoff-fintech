@@ -17,6 +17,7 @@ API https://zulip.com/api/
 Стэк технологий:
  - Kotlin
  - MVP
+ - Clean Architecture
  - Moxy
  - Retrofit
  - Room
