@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.presentation
 
 import android.content.Context
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.WindowManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
+import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.peoplefragment.PeopleFragment
 import ru.myacademyhomework.tinkoffmessenger.presentation.profilefragment.ProfileFragment
 import ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.StreamFragment

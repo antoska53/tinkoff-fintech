@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.newstreamfragment
 
 import io.reactivex.rxkotlin.addTo
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.di.newstream.NewStreamScope
 import ru.myacademyhomework.tinkoffmessenger.domain.newstream.CreateNewStreamUseCase
 import javax.inject.Inject

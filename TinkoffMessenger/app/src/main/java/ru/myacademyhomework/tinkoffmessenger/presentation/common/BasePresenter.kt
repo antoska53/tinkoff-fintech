@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.common
+package ru.myacademyhomework.tinkoffmessenger.presentation.common
 
 import io.reactivex.disposables.CompositeDisposable
 import moxy.MvpPresenter

@@ -1,7 +1,7 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.presentation
 
 import moxy.viewstate.strategy.alias.AddToEnd
-import ru.myacademyhomework.tinkoffmessenger.common.BaseView
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BaseView
 
 interface FlowFragmentView : BaseView {
 

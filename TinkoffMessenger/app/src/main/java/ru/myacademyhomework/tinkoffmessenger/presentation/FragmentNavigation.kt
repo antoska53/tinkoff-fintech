@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.presentation
 
 import androidx.fragment.app.Fragment
 

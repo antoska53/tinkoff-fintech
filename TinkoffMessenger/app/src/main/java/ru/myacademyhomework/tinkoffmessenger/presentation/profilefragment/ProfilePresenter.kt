@@ -4,7 +4,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.di.profile.ProfileScope
 import ru.myacademyhomework.tinkoffmessenger.domain.profile.GetStatusUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.profile.GetUserInfoUseCase

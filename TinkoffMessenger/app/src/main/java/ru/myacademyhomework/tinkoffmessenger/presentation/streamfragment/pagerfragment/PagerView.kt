@@ -2,7 +2,7 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.pagerf
 
 import moxy.viewstate.strategy.alias.AddToEnd
 import moxy.viewstate.strategy.alias.Skip
-import ru.myacademyhomework.tinkoffmessenger.common.BaseView
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BaseView
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 

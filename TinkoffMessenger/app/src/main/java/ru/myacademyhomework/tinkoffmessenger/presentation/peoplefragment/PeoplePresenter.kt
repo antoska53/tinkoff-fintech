@@ -1,22 +1,13 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.peoplefragment
 
-import android.util.Log
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
-import ru.myacademyhomework.tinkoffmessenger.data.database.ChatDao
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.UserDb
-import ru.myacademyhomework.tinkoffmessenger.di.ApiClient
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.di.people.PeopleScope
 import ru.myacademyhomework.tinkoffmessenger.domain.people.GetAllUserFromDbUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.people.GetAllUserFromNetworkUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.people.InitSearchUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.people.SearchUseCase
-import ru.myacademyhomework.tinkoffmessenger.domain.profile.UserInfo
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @PeopleScope

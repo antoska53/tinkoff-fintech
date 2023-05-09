@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.pagerfragment
 
 import io.reactivex.rxkotlin.addTo
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.di.pager.PagerScope
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto

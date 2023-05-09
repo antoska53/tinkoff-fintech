@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.newstreamfragment
 
 import moxy.viewstate.strategy.alias.Skip
-import ru.myacademyhomework.tinkoffmessenger.common.BaseView
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BaseView
 
 interface NewStreamView :BaseView {
     @Skip

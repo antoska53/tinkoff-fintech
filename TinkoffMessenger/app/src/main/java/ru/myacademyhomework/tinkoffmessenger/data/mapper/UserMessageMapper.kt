@@ -16,6 +16,7 @@ class UserMessageMapper @Inject constructor() {
             senderFullName = messageDb.senderFullName,
             timestamp = messageDb.timestamp,
             streamID = messageDb.streamID,
+            nameTopic = messageDb.nameTopic,
             reactions = reactions
         )
     }

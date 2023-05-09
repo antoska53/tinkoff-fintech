@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.rxkotlin.addTo
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.data.*
 import ru.myacademyhomework.tinkoffmessenger.di.chat.ChatScope
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.AddReactionUseCase

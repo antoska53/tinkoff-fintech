@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.presentation
 
 import android.app.Application
 import ru.myacademyhomework.tinkoffmessenger.di.AppComponent

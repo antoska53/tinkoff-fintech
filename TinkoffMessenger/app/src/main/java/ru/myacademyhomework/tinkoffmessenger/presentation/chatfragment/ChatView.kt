@@ -3,7 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment
 import moxy.viewstate.strategy.alias.AddToEndSingle
 import moxy.viewstate.strategy.alias.OneExecution
 import moxy.viewstate.strategy.alias.Skip
-import ru.myacademyhomework.tinkoffmessenger.common.BaseView
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BaseView
 import ru.myacademyhomework.tinkoffmessenger.data.ChatMessage
 import ru.myacademyhomework.tinkoffmessenger.data.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.TopicDb

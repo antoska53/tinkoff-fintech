@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.listeners
+package ru.myacademyhomework.tinkoffmessenger.presentation.listeners
 
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto

@@ -12,10 +12,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.App
-import ru.myacademyhomework.tinkoffmessenger.FlowFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.App
+import ru.myacademyhomework.tinkoffmessenger.presentation.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
-import ru.myacademyhomework.tinkoffmessenger.data.database.model.StreamDb
 import ru.myacademyhomework.tinkoffmessenger.domain.stream.StreamInfo
 import javax.inject.Inject
 import javax.inject.Provider

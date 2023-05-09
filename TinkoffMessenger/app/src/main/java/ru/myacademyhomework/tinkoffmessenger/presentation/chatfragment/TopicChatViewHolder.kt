@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.data.TopicMessage
-import ru.myacademyhomework.tinkoffmessenger.listeners.TopicChatListener
+import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.TopicChatListener
 
 class TopicChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

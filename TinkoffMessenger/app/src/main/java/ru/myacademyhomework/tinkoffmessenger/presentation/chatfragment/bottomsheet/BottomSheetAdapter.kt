@@ -3,7 +3,7 @@ package ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsh
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.myacademyhomework.tinkoffmessenger.listeners.BottomSheetListener
+import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.BottomSheetListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.factory.SmileFactory
 

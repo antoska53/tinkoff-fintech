@@ -1,7 +1,7 @@
-package ru.myacademyhomework.tinkoffmessenger
+package ru.myacademyhomework.tinkoffmessenger.presentation
 
 import moxy.InjectViewState
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 
 @InjectViewState
 class FlowFragmentPresenter : BasePresenter<FlowFragmentView>() {

@@ -9,8 +9,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.App
-import ru.myacademyhomework.tinkoffmessenger.FlowFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.App
+import ru.myacademyhomework.tinkoffmessenger.presentation.FlowFragment
 import ru.myacademyhomework.tinkoffmessenger.R
 import javax.inject.Inject
 import javax.inject.Provider

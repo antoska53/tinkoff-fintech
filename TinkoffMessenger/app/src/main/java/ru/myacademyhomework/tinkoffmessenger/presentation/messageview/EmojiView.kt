@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.messageview
+package ru.myacademyhomework.tinkoffmessenger.presentation.messageview
 
 import android.content.Context
 import android.content.res.TypedArray

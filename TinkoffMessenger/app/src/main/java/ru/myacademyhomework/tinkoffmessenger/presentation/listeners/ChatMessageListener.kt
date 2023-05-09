@@ -1,4 +1,4 @@
-package ru.myacademyhomework.tinkoffmessenger.listeners
+package ru.myacademyhomework.tinkoffmessenger.presentation.listeners
 
 interface ChatMessageListener {
     fun itemLongClicked(idMessage: Long, nameTopic: String, message: String, position: Int): Boolean

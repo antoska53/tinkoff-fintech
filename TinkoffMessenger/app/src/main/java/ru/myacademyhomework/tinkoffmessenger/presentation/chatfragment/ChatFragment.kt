@@ -17,10 +17,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.App
-import ru.myacademyhomework.tinkoffmessenger.FlowFragment
-import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
-import ru.myacademyhomework.tinkoffmessenger.listeners.ChatMessageListener
+import ru.myacademyhomework.tinkoffmessenger.presentation.App
+import ru.myacademyhomework.tinkoffmessenger.presentation.FlowFragment
+import ru.myacademyhomework.tinkoffmessenger.presentation.FragmentNavigation
+import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.ChatMessageListener
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsheet.BottomSheetActionAdapter
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.bottomsheet.BottomSheetAdapter

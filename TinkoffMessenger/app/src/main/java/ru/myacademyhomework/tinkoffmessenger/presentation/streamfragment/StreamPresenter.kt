@@ -1,7 +1,7 @@
 package ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment
 
 import io.reactivex.rxkotlin.addTo
-import ru.myacademyhomework.tinkoffmessenger.common.BasePresenter
+import ru.myacademyhomework.tinkoffmessenger.presentation.common.BasePresenter
 import ru.myacademyhomework.tinkoffmessenger.di.stream.StreamScope
 import ru.myacademyhomework.tinkoffmessenger.domain.stream.InitSearchUseCase
 import ru.myacademyhomework.tinkoffmessenger.domain.stream.SearchUseCase

@@ -12,12 +12,12 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
-import ru.myacademyhomework.tinkoffmessenger.App
-import ru.myacademyhomework.tinkoffmessenger.FragmentNavigation
+import ru.myacademyhomework.tinkoffmessenger.presentation.App
+import ru.myacademyhomework.tinkoffmessenger.presentation.FragmentNavigation
 import ru.myacademyhomework.tinkoffmessenger.R
 import ru.myacademyhomework.tinkoffmessenger.presentation.chatfragment.ChatFragment
 import ru.myacademyhomework.tinkoffmessenger.data.Stream
-import ru.myacademyhomework.tinkoffmessenger.listeners.StreamListener
+import ru.myacademyhomework.tinkoffmessenger.presentation.listeners.StreamListener
 import ru.myacademyhomework.tinkoffmessenger.data.network.model.TopicDto
 import ru.myacademyhomework.tinkoffmessenger.presentation.streamfragment.newstreamfragment.NewStreamFragment
 import javax.inject.Inject
