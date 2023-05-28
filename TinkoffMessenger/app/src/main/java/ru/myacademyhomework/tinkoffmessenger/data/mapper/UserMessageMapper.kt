@@ -1,5 +1,6 @@
 package ru.myacademyhomework.tinkoffmessenger.data.mapper
 
+import android.text.Html
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.Reaction
 import ru.myacademyhomework.tinkoffmessenger.domain.chat.UserMessage
 import ru.myacademyhomework.tinkoffmessenger.data.database.model.MessageDb
@@ -24,7 +25,7 @@ class UserMessageMapper @Inject constructor() {
     fun mapDtoToDbModel(userMessage: UserMessageDto, nameTopic: String, nameStream: String): MessageDb{
         return MessageDb(
             avatarURL = userMessage.avatarURL,
-            content = userMessage.content,
+            content = Html.fromHtml(userMessage.content, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim().toString(),
             id = userMessage.id,
             isMeMessage = userMessage.isMeMessage,
             senderFullName = userMessage.senderFullName,

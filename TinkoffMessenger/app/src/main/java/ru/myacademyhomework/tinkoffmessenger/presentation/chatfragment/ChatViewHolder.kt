@@ -25,8 +25,8 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun onBind(message: UserMessage, userId: Int, listener: ChatMessageListener) {
 
         textviewName.text = message.senderFullName
-        textviewMessage.text =
-            Html.fromHtml(message.content, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim()
+        textviewMessage.text = message.content
+//            Html.fromHtml(message.content, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim()
         flexBoxEmoji.removeAllViews()
 
         val myReaction = message.reactions.filter {
@@ -38,10 +38,10 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val emojiView: EmojiView = LayoutInflater.from(itemView.context)
                 .inflate(R.layout.emoji_view_layout, flexBoxEmoji, false) as EmojiView
 
-            val isMyReaction = myReaction.count {
+            val countMyReaction = myReaction.count {
                 it.emojiName == emoji.emojiName
             }
-            emojiView.isSelected = isMyReaction > 0
+            emojiView.isSelected = countMyReaction > 0
 
             emojiView.setOnClickListener {
                 if (!it.isSelected) {
