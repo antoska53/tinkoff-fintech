@@ -50,13 +50,13 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                     listener.itemRemoveReactionClicked(message.id, message.nameTopic, emoji.emojiName, emoji.emojiCode, emoji.reactionType, emoji.userId, adapterPosition)
                 }
             }
-            emojiView.smile = emoji.emojiCode.split("-").joinToString("") {
-                if (it == "zulip") {
-                    "Z "
-                } else {
-                    String(Character.toChars(it.toInt(16)))
-                }
-            }
+            emojiView.smile = emoji.emojiCode //.split("-").joinToString("") {
+//                if (it == "zulip") {
+//                    "Z "
+//                } else {
+//                    String(Character.toChars(it.toInt(16)))
+//                }
+//            }
             emojiView.textCount = message.reactions.count {
                 it.emojiName == emoji.emojiName
             }.toString()

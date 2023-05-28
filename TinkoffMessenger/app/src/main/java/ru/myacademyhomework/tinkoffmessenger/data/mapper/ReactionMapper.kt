@@ -15,13 +15,19 @@ class ReactionMapper @Inject constructor() {
         )
     }
 
-    fun mapDtoToDbModel(reaction: ReactionDto, userId: Long): ReactionDb{
+    fun mapDtoToDbModel(reaction: ReactionDto, messageId: Long): ReactionDb{
         return ReactionDb(
-            reaction.emojiCode,
+            reaction.emojiCode.split("-").joinToString("") {
+                if (it == "zulip") {
+                    "Z "
+                } else {
+                    String(Character.toChars(it.toInt(16)))
+                }
+            },
             reaction.emojiName,
             reaction.reactionType,
             reaction.userId,
-            userId
+            messageId
         )
     }
 }
