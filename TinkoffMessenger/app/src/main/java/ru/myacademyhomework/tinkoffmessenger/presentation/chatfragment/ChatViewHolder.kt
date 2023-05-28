@@ -26,39 +26,32 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         textviewName.text = message.senderFullName
         textviewMessage.text = message.content
-//            Html.fromHtml(message.content, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).trim()
         flexBoxEmoji.removeAllViews()
 
         val myReaction = message.reactions.filter {
             it.userId == userId
         }
         val reactionsDistinct = message.reactions.distinctBy { it.emojiName }
-        for (emoji in reactionsDistinct) {
 
+        for (reaction in reactionsDistinct) {
             val emojiView: EmojiView = LayoutInflater.from(itemView.context)
                 .inflate(R.layout.emoji_view_layout, flexBoxEmoji, false) as EmojiView
 
             val countMyReaction = myReaction.count {
-                it.emojiName == emoji.emojiName
+                it.emojiName == reaction.emojiName
             }
             emojiView.isSelected = countMyReaction > 0
 
             emojiView.setOnClickListener {
                 if (!it.isSelected) {
-                    listener.itemAddReactionClicked(message.id, message.nameTopic, emoji.emojiName, adapterPosition)
+                    listener.itemAddReactionClicked(message.id, message.nameTopic, reaction.emojiName, adapterPosition)
                 } else {
-                    listener.itemRemoveReactionClicked(message.id, message.nameTopic, emoji.emojiName, emoji.emojiCode, emoji.reactionType, emoji.userId, adapterPosition)
+                    listener.itemRemoveReactionClicked(message.id, message.nameTopic, reaction.emojiName, reaction.emojiCode, reaction.reactionType, reaction.userId, adapterPosition)
                 }
             }
-            emojiView.smile = emoji.emojiCode //.split("-").joinToString("") {
-//                if (it == "zulip") {
-//                    "Z "
-//                } else {
-//                    String(Character.toChars(it.toInt(16)))
-//                }
-//            }
+            emojiView.smile = reaction.emojiCode
             emojiView.textCount = message.reactions.count {
-                it.emojiName == emoji.emojiName
+                it.emojiName == reaction.emojiName
             }.toString()
             flexBoxEmoji.addView(emojiView)
         }
