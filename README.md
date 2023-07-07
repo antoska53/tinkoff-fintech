@@ -24,3 +24,8 @@ API https://zulip.com/api/
  - SQL
  - RxJava2
  - Dagger2
+
+<img src="https://github.com/antoska53/tinkoff-fintech/assets/32413836/bf4da018-0f0c-481e-ac29-e76fe3087c9f" width="300">
+<img src="https://github.com/antoska53/tinkoff-fintech/assets/32413836/35b9adfe-3903-4ea4-9d2d-0c21193da145" width="300">
+<img src="https://github.com/antoska53/tinkoff-fintech/assets/32413836/f1b07abc-7216-4dd4-9f63-9b91e6a5428c" width="300">
+
